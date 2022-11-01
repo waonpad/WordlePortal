@@ -22,13 +22,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import {useAuth} from "../AuthContext";
-
-interface LoginData {
-  email: string;
-  password: string;
-  submit: string;
-}
+import {useAuth} from "../contexts/AuthContext";
+import { LoginData, LoginErrorData } from '../../../@types/AuthType';
 
 function Copyright(props: any) {
   return (
@@ -47,7 +42,6 @@ const theme = createTheme();
 
 export default function LogIn(): React.ReactElement {
 
-  // https://dev.classmethod.jp/articles/react-beginners-tried-to-create-a-modern-web-form-with-material-ui-and-yup/
   const basicSchema = Yup.object().shape({
     email: Yup.string()
     .email('emailの型ではありません')
@@ -97,9 +91,8 @@ export default function LogIn(): React.ReactElement {
           }
           else {
             const obj: LoginData = res.data.validation_errors;
-
-            // https://qiita.com/mizuki_r/items/1950dfc27824b3ecd6c7
-            (Object.keys(obj) as (keyof LoginData)[]).forEach((key) => setError(key, {
+            
+            (Object.keys(obj) as (keyof LoginErrorData)[]).forEach((key) => setError(key, {
               type: 'manual',
               message: obj[key]
             }))

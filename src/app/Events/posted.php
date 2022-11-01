@@ -18,13 +18,16 @@ class Posted implements ShouldBroadcast
      */
     public $post;
 
+    public $event_type;
+
     /**
      * Posted constructor.
      * @param Post $post
      */
-    public function __construct(Post $post)
+    public function __construct($post, $event_type)
     {
         $this->post = $post;
+        $this->event_type = $event_type;
     }
 
     /**

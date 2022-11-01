@@ -16,18 +16,12 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $users = User::get();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return response()->json([
+            'status' => true,
+            'users' => $users,
+        ]);
     }
 
     /**
@@ -38,15 +32,19 @@ class UserController extends Controller
      */
     public function show(Request $request)
     {   
-        $user = User::where('screen_name', $request->screen_name)->first();
+        $auth_user = Auth::user() ?? '';
+        $target_user = User::with(['followers', 'follows', 'posts', 'likes'])->where('screen_name', $request->screen_name)->first();
+
+        $myself = ($auth_user->id === $target_user->id) ? true : false;
+        $follow = in_array($auth_user->id, $target_user->followers->pluck('id')->toArray()) ? true : false;
+        $followed = in_array($auth_user->id, $target_user->follows->pluck('id')->toArray()) ? true : false;
 
         return response()->json([
-            'id'=>$user->id,
-            'screen_name'=>$user->screen_name,
-            'name'=>$user->name,
-            'email'=>$user->email,
-            'created_at'=>$user->created_at,
-            // 'password'=>$user->password,
+            'status' => true,
+            'user' => $target_user,
+            'myself' => $myself,
+            'follow' => $follow,
+            'followed' => $followed
         ]);
     }
 
@@ -57,19 +55,20 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
-    }
+        $user = $request->user();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $user->update([
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'age' => $request['age'],
+            'gender' => $request['gender']
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'user' => $user
+        ]);
     }
 }

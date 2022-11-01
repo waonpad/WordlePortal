@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'description',
+        'age',
+        'gender',
         'icon',
     ];
 
@@ -55,5 +57,15 @@ class User extends Authenticatable
     public function follows()
     {
         return $this->belongsToMany('App\Models\User', 'follows', 'following_user_id', 'followed_user_id');
+    }
+
+    // ユーザーのpost一覧
+    public function posts() {
+        return $this->hasMany(Post::class);
+    }
+
+    // ユーザーのlike一覧
+    public function likes() {
+        return $this->belongsToMany('App\Models\Post', 'likes', 'user_id', 'post_id');
     }
 }

@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 import { LoadingButton } from '@mui/lab';
 import ReactLoading from 'react-loading';
 
-import {useAuth} from "../AuthContext";
+import {useAuth} from "../contexts/AuthContext";
 
 interface PrivatePostData {
     disp_user_id: number;
