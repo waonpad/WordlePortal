@@ -17,21 +17,18 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import CloseIcon from '@material-ui/icons/Close';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import {useAuth} from "../AuthContext";
-
-interface RegisterData {
-  screen_name: string;
-  name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
-  submit: string;
-}
+import {useAuth} from "../contexts/AuthContext";
+import { RegisterData, RegisterErrorData } from '../../../@types/AuthType';
 
 function Copyright(props: any) {
   return (
@@ -50,7 +47,6 @@ const theme = createTheme();
 
 export default function Register(): React.ReactElement {
 
-  // https://dev.classmethod.jp/articles/react-beginners-tried-to-create-a-modern-web-form-with-material-ui-and-yup/
   const basicSchema = Yup.object().shape({
     screen_name: Yup.string()
     .required('必須入力'),
@@ -65,6 +61,9 @@ export default function Register(): React.ReactElement {
     password_confirmation: Yup.string()
     .oneOf([Yup.ref('password')], 'passwordが一致しません。')
     .required('必須入力'),
+    description: Yup.string().max(191),
+    age: Yup.number().min(0).max(130).required(),
+    gender: Yup.string().oneOf(['male', 'female']).required()
   });
 
   const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterData>({
@@ -90,13 +89,22 @@ export default function Register(): React.ReactElement {
 
   // 認証が終わってUserにデータが入ったら移動する
   useEffect(() => {
-    if (auth!.user !== null) {
+    if (auth?.user !== null) {
       history.push('/')
     }
-  }, [auth!.user])
+  }, [auth?.user])
+
+  const [gender, setGender] = React.useState('');
+
+  const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target);
+    console.log(event.target.value);
+    setGender(event.target.value);
+  };
   
   const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
     setLoading(true)
+    console.log(data);
     axios.get('/sanctum/csrf-cookie').then(() => {
         auth?.register(data).then((res: any) => {
           console.log(res);
@@ -106,10 +114,9 @@ export default function Register(): React.ReactElement {
             // setLoading(false)
           }
           else {
-            const obj: RegisterData = res.data.validation_errors;
+            const obj: RegisterErrorData = res.data.validation_errors;
 
-            // https://qiita.com/mizuki_r/items/1950dfc27824b3ecd6c7
-            (Object.keys(obj) as (keyof RegisterData)[]).forEach((key) => setError(key, {
+            (Object.keys(obj) as (keyof RegisterErrorData)[]).forEach((key) => setError(key, {
               type: 'manual',
               message: obj[key]
             }))
@@ -213,12 +220,50 @@ export default function Register(): React.ReactElement {
                   helperText={errors.password_confirmation?.message}
                 />
               </Grid>
-              {/* <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid> */}
+              <Grid item xs={12}>
+                  <TextField
+                      // required
+                      fullWidth
+                      id="description"
+                      label="Description"
+                      autoComplete="description"
+                      multiline
+                      rows={4}
+                      {...register('description')}
+                      error={errors.description ? true : false}
+                      helperText={errors.description?.message}
+                  />
+              </Grid>
+              <Grid item xs={12}>
+                  <TextField
+                      required
+                      fullWidth
+                      id="age"
+                      label="Age"
+                      autoComplete="age"
+                      {...register('age')}
+                      inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      error={errors.age ? true : false}
+                      helperText={errors.age?.message}
+                  />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl error={errors.gender ? true : false}>
+                  <FormLabel id="demo-controlled-radio-buttons-group">Gender</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-controlled-radio-buttons-group"
+                    id="gender"
+                    value={gender}
+                    {...register('gender')}
+                    onChange={handleChangeGender}
+                  >
+                    <FormControlLabel value="male" control={<Radio />} label="Male" />
+                    <FormControlLabel value="female" control={<Radio />} label="Female" />
+                  </RadioGroup>
+                  <FormHelperText>{errors.gender?.message}</FormHelperText>
+                </FormControl>
+              </Grid>
             </Grid>
             <LoadingButton
               type="submit"

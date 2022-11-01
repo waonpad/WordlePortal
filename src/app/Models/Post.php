@@ -3,22 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Category;
+use App\Models\User;
 
-/**
- * Class Post
- * @package App\Models
- *
- * @property string $text
- */
 class Post extends Model
 {
+    use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'text'
+        'title',
+        'comment',
+        'user_id'
     ];
+
+    protected $table = 'posts';
+
+    public function categories() {
+      return $this->belongsToMany(Category::class);
+    }
+
+    public function user() {
+      return $this->belongsTo(User::class);
+    }
+
+    public function likes() {
+        return $this->belongsToMany('App\Models\User', 'likes', 'post_id', 'user_id');
+    }
 }

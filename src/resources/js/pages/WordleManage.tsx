@@ -34,7 +34,7 @@ import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
 import Hidden from '@mui/material/Hidden';
-import {useAuth} from "../AuthContext";
+import {useAuth} from "../contexts/AuthContext";
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';

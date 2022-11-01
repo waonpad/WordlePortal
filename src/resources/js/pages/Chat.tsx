@@ -1,106 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import swal from "sweetalert";
-import ReactDOM from 'react-dom';
-import { Button, Card } from '@material-ui/core';
-import { Link } from "react-router-dom";
-import axios from 'axios';
-import { useForm, SubmitHandler } from "react-hook-form";
-import TextField from '@mui/material/TextField';
-import { LoadingButton } from '@mui/lab';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { Link, useParams, useLocation } from "react-router-dom";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress';
+import PostForm from '../components/PostForm';
+import PostList from '../components/PostList';
 
-interface PostData {
-    text: string;
-    submit: string;
-}
-
-declare global {
-    interface Window {
-        Echo: any;
-    }
-}
+const theme = createTheme();
 
 function Chat(): React.ReactElement {
+    const [initial_loading, setInitialLoading] = useState(true);
 
-    const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<PostData>();
-    const [loading, setLoading] = useState(false);
+    const [post_get_api_method, setPostGetApiMethod] = useState('post/index');
+    const [request_params, setRequestParams] = useState<any>({});
+    const [listening_channel, setListeningChannel] = useState('post');
+    const [listening_event, setListeningEvent] = useState('Posted');
 
-    const onSubmit: SubmitHandler<PostData> = (data: PostData) => {
-        setLoading(true)
+    const location = useLocation();
+    const {category_id} = useParams<{category_id: string}>();
 
-        axios.post('/api/post', data).then(res => {
-            swal("送信成功", "送信成功", "success");
-            console.log(res);
-            setLoading(false);
-        }).catch(error => {
-            console.log(error)
-            setError('submit', {
-            type: 'manual',
-            message: '送信に失敗しました'
-        })
-            setLoading(false);
-        })
-    }
+    const [key, setKey] = useState('');　//再読み込みのためにkeyが必要
 
-    const initialState = [
-        {
-            text: 'sample1',
-        },
-        {
-            text: 'sample2',
-        },
-        {
-            text: 'sample3',
-        },     
-    ]
-
-    const [posts, setPosts] = useState(initialState);
-
-	useEffect(() => {
-        window.Echo.channel('post').listen('Posted', (e: any) => {
-            console.log(e);
-            console.log(e.post.text);
-            setPosts(posts => [...posts,{text: e.post.text}]);
-        });
-	}, [])
+    useEffect(() => {
+        console.log(category_id);
+        setInitialLoading(true);
+        if(category_id !== undefined) {
+            setPostGetApiMethod('post/category');
+            setRequestParams({category_id: category_id});
+            setListeningChannel(`category_post.${category_id}`);
+            setListeningEvent('CategoryPosted');
+            setKey(`category.${category_id}`);
+        }
+        setInitialLoading(false);
+    }, [location]);
 
     return (
-        <React.Fragment>
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-md-8">
-                        <div className="card">
-                            <div className="card-header">
-                                <ul id='board'>
-                                    { posts.map((post, index) => (
-                                    <li key={ index }>{ post.text }</li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            <form className="py-4" onSubmit={e => {clearErrors(); handleSubmit(onSubmit)(e)}}>
-                                <div className="card-body">
-                                    <div className="py-4">
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined" 
-                                            id="text"
-                                            label="メッセージ" 
-                                            {...register('text', {
-                                            required: '入力してください'
-                                            })} 
-                                        />
-                                    </div>
-                                        
-                                    <div>
-                                        <LoadingButton loading={loading} type="submit" variant="contained" fullWidth>Submit</LoadingButton>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </React.Fragment>
+        <ThemeProvider theme={theme}>
+          <Container component="main" maxWidth={'md'} sx={{padding: 0}}>
+            <CssBaseline />
+                <PostForm />
+                {!initial_loading ? (
+                    <PostList
+                    post_get_api_method={post_get_api_method}
+                    request_params={request_params}
+                    listening_channel={listening_channel}
+                    listening_event={listening_event}
+                    key={key}
+                    />
+                ) : (
+                    <CircularProgress sx={{textAlign: 'center'}} />
+                )}
+            </Container>
+        </ThemeProvider>
     );
 }
 

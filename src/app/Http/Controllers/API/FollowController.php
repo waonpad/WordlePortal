@@ -10,7 +10,6 @@ use App\Notifications\CommonNotification;
 
 class FollowController extends Controller
 {
-    
     public function followToggle(Request $request) {
         $user = $request->user();
         $target_user = User::where('screen_name', $request->screen_name)->first();
@@ -23,21 +22,11 @@ class FollowController extends Controller
             $follow_status = false;
         }
 
+        // 通知を送る
+
         return response()->json([
             'status' => true,
             'follow_status' => $follow_status,
-        ]);
-    }
-
-    public function ffcheck(Request $request) {
-        $id = User::where('screen_name', $request->screen_name)->first()->id;
-        $follow = Follow::where('following_user_id', $request->user()->id)->where('followed_user_id', $id)->first();
-        $followed = Follow::where('following_user_id', $id)->where('followed_user_id', $request->user()->id)->first();
-
-        return response()->json([
-            'myself' => $request->user()->id == $id ? true : false,
-            'follow' => $follow ? true : false,
-            'followed' => $followed ? true : false,
         ]);
     }
 }

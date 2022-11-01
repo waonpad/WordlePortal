@@ -1,4 +1,5 @@
 APP_CONTAINER = app
+APP_CONTAINER_NAME = fullstack-app
 MAIN_BRANCH = main
 
 build:
@@ -7,7 +8,8 @@ build:
 	docker-compose exec ${APP_CONTAINER} composer install
 	docker-compose exec ${APP_CONTAINER} cp .env.example .env
 	docker-compose exec ${APP_CONTAINER} php artisan key:generate
-	docker-compose exec ${APP_CONTAINER} npm install --save --legacy-peer-deps
+	docker-compose exec ${APP_CONTAINER} npm install --legacy-peer-deps
+	docker-compose exec ${APP_CONTAINER} rm -rf node_modules/mui-chips-input/node_modules
 	npm install
 	start /min start.bat
 
@@ -16,6 +18,10 @@ up:
 
 down:
 	docker-compose down
+
+restart:
+	docker-compose restart
+	start /min docker-compose exec app npm run watch-poll
 
 
 
@@ -34,6 +40,15 @@ newb-%:
 
 delb-%:
 	git branch -d ${@:delb-%=%}
+
+
+
+npmi:
+	$(MAKE) -C src npmi
+
+npmi-c:
+	docker-compose exec ${APP_CONTAINER} npm install --legacy-peer-deps
+	docker-compose exec ${APP_CONTAINER} rm -rf node_modules/mui-chips-input/node_modules
 
 
 
@@ -85,9 +100,5 @@ optimize:
 evt-%:
 	docker-compose exec ${APP_CONTAINER} php artisan make:event ${@:evt-%=%}
 
-
-rm-mui-chips-input-node-modules:
-	docker-compose exec ${APP_CONTAINER} rm -rf node_modules/mui-chips-input/node_modules
-
 acs:
-	docker container  exec -it fullstack-app /bin/ash
+	docker container exec -it ${APP_CONTAINER_NAME} /bin/ash

@@ -23,12 +23,7 @@ function User(): React.ReactElement {
         })
     }
 
-    const [userData, setUserData] = useState({
-        screen_name: '',
-        name: '',
-        email: '',
-        password: '',
-    });
+    const [userData, setUserData] = useState<any>({});
 
     const data = {
         screen_name: id,
@@ -37,25 +32,13 @@ function User(): React.ReactElement {
     useEffect(() => {
         axios.get('/api/user/show', {params: data}).then(res => {
             if (res.status === 200) {
-                setUserData(res.data);
                 console.log(res);
+                setUserData(res.data.user);
+                setMyself(res.data.myself);
+                setFollowStatus(res.data.follow);
+                setLoading(false);
             }
         });
-        
-        if (!localStorage.getItem('auth_token')){
-            setFollowStatus(false);
-            setLoading(false);
-        }
-        else {
-            axios.get('/api/ffcheck', {params: {screen_name: id}}).then(res => {
-                if(res.status === 200) {
-                    console.log(res);
-                    setMyself(res.data.myself);
-                    setFollowStatus(res.data.follow);
-                    setLoading(false);
-                }
-            })
-        }
     }, [])
 
     return (
@@ -74,7 +57,9 @@ function User(): React.ReactElement {
             {userData.screen_name ? <span>{userData.screen_name}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
             {userData.name ? <span>{userData.name}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
             {userData.email ? <span>{userData.email}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
-            {userData.password ? <span>{userData.password}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
+            {userData.description ? <span>{userData.description}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
+            {userData.age ? <span>{userData.age}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
+            {userData.gender ? <span>{userData.gender}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
         </React.Fragment>
     );
 }

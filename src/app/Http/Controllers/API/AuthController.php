@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -23,13 +24,16 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'description' => $request->description,
+                'age' => $request->age,
+                'gender' => $request->gender
             ]);
 
-            $token = $user->createToken($user->email.'_Token')->plainTextToken;
+            
+            Auth::login($user, $remember = false);
 
             return response()->json([
                 'user' => $user,
-                'token' => $token,
                 'status' => true,
                 'message' => 'Registerd Successfully'
             ]);
@@ -42,35 +46,24 @@ class AuthController extends Controller
             return response()->json([
                 'validation_errors' => $validator->errors(),
             ]);
-        } else {
-            $user = User::where('email', $request->email)->first();
-
-            if (! $user || ! Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'status' => false,
-                    'message' => '入力情報が不正です',
-                ]);
-            } 
-            else if (null !== $request->bearerToken()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => '既にログインしています',
-                ]);
-            } else {
-                $token = $user->createToken($user->email.'_Token')->plainTextToken;
-
-                return response()->json([
-                    'user' => $user,
-                    'token' => $token,
-                    'status' => true,
-                    'message' => 'ログインに成功しました。'
-                ]);
-            }
         }
+
+        if (!Auth::attempt(request(['email', 'password']))) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ]);
+        }
+        $user = User::whereEmail($request->email)->first();
+        return response()->json([
+            'user' => $user,
+            'status' => true,
+            'message' => 'ログインに成功しました。'
+        ]);
     }
 
-    public function logout(Request $request){
-        $request->user()->currentAccessToken()->delete();
+    public function logout (Request $request) {
+        $request->session()->flush();
         return response()->json([
             'status' => true,
             'message' => 'ログアウト成功',

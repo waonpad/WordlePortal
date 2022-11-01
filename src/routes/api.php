@@ -11,6 +11,7 @@ use App\Http\Controllers\API\GroupController;
 // use App\Http\Controllers\API\GroupUserController;
 use App\Http\Controllers\API\GroupPostController;
 use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\WordleController;
 use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\GameController;
@@ -40,23 +41,38 @@ Route::post('login', [AuthController::class, 'login']);
 
 // ユーザー
 Route::prefix('user')->group(function (){
+    Route::get('/index', [UserController::class, 'index']);
     Route::get('/show', [UserController::class, 'show']);
+    Route::get('/update', [UserController::class, 'update']);
 });
 
 // ログイン中のみ使用可能 ///////////////////////////////////
 Route::middleware('auth:sanctum')->group(function() {
+
+    // ユーザー
+    Route::prefix('user')->group(function (){
+        Route::get('/update', [UserController::class, 'update']);
+    });
 
     // ログアウト
     Route::post('logout', [AuthController::class, 'logout']);
 
     // フォロー
     Route::post('followtoggle', [FollowController::class, 'followToggle']);
-    // Route::post('follow', [FollowController::class, 'follow']);
-    // Route::post('unfollow', [FollowController::class, 'unfollow']);
-    Route::get('ffcheck', [FollowController::class, 'ffcheck']);
 
     // 投稿
-    Route::post('post', [PostController::class, 'post']);
+    Route::prefix('post')->group(function (){
+        Route::get('/index', [PostController::class, 'index']);
+        Route::get('/show', [PostController::class, 'show']);
+        Route::post('/upsert', [PostController::class, 'upsert']);
+        Route::post('/destroy', [PostController::class, 'destroy']);
+        Route::post('/search', [PostController::class, 'search']);
+        Route::post('/liketoggle', [LikeController::class, 'likeToggle']);
+
+        Route::get('/category', [PostController::class, 'category']);
+    });
+    
+    // プライベートチャット
     Route::post('privatepost', [PrivatePostController::class, 'privatePost']);
 
     // グループ
