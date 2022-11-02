@@ -23,7 +23,7 @@ import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import {useAuth} from "../contexts/AuthContext";
-import { LoginData, LoginErrorData } from '../../../@types/AuthType';
+import { LoginData, LoginErrorData } from '../@types/AuthType';
 
 function Copyright(props: any) {
   return (

@@ -4,7 +4,7 @@ import {Route, Redirect, useHistory} from "react-router-dom"
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { User, LoginData, RegisterData, authProps, Props, RouteProps, From } from "../../../@types/AuthType";
+import { User, LoginData, RegisterData, authProps, Props, RouteProps, From } from "../@types/AuthType";
 
 const authContext = createContext<authProps | null>(null)
 
