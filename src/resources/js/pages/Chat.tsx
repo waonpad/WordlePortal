@@ -20,7 +20,7 @@ function Chat(): React.ReactElement {
     const location = useLocation();
     const {category_id} = useParams<{category_id: string}>();
 
-    const [key, setKey] = useState('');　//再読み込みのためにkeyが必要
+    const [key, setKey] = useState(''); //再読み込みのためにkeyが必要
 
     useEffect(() => {
         console.log(category_id);

@@ -20,37 +20,40 @@ import Page404 from './pages/Page404';
 import AxiosInterceptors from './contexts/AxiosInterceptors';
 import ProvideAuth, { PrivateRoute, PublicRoute } from './contexts/AuthContext'
 import ProvideNoification from './contexts/NotificationContext';
+import YupCustom from './contexts/YupCustom';
 
 function App(): React.ReactElement {
     return (
         <AxiosInterceptors>
-            <ProvideAuth> 
-                <ProvideNoification>
-                    <BrowserRouter>
-                        <Header>
-                            <Switch>
-                                <Route path='/' exact component={Top} />
-                                <Route path='/example' exact component={Example} />
-                                <PrivateRoute path='/about' exact><About/></PrivateRoute>
-                                <PublicRoute path='/register' exact><Register/></PublicRoute>
-                                <PublicRoute path='/login' exact><Login/></PublicRoute>
-                                <Route path='/user/:id' exact component={User} />
-                                <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
-                                <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
-                                <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
-                                <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute>
-                                <PrivateRoute path='/wordle/create' exact><WordleManage/></PrivateRoute>
-                                <PrivateRoute path='/wordle/manage/:id' exact><WordleManage/></PrivateRoute>
-                                {/* リンクから直接飛んで来たらページ内で固有ゲームIDを付与してURLを書き換える？ */}
-                                <PrivateRoute path='/wordle/game/:id' exact><Wordle/></PrivateRoute>
-                                <PrivateRoute path='/wordle/game/:id/:game_id' exact><Wordle/></PrivateRoute>
-                                <Route path='/search' exact component={Search} />
-                                <Route path='*' exact component={Page404} />
-                            </Switch>
-                        </Header>
-                    </BrowserRouter>
-                </ProvideNoification>
-            </ProvideAuth>
+            <YupCustom>
+                <ProvideAuth> 
+                    <ProvideNoification>
+                        <BrowserRouter>
+                            <Header>
+                                <Switch>
+                                    <Route path='/' exact component={Top} />
+                                    <Route path='/example' exact component={Example} />
+                                    <PrivateRoute path='/about' exact><About/></PrivateRoute>
+                                    <PublicRoute path='/register' exact><Register/></PublicRoute>
+                                    <PublicRoute path='/login' exact><Login/></PublicRoute>
+                                    <Route path='/user/:id' exact component={User} />
+                                    <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
+                                    <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
+                                    <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
+                                    <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute>
+                                    <PrivateRoute key={'wordlecreate'} path='/wordle/create' exact><WordleManage/></PrivateRoute>
+                                    <PrivateRoute key={'wordlemanage'} path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
+                                    {/* リンクから直接飛んで来たらページ内で固有ゲームIDを付与してURLを書き換える？ */}
+                                    <PrivateRoute path='/wordle/game/:id' exact><Wordle/></PrivateRoute>
+                                    <PrivateRoute path='/wordle/game/:id/:game_id' exact><Wordle/></PrivateRoute>
+                                    <Route path='/search' exact component={Search} />
+                                    <Route path='*' exact component={Page404} />
+                                </Switch>
+                            </Header>
+                        </BrowserRouter>
+                    </ProvideNoification>
+                </ProvideAuth>
+            </YupCustom>
         </AxiosInterceptors>
     );
 }

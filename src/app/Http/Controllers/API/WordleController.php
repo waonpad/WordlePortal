@@ -18,35 +18,45 @@ class WordleController extends Controller
             return response()->json([
                 'validation_errors' => $validator->errors(),
             ]);
-        } else {
-            $wordle = Wordle::updateOrCreate(
-                ['id'=>$request->wordle_id],
-                [
-                    'name'=>$request->name,
-                    'user_id'=>$request->user()->id,
-                    'words'=>$request->words,
-                    'input'=>$request->input,
-                    'description'=>$request->description,
-                ]
-            );
+        }
 
-            $tag_id_array = [];
-            foreach ($request->tags as $tag) {
-                $target_tag_id = Tag::firstOrCreate(
-                    ['name'=>$tag],
-                    [
-                        'name'=>$tag
-                    ]
-                )->id;
-                array_push($tag_id_array, $target_tag_id);
-            }
-            
-            $wordle->tags()->sync($tag_id_array);
-
+        // 空要素を削除、重複削除した結果wordが10個無ければエラー
+        $recognized_words = array_unique(array_filter($request->words, 'strlen'));
+        if(count($recognized_words) < 10) {
             return response()->json([
-                'status' => true
+                'validation_errors'=>[
+                    'words' => 'words field must have at least 10 items & must be unique',
+                ]
             ]);
         }
+
+        $wordle = Wordle::updateOrCreate(
+            ['id'=>$request->id],
+            [
+                'name'=>$request->name,
+                'user_id'=>$request->user()->id,
+                'words'=>$recognized_words,
+                'input'=>$request->input,
+                'description'=>$request->description,
+            ]
+        );
+
+        $tag_id_array = [];
+        foreach ($request->tags as $tag) {
+            $target_tag_id = Tag::firstOrCreate(
+                ['name'=>$tag],
+                [
+                    'name'=>$tag
+                ]
+            )->id;
+            array_push($tag_id_array, $target_tag_id);
+        }
+        
+        $wordle->tags()->sync($tag_id_array);
+
+        return response()->json([
+            'status' => true
+        ]);
     }
     
     public function show(Request $request)
@@ -73,7 +83,7 @@ class WordleController extends Controller
         else {
             return response()->json([
                'message' => 'Wordleが存在しないか削除権限が無い',
-               'status' => true
+               'status' => false
             ]);
         }
     }
