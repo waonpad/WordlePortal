@@ -24,7 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {useAuth} from "../contexts/AuthContext";
 import PostForm from '../components/PostForm';
 import Modal from "react-modal";
-import { PostListProps } from '../../../@types/PostListType';
+import { PostListProps } from '../@types/PostListType';
 
 const customStyles = {
     overlay: {

@@ -11,7 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { PostData, PostErrorData } from '../../../@types/PostType';
+import { PostData, PostErrorData } from '../@types/PostType';
 
 // Edit Comment Props
 // -------------------

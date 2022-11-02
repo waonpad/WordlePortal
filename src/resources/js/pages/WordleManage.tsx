@@ -21,18 +21,11 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Chip from '@mui/material/Chip';
-import Autocomplete from '@mui/material/Autocomplete';
-import Stack from '@mui/material/Stack';
-import Hidden from '@mui/material/Hidden';
 import {useAuth} from "../contexts/AuthContext";
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { WordleData, WordleErrorData, WordleDefaultData } from '../../../@types/WordleType';
+import { WordleData, WordleErrorData, WordleDefaultData } from '../@types/WordleType';
 
 // TODO textfieldの削除処理
 
@@ -84,12 +77,13 @@ function WordleManage(): React.ReactElement {
     ///////////////////////////////////////////////////////////////////////
 
     // Checkbox //////////////////////////////////////////////////////////////////
-    const [input, setInput] = React.useState({
+    const [input, setInput] = useState<{[key: string]: boolean}>({
         japanese: false,
         english: false,
         number: false,
         typing: false
     });
+    const input_values = ['japanese', 'english', 'number', 'typing'];
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput({
@@ -100,12 +94,16 @@ function WordleManage(): React.ReactElement {
 
     const handleSetDefaultInput = (default_input: string) => {
         setInput({
-        ...input,
-        [default_input]: true,
+            ...input,
+            [default_input]: true,
         });
     }
 
-    const { japanese, english, number, typing } = input;
+    useEffect(() => {
+        console.log(input);
+    }, [input]);
+
+    // const { japanese, english, number, typing } = input;
     // const error = [japanese, english, number, typing].filter((v) => v).length !== 2;
     //////////////////////////////////////////////////////////////////////////////
 
@@ -249,30 +247,15 @@ function WordleManage(): React.ReactElement {
                                 <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
                                     <FormLabel component="legend">Using Language Set</FormLabel>
                                     <FormGroup>
-                                        <FormControlLabel
-                                            control={
-                                            <Checkbox value='japanese' checked={japanese} {...register('input')} onChange={handleInputChange} id="japanese"/>
-                                            }
-                                            label="Japanese"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                            <Checkbox value='english' checked={english} {...register('input')} onChange={handleInputChange} id="english"/>
-                                            }
-                                            label="English"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                            <Checkbox value='number' checked={number} {...register('input')} onChange={handleInputChange} id="number"/>
-                                            }
-                                            label="Number"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                            <Checkbox value='typing' checked={typing} {...register('input')} onChange={handleInputChange} id="typing"/>
-                                            }
-                                            label="Typing"
-                                        />
+                                        {input_values.map((input_value, index) => 
+                                            <FormControlLabel
+                                                key={index}
+                                                control={
+                                                <Checkbox value={input_value} checked={input[input_value]} {...register('input')} onChange={handleInputChange} id={input_value} />
+                                                }
+                                                label={input_value}
+                                            />
+                                        )}
                                     </FormGroup>
                                     <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.input?.message}</FormHelperText>
                                 </FormControl>
@@ -330,28 +313,6 @@ function WordleManage(): React.ReactElement {
                         </Box>
                     </Box>
                 </Container>
-        
-              {/* <Snackbar
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                open={open}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                message={errors.submit?.message ? errors.submit?.message : ''}
-                action={
-                  <React.Fragment>
-                    <Button color="secondary" size="small" onClick={handleClose}>
-                      OK
-                    </Button>
-                    <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                  </React.Fragment>
-                }
-              /> */}
-              {/* Alert？ */}
             </ThemeProvider>
         );
 	}
