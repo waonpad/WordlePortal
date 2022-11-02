@@ -17,8 +17,8 @@ class UpsertWordleRequest extends FormRequest
     {
         return [
             'name' => 'required|max:50',
-            'words' => 'required|array',
-            'words.*' => 'string|min:5|max:10',
+            'words' => 'required|array|min:10',
+            'words.*' => 'string|min:5|max:10|nullable',
             'input' => 'required|array',
             'input.*' => [
                 'string|',
