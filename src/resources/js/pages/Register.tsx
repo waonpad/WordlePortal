@@ -26,9 +26,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import Snackbar from '../components/Snackbar';
 import {useAuth} from "../contexts/AuthContext";
 import { RegisterData, RegisterErrorData } from '../@types/AuthType';
+import SnackbarPrimary from '../components/SnackbarPrimary';
 
 function Copyright(props: any) {
 return (
@@ -285,7 +285,7 @@ export default function Register(): React.ReactElement {
             </Box>
             <Copyright sx={{ mt: 5 }} />
         </Container>
-        <Snackbar
+        <SnackbarPrimary
             open={open}
             handleClose={handleClose}
             message={errors.submit?.message ? errors.submit?.message : ''}

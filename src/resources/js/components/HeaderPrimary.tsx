@@ -20,7 +20,7 @@ import { Link, useHistory } from "react-router-dom";
 import swal from 'sweetalert';
 import { useAuth } from "../contexts/AuthContext";
 import { HeaderStyle } from '../styles/HeaderStyle';
-import Drawer from "./Drawer";
+import DrawerPrimary from "./DrawerPrimary";
 import HeaderSearch from "./HeaderSearch";
 import { useNotification } from '../contexts/NotificationContext';
 
@@ -28,7 +28,7 @@ type Props = {
     children: ReactNode
 }
 
-export default function Header({children}: Props) {
+export default function HeaderPrimary({children}: Props) {
     
     const history = useHistory();
     const auth = useAuth();
@@ -256,7 +256,7 @@ export default function Header({children}: Props) {
             </div>
             </Toolbar>
         </AppBar>
-        <Drawer open={open} classes={classes} theme={theme} handleDrawerOpen={handleDrawerOpen} />
+        <DrawerPrimary open={open} classes={classes} theme={theme} handleDrawerOpen={handleDrawerOpen} />
         <main
             className={clsx(classes.content, {
                 [classes.contentShift]: open
@@ -270,4 +270,4 @@ export default function Header({children}: Props) {
         {renderSettingMenu}
         </div>
     );
-    }
+}

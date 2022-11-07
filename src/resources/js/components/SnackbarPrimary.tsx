@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import { Snackbar as MuiSnackbar } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { SnackbarProps } from '../@types/SnackbatType';
+import { SnackbarPrimaryProps } from '../@types/SnackbarPrimaryType';
 
-function Snackbar(props: SnackbarProps): React.ReactElement {
+function SnackbarPrimary(props: SnackbarPrimaryProps): React.ReactElement {
 
     return (
-        <MuiSnackbar
+        <Snackbar
             anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'center',
@@ -31,4 +31,4 @@ function Snackbar(props: SnackbarProps): React.ReactElement {
     )
 }
 
-export default Snackbar;
+export default SnackbarPrimary;
