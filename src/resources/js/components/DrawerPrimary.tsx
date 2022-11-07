@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import { Home, Chat, Forum, Group, Login, PersonAdd } from '@mui/icons-material';
-import { Drawer as MuiDrawer } from '@material-ui/core';
+import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -11,11 +11,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link, useHistory } from "react-router-dom";
 
-function Drawer(props: any): React.ReactElement {
+function DrawerPrimary(props: any): React.ReactElement {
 
     return (
         
-        <MuiDrawer
+        <Drawer
             className={props.classes.drawer}
             variant='persistent'
             anchor="left"
@@ -80,8 +80,8 @@ function Drawer(props: any): React.ReactElement {
             </ListItem>
             ))} */}
         </List>
-        </MuiDrawer>
+        </Drawer>
     )
 };
 
-export default Drawer;
+export default DrawerPrimary;

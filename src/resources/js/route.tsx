@@ -11,7 +11,7 @@ import User from './pages/User';
 import Chat from './pages/Chat';
 import PrivateChat from './pages/PrivateChat';
 import GroupChat from './pages/GroupChat';
-import Header from './components/Header';
+import HeaderPrimary from './components/HeaderPrimary';
 import Wordle from './pages/Wordle';
 import WordleManage from './pages/WordleManage';
 import Search from './pages/Search';
@@ -29,7 +29,7 @@ function App(): React.ReactElement {
                 <ProvideAuth> 
                     <ProvideNoification>
                         <BrowserRouter>
-                            <Header>
+                            <HeaderPrimary>
                                 <Switch>
                                     <Route path='/' exact component={Top} />
                                     <Route path='/example' exact component={Example} />
@@ -49,7 +49,7 @@ function App(): React.ReactElement {
                                     <Route path='/search' exact component={Search} />
                                     <Route path='*' exact component={Page404} />
                                 </Switch>
-                            </Header>
+                            </HeaderPrimary>
                         </BrowserRouter>
                     </ProvideNoification>
                 </ProvideAuth>

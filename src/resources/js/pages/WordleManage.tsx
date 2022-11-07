@@ -25,6 +25,8 @@ import {useAuth} from "../contexts/AuthContext";
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import IconButton from '@material-ui/core/IconButton';
 import { WordleData, WordleErrorData, WordleDefaultData } from '../@types/WordleType';
 
 // TODO textfieldの削除処理
@@ -71,8 +73,20 @@ function WordleManage(): React.ReactElement {
     // Words ///////////////////////////////////////////////////////
     const [words, setWords] = useState<string[]>([]);
 
-    const handleSetWords = () => {
+    const handleAddWord = () => {
         setWords([...words, '']);
+    }
+
+    const handleChangeWord = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const target_word_id = Number(event.currentTarget.id);
+        const changed_word = event.currentTarget.value;
+        setWords((words) => words.map((word, index) => (index === target_word_id ? changed_word : word)));
+    }
+
+    const handleDeleteWord = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const target_word_id = Number(event.currentTarget.id);
+        setWords((words) => words.map((word, index) => (index === target_word_id ? '' : word)));
+        setWords(words.filter((word, index) => (index !== target_word_id)));
     }
     ///////////////////////////////////////////////////////////////////////
 
@@ -278,9 +292,20 @@ function WordleManage(): React.ReactElement {
                                             <TextField
                                                 fullWidth
                                                 autoComplete="words"
-                                                defaultValue={word}
+                                                value={word}
                                                 label="word"
+                                                id={String(index)}
+                                                InputProps={{
+                                                    endAdornment: 
+                                                        <IconButton aria-label='delete-word-by-index' id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
+                                                            <HighlightOffIcon />
+                                                        </IconButton>,
+                                                    style: {
+                                                        padding: 0
+                                                    }
+                                                }}
                                                 {...register(`words.${index}`)}
+                                                onChange={handleChangeWord}
                                                 error={errors.words ? errors.words[index]? true : false : false}
                                                 helperText={errors.words ? errors.words[index]?.message : ''}
                                             />
@@ -291,7 +316,7 @@ function WordleManage(): React.ReactElement {
                                             type="button"
                                             fullWidth
                                             variant="contained"
-                                            onClick={handleSetWords}
+                                            onClick={handleAddWord}
                                         >
                                             Add
                                         </Button>
