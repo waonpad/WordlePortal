@@ -4,13 +4,30 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Wordle;
 use App\Models\Tag;
 use App\Models\WordleTag;
+use App\Events\WordlePosted;
+use App\Events\WordleTagPosted;
 use App\Http\Requests\UpsertWordleRequest;
 
 class WordleController extends Controller
 {
+    public function index()
+    {
+        $wordles = Wordle::with('user', 'tags', 'likes')->get();
+
+        foreach($wordles as $wordle) {
+            $wordle['like_status'] = in_array(Auth::id(), $wordle->likes->pluck('id')->toArray());
+        };
+
+        return response()->json([
+            'wordles' => $wordles,
+            'status' => true
+        ]);
+    }
+
     public function upsert(UpsertWordleRequest $request)
     {
         $validator = $request->getValidator();
@@ -21,7 +38,14 @@ class WordleController extends Controller
         }
 
         // 空要素を削除、重複削除した結果wordが10個無ければエラー
-        $recognized_words = array_unique(array_filter($request->words, 'strlen'));
+        $recognized_words = array_unique(array_filter($request->words, function($value){
+            if( empty($value) && $value !== '0' && $value !== 0 ) {
+                return false;
+            } else {
+                return true;
+            }
+        }));
+        $recognized_words = array_values($recognized_words);
         if(count($recognized_words) < 10) {
             return response()->json([
                 'validation_errors'=>[
@@ -30,29 +54,38 @@ class WordleController extends Controller
             ]);
         }
 
+        $event_type = $request->id !== null ? 'update' : 'create';
+
         $wordle = Wordle::updateOrCreate(
             ['id'=>$request->id],
             [
                 'name'=>$request->name,
-                'user_id'=>$request->user()->id,
+                'user_id'=>Auth::user()->id,
                 'words'=>$recognized_words,
                 'input'=>$request->input,
                 'description'=>$request->description,
             ]
         );
 
-        $tag_id_array = [];
+        $sync_tags = [];
         foreach ($request->tags as $tag) {
-            $target_tag_id = Tag::firstOrCreate(
+            $target_tag = Tag::firstOrCreate(
                 ['name'=>$tag],
                 [
                     'name'=>$tag
                 ]
-            )->id;
-            array_push($tag_id_array, $target_tag_id);
+            );
+            array_push($sync_tags, $target_tag);
         }
         
-        $wordle->tags()->sync($tag_id_array);
+        $wordle->tags()->sync(array_column($sync_tags, 'id'));
+        $response_wordle = Wordle::with('user', 'tags', 'likes')->find($wordle->id);
+
+        event(new WordlePosted($response_wordle, $event_type));
+
+        foreach($sync_tags as $tag) {
+            event(new WordleTagPosted($response_wordle, $event_type, $tag->id));
+        }
 
         return response()->json([
             'status' => true
@@ -61,7 +94,7 @@ class WordleController extends Controller
     
     public function show(Request $request)
     {
-        $wordle = Wordle::with('tags')->find($request->wordle_id);
+        $wordle = Wordle::with('user', 'tags', 'likes')->find($request->wordle_id);
 
         return response()->json([
             'wordle' => $wordle,
@@ -73,7 +106,7 @@ class WordleController extends Controller
     {
         $wordle = Wordle::find($request->wordle_id);
         
-        if ($wordle->user_id === $request->user()->id) {
+        if ($wordle->user_id === Auth::user()->id) {
             Wordle::destroy($wordle->id);
 
             return response()->json([
@@ -90,11 +123,44 @@ class WordleController extends Controller
     
     public function search(Request $request)
     {
-        $wordles = Wordle::where('user_id', $request->user()->id)->with('tags')->get();
+        $wordles = Wordle::where('user_id', $request->user()->id)->with('user', 'tags', 'likes')->get();
 
         return response()->json([
             'wordles' => $wordles,
             'status' => true
+        ]);
+    }
+
+    public function likeToggle(Request $request) {
+        $user = $request->user();
+        $toggle_result = $user->wordleLikes()->toggle($request->wordle_id);
+
+        if(in_array($request->wordle_id, $toggle_result['attached'])) {
+            $like_status = true;
+        }
+        else if(in_array($request->wordle_id, $toggle_result['detached'])) {
+            $like_status = false;
+        }
+
+        // 通知を送る
+
+        return response()->json([
+            'status' => true,
+            'like_status' => $like_status,
+        ]);
+    }
+
+    public function tag(Request $request)
+    {
+        $wordles = Tag::with('wordles.tags', 'wordles.user', 'wordles.likes')->find($request->tag_id)->wordles;
+
+        foreach($wordles as $wordle) {
+            $post['like_status'] = in_array(Auth::id(), $wordle->likes->pluck('id')->toArray());
+        };
+
+        return response()->json([
+            'status' => true,
+            'wordles' => $wordles,
         ]);
     }
 }

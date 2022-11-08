@@ -68,4 +68,14 @@ class User extends Authenticatable
     public function likes() {
         return $this->belongsToMany('App\Models\Post', 'likes', 'user_id', 'post_id');
     }
+
+    // ユーザーのwordle一覧
+    public function wordles() {
+        return $this->hasMany(Wordle::class);
+    }
+
+    // ユーザーのlikeしたwordle一覧
+    public function wordleLikes() {
+        return $this->belongsToMany('App\Models\Wordle', 'wordle_likes', 'user_id', 'wordle_id');
+    }
 }

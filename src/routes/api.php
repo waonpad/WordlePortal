@@ -41,9 +41,9 @@ Route::post('login', [AuthController::class, 'login']);
 
 // ユーザー
 Route::prefix('user')->group(function (){
-    Route::get('/index', [UserController::class, 'index']);
-    Route::get('/show', [UserController::class, 'show']);
-    Route::get('/update', [UserController::class, 'update']);
+    Route::get('index', [UserController::class, 'index']);
+    Route::get('show', [UserController::class, 'show']);
+    Route::get('update', [UserController::class, 'update']);
 });
 
 // ログイン中のみ使用可能 ///////////////////////////////////
@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     // ユーザー
     Route::prefix('user')->group(function (){
-        Route::get('/update', [UserController::class, 'update']);
+        Route::get('update', [UserController::class, 'update']);
     });
 
     // ログアウト
@@ -62,14 +62,14 @@ Route::middleware('auth:sanctum')->group(function() {
 
     // 投稿
     Route::prefix('post')->group(function (){
-        Route::get('/index', [PostController::class, 'index']);
-        Route::get('/show', [PostController::class, 'show']);
-        Route::post('/upsert', [PostController::class, 'upsert']);
-        Route::post('/destroy', [PostController::class, 'destroy']);
-        Route::post('/search', [PostController::class, 'search']);
-        Route::post('/liketoggle', [LikeController::class, 'likeToggle']);
+        Route::get('index', [PostController::class, 'index']);
+        Route::get('show', [PostController::class, 'show']);
+        Route::post('upsert', [PostController::class, 'upsert']);
+        Route::post('destroy', [PostController::class, 'destroy']);
+        Route::post('search', [PostController::class, 'search']);
+        Route::post('liketoggle', [LikeController::class, 'likeToggle']);
 
-        Route::get('/category', [PostController::class, 'category']);
+        Route::get('category', [PostController::class, 'category']);
     });
     
     // プライベートチャット
@@ -77,28 +77,31 @@ Route::middleware('auth:sanctum')->group(function() {
 
     // グループ
     Route::prefix('group')->group(function (){
-        Route::get('/show', [GroupController::class, 'show']);
-        Route::post('/create', [GroupController::class, 'create']);
-        // Route::post('/join', [GroupUserController::class, 'join']);
-        // Route::post('/leave', [GroupUserController::class, 'leave']);
-        Route::post('/post', [GroupPostController::class, 'post']);
+        Route::get('show', [GroupController::class, 'show']);
+        Route::post('create', [GroupController::class, 'create']);
+        // Route::post('join', [GroupUserController::class, 'join']);
+        // Route::post('leave', [GroupUserController::class, 'leave']);
+        Route::post('post', [GroupPostController::class, 'post']);
     });
 
     // 通知
     Route::prefix('notification')->group(function (){
-        Route::get('/index', [NotificationController::class, 'index']);
-        Route::get('/unread', [NotificationController::class, 'unread']);
-        Route::post('/read', [NotificationController::class, 'read']);
-        Route::post('/readall', [NotificationController::class, 'readAll']);
+        Route::get('index', [NotificationController::class, 'index']);
+        Route::get('unread', [NotificationController::class, 'unread']);
+        Route::post('read', [NotificationController::class, 'read']);
+        Route::post('readall', [NotificationController::class, 'readAll']);
     });
 
     
     // Wordles
     Route::prefix('wordle')->group(function (){
+        Route::get('index', [WordleController::class, 'index']);
         Route::post('upsert', [WordleController::class, 'upsert']);
         Route::get('show', [WordleController::class, 'show']);
         Route::post('destroy', [WordleController::class, 'destroy']);
         Route::get('search', [WordleController::class, 'search']);
+        Route::post('liketoggle', [WordleController::class, 'likeToggle']);
+        Route::get('tag', [WordleController::class, 'tag']);
 
         // comments
         Route::prefix('comment')->group(function (){

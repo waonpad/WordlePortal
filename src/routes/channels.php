@@ -50,6 +50,14 @@ Broadcast::channel('category_post.{category_id}', function (){
     return true;
 });
 
+Broadcast::channel('wordle', function (){
+    return true;
+});
+
+Broadcast::channel('wordle_tag_post.{tag_id}', function (){
+    return true;
+});
+
 Broadcast::channel('game.{game_id}', function ($user, $game_id){
     $user_id = GameUser::where('game_id', $game_id)->where('user_id', $user->id)->first()->user_id;
 
