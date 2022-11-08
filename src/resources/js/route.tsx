@@ -43,6 +43,7 @@ function App(): React.ReactElement {
                                     <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute>
                                     <PrivateRoute key={'wordlecreate'} path='/wordle/create' exact><WordleManage/></PrivateRoute>
                                     <PrivateRoute key={'wordlemanage'} path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
+                                    <PrivateRoute key={'wordletag'} path='/wordle/tag/:wordle_tag_id' exact><Top/></PrivateRoute>
                                     {/* リンクから直接飛んで来たらページ内で固有ゲームIDを付与してURLを書き換える？ */}
                                     <PrivateRoute path='/wordle/game/:id' exact><Wordle/></PrivateRoute>
                                     <PrivateRoute path='/wordle/game/:id/:game_id' exact><Wordle/></PrivateRoute>

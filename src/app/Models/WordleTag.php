@@ -14,4 +14,6 @@ class WordleTag extends Pivot
         'wordle_id',
         'tag_id'
     ];
+    
+    protected $table = 'wordle_tags';
 }
