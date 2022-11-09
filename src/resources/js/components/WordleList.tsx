@@ -21,6 +21,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { borders } from '@mui/system';
 import {useAuth} from "../contexts/AuthContext";
 // import wordleForm from '../components/wordleForm';
 import Modal from "react-modal";
@@ -134,13 +135,31 @@ function WordleList(props: any): React.ReactElement {
                                     sx={{pb: 1}}
                                 />
                                 <CardContent sx={{pt: 0}}>
-                                    <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                                        {(wordle.tags as any[]).map((tag: any, index: number) => (
-                                            // URL未決定
-                                            <Link to={`/wordle/tag/${tag.id}`} key={index}><Chip label={tag.name} /></Link>
-                                        ))}
-                                    </Stack>
-                                    {/* Main Content */}
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12}>
+                                            <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                                                {(wordle.tags as any[]).map((tag: any, index: number) => (
+                                                    // URL未決定
+                                                    <Link to={`/wordle/tag/${tag.id}`} key={index}><Chip label={tag.name} /></Link>
+                                                ))}
+                                            </Stack>
+                                        </Grid>
+                                        {/* Main Content */}
+                                        <Grid item xs={12}>
+                                            <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
+                                                {(wordle.input as string[]).map((input: string, index: number) => (
+                                                    // あ, Ａ, １とかに変更する？
+                                                    <Chip key={index} sx={{borderRadius: '7px', border: 'solid 1px rgba(0, 0, 0, 0.54)', boxSizing: 'border-box'}} label={input} />
+                                                ))}
+                                            </Stack>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Stack spacing={2} direction="row">
+                                                <Button variant="contained">Single Play</Button>
+                                                <Button variant="contained">VS Play</Button>
+                                            </Stack>
+                                        </Grid>
+                                    </Grid>
                                 </CardContent>
                                 <CardActions disableSpacing>
                                     {auth?.user ?

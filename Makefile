@@ -94,7 +94,7 @@ prov-%:
 middleware-%:
 	docker-compose exec ${APP_CONTAINER} php artisan make:middleware ${@:middleware-%=%}
 
-optimize:
+optm:
 	docker-compose exec ${APP_CONTAINER} php artisan optimize
 
 evt-%:

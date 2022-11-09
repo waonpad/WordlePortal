@@ -34,7 +34,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user(); // ログイン中のユーザー情報を取得
 });
 
-// 常時使用可能 ////////////////////////////////////////////
+Route::middleware('auth:sanctum')->group(function() {
+});
+
 // 認証
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
@@ -43,82 +45,72 @@ Route::post('login', [AuthController::class, 'login']);
 Route::prefix('user')->group(function (){
     Route::get('index', [UserController::class, 'index']);
     Route::get('show', [UserController::class, 'show']);
-    Route::get('update', [UserController::class, 'update']);
+    Route::get('update', [UserController::class, 'update'])->middleware('auth');
 });
 
-// ログイン中のみ使用可能 ///////////////////////////////////
-Route::middleware('auth:sanctum')->group(function() {
+// ログアウト
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth');
 
-    // ユーザー
-    Route::prefix('user')->group(function (){
-        Route::get('update', [UserController::class, 'update']);
+// フォロー
+Route::post('followtoggle', [FollowController::class, 'followToggle'])->middleware('auth');
+
+// 投稿
+Route::prefix('post')->group(function (){
+    Route::get('index', [PostController::class, 'index']);
+    Route::get('show', [PostController::class, 'show']);
+    Route::post('upsert', [PostController::class, 'upsert'])->middleware('auth');
+    Route::post('destroy', [PostController::class, 'destroy'])->middleware('auth');
+    Route::post('search', [PostController::class, 'search']);
+    Route::post('liketoggle', [LikeController::class, 'likeToggle'])->middleware('auth');
+    Route::get('category', [PostController::class, 'category']);
+});
+
+// プライベートチャット
+Route::post('privatepost', [PrivatePostController::class, 'privatePost'])->middleware('auth');
+
+// グループ
+Route::prefix('group')->group(function (){
+    Route::get('show', [GroupController::class, 'show'])->middleware('auth');
+    Route::post('create', [GroupController::class, 'create'])->middleware('auth');
+    // Route::post('join', [GroupUserController::class, 'join']);
+    // Route::post('leave', [GroupUserController::class, 'leave']);
+    Route::post('post', [GroupPostController::class, 'post'])->middleware('auth');
+});
+
+// 通知
+Route::prefix('notification')->group(function (){
+    Route::get('index', [NotificationController::class, 'index'])->middleware('auth');
+    Route::get('unread', [NotificationController::class, 'unread'])->middleware('auth');
+    Route::post('read', [NotificationController::class, 'read'])->middleware('auth');
+    Route::post('readall', [NotificationController::class, 'readAll'])->middleware('auth');
+});
+
+
+// Wordles
+Route::prefix('wordle')->group(function (){
+    Route::get('index', [WordleController::class, 'index']);
+    Route::post('upsert', [WordleController::class, 'upsert'])->middleware('auth');
+    Route::get('show', [WordleController::class, 'show'])->middleware('auth');
+    Route::post('destroy', [WordleController::class, 'destroy'])->middleware('auth');
+    Route::get('search', [WordleController::class, 'search']);
+    Route::post('liketoggle', [WordleController::class, 'likeToggle'])->middleware('auth');
+    Route::get('tag', [WordleController::class, 'tag']);
+
+    // comments
+    Route::prefix('comment')->group(function (){
+        Route::post('upsert', [CommentController::class, 'upsert'])->middleware('auth');
+        Route::post('destroy', [CommentController::class, 'destroy'])->middleware('auth');
     });
 
-    // ログアウト
-    Route::post('logout', [AuthController::class, 'logout']);
-
-    // フォロー
-    Route::post('followtoggle', [FollowController::class, 'followToggle']);
-
-    // 投稿
-    Route::prefix('post')->group(function (){
-        Route::get('index', [PostController::class, 'index']);
-        Route::get('show', [PostController::class, 'show']);
-        Route::post('upsert', [PostController::class, 'upsert']);
-        Route::post('destroy', [PostController::class, 'destroy']);
-        Route::post('search', [PostController::class, 'search']);
-        Route::post('liketoggle', [LikeController::class, 'likeToggle']);
-
-        Route::get('category', [PostController::class, 'category']);
-    });
-    
-    // プライベートチャット
-    Route::post('privatepost', [PrivatePostController::class, 'privatePost']);
-
-    // グループ
-    Route::prefix('group')->group(function (){
-        Route::get('show', [GroupController::class, 'show']);
-        Route::post('create', [GroupController::class, 'create']);
-        // Route::post('join', [GroupUserController::class, 'join']);
-        // Route::post('leave', [GroupUserController::class, 'leave']);
-        Route::post('post', [GroupPostController::class, 'post']);
-    });
-
-    // 通知
-    Route::prefix('notification')->group(function (){
-        Route::get('index', [NotificationController::class, 'index']);
-        Route::get('unread', [NotificationController::class, 'unread']);
-        Route::post('read', [NotificationController::class, 'read']);
-        Route::post('readall', [NotificationController::class, 'readAll']);
-    });
-
-    
-    // Wordles
-    Route::prefix('wordle')->group(function (){
-        Route::get('index', [WordleController::class, 'index']);
-        Route::post('upsert', [WordleController::class, 'upsert']);
-        Route::get('show', [WordleController::class, 'show']);
-        Route::post('destroy', [WordleController::class, 'destroy']);
-        Route::get('search', [WordleController::class, 'search']);
-        Route::post('liketoggle', [WordleController::class, 'likeToggle']);
-        Route::get('tag', [WordleController::class, 'tag']);
-
-        // comments
-        Route::prefix('comment')->group(function (){
-            Route::post('upsert', [CommentController::class, 'upsert']);
-            Route::post('destroy', [CommentController::class, 'destroy']);
-        });
-
-        // games
-        Route::prefix('game')->group(function (){
-            Route::post('create', [GameController::class, 'create']);
-            Route::get('show', [GameController::class, 'show']);
-            Route::get('search', [GameController::class, 'search']);
-            Route::post('entry', [GameController::class, 'entry']);
-            Route::post('leave', [GameController::class, 'leave']);
-            Route::post('ready', [GameController::class, 'ready']);
-            Route::post('start', [GameController::class, 'start']);
-            Route::post('input', [GameController::class, 'input']);
-        });
+    // games
+    Route::prefix('game')->group(function (){
+        Route::post('create', [GameController::class, 'create'])->middleware('auth');
+        Route::get('show', [GameController::class, 'show'])->middleware('auth');
+        Route::get('search', [GameController::class, 'search']);
+        Route::post('entry', [GameController::class, 'entry'])->middleware('auth');
+        Route::post('leave', [GameController::class, 'leave'])->middleware('auth');
+        Route::post('ready', [GameController::class, 'ready'])->middleware('auth');
+        Route::post('start', [GameController::class, 'start'])->middleware('auth');
+        Route::post('input', [GameController::class, 'input'])->middleware('auth');
     });
 });
