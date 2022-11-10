@@ -25,6 +25,8 @@ import { borders } from '@mui/system';
 import {useAuth} from "../contexts/AuthContext";
 // import wordleForm from '../components/wordleForm';
 import Modal from "react-modal";
+import ModalPrimary from './ModalPrimary';
+import VSPlayOption from './VSPlayOption';
 
 function WordleList(props: any): React.ReactElement {
     const auth = useAuth();
@@ -107,12 +109,28 @@ function WordleList(props: any): React.ReactElement {
     };
     ////////////////////////////////////////////////////////////////////////////////////
 
+    // VSPlay /////////////////////////////////////////////////////////////////////////////
+    const [vs_target_wordle, setVSTargetWordle] = useState<any>();
+    const [modalIsOpen, setIsOpen] = useState(false);
+
+    const handleVSPlayOptionOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const target = wordles.find((wordle) => wordle.id === Number(event.currentTarget.id));
+        console.log(target);
+        setVSTargetWordle(target);
+        setIsOpen(true);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
     return (
         <Box
             sx={{
                 marginTop: 2,
             }}
         >
+            <ModalPrimary isOpen={modalIsOpen}>
+                <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
+                <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
+            </ModalPrimary>
             <Grid container spacing={2} direction="column" alignItems="center" justifyContent="center">
                 {!wordle_loading ? (
                     wordles.map((wordle, index) => (
@@ -156,7 +174,7 @@ function WordleList(props: any): React.ReactElement {
                                         <Grid item xs={12}>
                                             <Stack spacing={2} direction="row">
                                                 <Button variant="contained">Single Play</Button>
-                                                <Button variant="contained">VS Play</Button>
+                                                <Button variant="contained" id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
                                             </Stack>
                                         </Grid>
                                     </Grid>
