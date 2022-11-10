@@ -10,6 +10,8 @@ class Game extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
+        'uuid',
         'wordle_id',
         'name',
         'user_id',
@@ -18,8 +20,12 @@ class Game extends Model
         'max',
         'input',
         'description',
-        'answer',
-        'entry_limit',
+        // 'answer',
+        'max_participants',
+        'laps',
+        'visibility',
+        'answer_time_limit',
+        'coloring',
         'status'
     ];
 

@@ -22,6 +22,10 @@ type ModalPrimaryProps = {
 
 Modal.setAppElement('#app');
 
+// CAUTION //////////////////////////////////////
+// モーダルの中身が表示されない場合がある
+////////////////////////////////////////////
+
 function ModalPrimary(props: ModalPrimaryProps): React.ReactElement {
 
     return (

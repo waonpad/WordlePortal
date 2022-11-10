@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('wordle_id')->nullable();
             $table->foreign('wordle_id')->references('id')->on('wordles')->nullOnDelete();
             $table->string('name');
@@ -26,7 +27,11 @@ return new class extends Migration
             $table->json('input');
             $table->string('description')->nullable();
             $table->string('answer');
-            $table->integer('entry_limit');
+            $table->integer('max_participants');
+            $table->integer('laps');
+            $table->boolean('visibility');
+            $table->integer('answer_time_limit');
+            $table->integer('coloring');
             $table->string('status');
             $table->timestamps();
         });
