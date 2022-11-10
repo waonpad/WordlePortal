@@ -15,7 +15,7 @@ class GameCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'entry_limit' => 'required|numeric',
+            'max_participants' => 'required|numeric',
             'laps' => 'required|numeric',
             'visibility' => 'required|boolean',
             'answer_limit' => 'required|numeric',

@@ -12,7 +12,7 @@ export type VSPlayOptionProps = {
 //////////////////////////////
 
 export type VSPlayOptionData = {
-    entry_limit: number
+    max_participants: number
     laps: number
     visibility: boolean
     answer_time_limit: number
@@ -21,7 +21,7 @@ export type VSPlayOptionData = {
 }
 
 export type VSPlayOptionErrorData = {
-    entry_limit: string
+    max_participants: string
     laps: string
     visibility: string
     answer_time_limit: string

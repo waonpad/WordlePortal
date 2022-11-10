@@ -10,6 +10,7 @@ use App\Models\GameUser;
 use App\Models\GameLog;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\GameCreateRequest;
+use Illuminate\Support\Str;
 
 class GameController extends Controller
 {
@@ -34,11 +35,8 @@ class GameController extends Controller
         $min = min($lengths);
         $max = max($lengths);
 
-        // TODO: ユニークなゲームIDを作る
-        // TODO: マイグレーションファイル書きかえ
-        // etc...
-
         $game = Game::create([
+            'uuid' => (string) Str::uuid(),
             'wordle_id' => $request->wordle_id,
             'name' => $wordle->name,
             'user_id' => $wordle->user_id,
@@ -48,16 +46,17 @@ class GameController extends Controller
             'input' => $wordle->input,
             'description' => $wordle->description,
             'answer' => $answer,
-            'entry_limit' => $request->entry_limit,
+            'max_participants' => $request->entry_limit,
             'laps' => $request->laps,
             'visibility' => $request->visibility,
-            'answer_limit' => $request->answer_limit,
+            'answer_time_limit' => $request->answer_limit,
             'coloring' => $request->coloring,
             'status' => 'wait',
         ]);
 
         return response()->json([
-            'status' => 200
+            'game' => $game,
+            'status' => true
         ]);
     }
     
@@ -73,7 +72,8 @@ class GameController extends Controller
         $games = Game::where('status', 'wait')->get();
 
         return response()->json([
-            'games' => $games
+            'games' => $games,
+            'status' => true
         ]);
     }
     
@@ -94,7 +94,7 @@ class GameController extends Controller
         ]);
 
         return response()->json([
-            'status' => 200
+            'status' => true
         ]);
     }
     
@@ -120,7 +120,7 @@ class GameController extends Controller
         }
 
         return response()->json([
-            'status' => 200
+            'status' => true
         ]);
     }
     
@@ -139,7 +139,7 @@ class GameController extends Controller
         ]);
 
         return response()->json([
-            'status' => 200
+            'status' => true
         ]);
     }
     
@@ -180,7 +180,7 @@ class GameController extends Controller
             ]);
     
             return response()->json([
-                'status' => 200
+                'status' => true
             ]);
         }
         else {

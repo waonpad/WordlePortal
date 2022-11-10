@@ -15,10 +15,10 @@ import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '../@
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const basicSchema = Yup.object().shape({
-        entry_limit: Yup.number().required(),
+        max_participants: Yup.number().required(),
         laps: Yup.number().required(),
         Visibility: Yup.boolean().required(),
-        answer_limit: Yup.number().required(),
+        answer_time_limit: Yup.number().required(),
         coloring: Yup.boolean().required(),
     });
 
@@ -64,53 +64,60 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     /////////////////////////////////////////////////////////////////////////
 
     return (
-        <></>
-        // <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3, minWidth: '100%' }}>
-        //     <Grid container spacing={2}>
-        //         <Grid item xs={12}>
-        //             <TextField
-        //                 required
-        //                 fullWidth
-        //                 defaultValue={props?.post?.title ?? ''}
-        //                 id="post-title"
-        //                 label="Post Title"
-        //                 autoComplete="post-title"
-        //                 {...register('title')}
-        //                 error={errors.title ? true : false}
-        //                 helperText={errors.title?.message}
-        //             />
-        //         </Grid>
-        //         <Grid item xs={12}>
-        //             <MuiChipsInput
-        //                 value={(categories as string[])}
-        //                 onChange={handleSelecetedCategories}
-        //                 fullWidth
-        //                 variant='outlined'
-        //                 id='categories'
-        //                 label='Categories'
-        //                 placeholder=''
-        //                 aria-multiline
-        //                 maxRows={10}
-        //                 validate={(chipValue) => {
-        //                     return {
-        //                         isError: chipValue.length > 50,
-        //                         textError: 'the value must be at least 50 characters long'
-        //                     }
-        //                 }}
-        //             />
-        //             <FormHelperText sx={{mt: 1, ml: 2}}>Double click to edit a category</FormHelperText>
-        //         </Grid>
-        //     </Grid>
-        //     <LoadingButton
-        //         type="submit"
-        //         loading={loading}
-        //         fullWidth
-        //         variant="contained"
-        //         sx={{ mt: 3, mb: 2 }}
-        //     >
-        //         Create Game
-        //     </LoadingButton>
-        // </Box>
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3, minWidth: '100%' }}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField
+                        required
+                        fullWidth
+                        id="max_participants"
+                        label="Max Participants"
+                        autoComplete="max-participants"
+                        {...register('max_participants')}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        error={errors.max_participants ? true : false}
+                        helperText={errors.max_participants?.message}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        required
+                        fullWidth
+                        id="laps"
+                        label="Laps"
+                        autoComplete="laps"
+                        {...register('laps')}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        error={errors.laps ? true : false}
+                        helperText={errors.laps?.message}
+                    />
+                </Grid>
+                {/* visibility */}
+                <Grid item xs={12}>
+                    <TextField
+                        required
+                        fullWidth
+                        id="answer_time_limit"
+                        label="Answer Time Limit"
+                        autoComplete="answer_time_limit"
+                        {...register('answer_time_limit')}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        error={errors.answer_time_limit ? true : false}
+                        helperText={errors.answer_time_limit?.message}
+                    />
+                </Grid>
+                {/* coloring */}
+            </Grid>
+            <LoadingButton
+                type="submit"
+                loading={loading}
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+            >
+                Create Game
+            </LoadingButton>
+        </Box>
     )
 }
 
