@@ -15,10 +15,13 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'screen_name' => 'required|max:16|unique:users,screen_name',
-            'name' => 'required|max:191',
+            'screen_name' => 'required|string|max:16|unique:users,screen_name',
+            'name' => 'required|string|max:191',
             'email' => 'required|email|max:191|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|string|min:8|confirmed',
+            'description' => 'nullable|string|max:191',
+            'age' => 'required|numeric|min:0|max:130',
+            'gender' => 'required|string|in:male,female',
         ];
     }
 

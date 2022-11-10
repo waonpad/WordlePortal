@@ -24,23 +24,24 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {useAuth} from "../contexts/AuthContext";
 import PostForm from '../components/PostForm';
 import Modal from "react-modal";
+import ModalPrimary from './ModalPrimary';
 import { PostListProps } from '../@types/PostListType';
 
-const customStyles = {
-    overlay: {
-      zIndex: 100
-    },
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-    },
-}
+// const customStyles = {
+//     overlay: {
+//       zIndex: 100
+//     },
+//     content: {
+//         top: '50%',
+//         left: '50%',
+//         right: 'auto',
+//         bottom: 'auto',
+//         marginRight: '-50%',
+//         transform: 'translate(-50%, -50%)',
+//     },
+// }
 
-Modal.setAppElement("#app");
+// Modal.setAppElement('#app');
 
 function PostList(props: PostListProps): React.ReactElement {
 
@@ -142,10 +143,14 @@ function PostList(props: PostListProps): React.ReactElement {
                 marginTop: 2,
             }}
         >
-            <Modal isOpen={modalIsOpen} style={customStyles}>
+            <ModalPrimary isOpen={modalIsOpen}>
                 <PostForm post={edit_target_post} handleModalClose={setIsOpen}/>
                 <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
-            </Modal>
+            </ModalPrimary>
+            {/* <Modal isOpen={modalIsOpen} style={customStyles}>
+                <PostForm post={edit_target_post} handleModalClose={setIsOpen}/>
+                <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
+            </Modal> */}
             <Grid container spacing={2} direction="column" alignItems="center" justifyContent="center">
                 {!post_loading ? (
                     posts.map((post, index) => (
