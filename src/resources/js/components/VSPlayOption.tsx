@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory, Link } from 'react-router-dom';
 import swal from "sweetalert";
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
 import TextField from '@mui/material/TextField';
 import { LoadingButton } from '@mui/lab';
-import { Editor } from '@tinymce/tinymce-react';
-import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import FormHelperText from '@mui/material/FormHelperText';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '../@types/VSPlayOptionType';
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const basicSchema = Yup.object().shape({
         max_participants: Yup.number().required(),
         laps: Yup.number().required(),
-        Visibility: Yup.boolean().required(),
+        visibility: Yup.boolean().oneOf([true, false]).required(),
         answer_time_limit: Yup.number().required(),
-        coloring: Yup.boolean().required(),
+        coloring: Yup.boolean().oneOf([true, false]).required(),
     });
 
     const { register, handleSubmit, setError, clearErrors, formState: { errors }, reset } = useForm<VSPlayOptionData>({
@@ -28,19 +32,51 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
         },
         resolver: yupResolver(basicSchema)
     });
-
+    
+    const history = useHistory();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        console.log(errors);
+    }, [errors]);
+
+    // Visibility ///////////////////////////////////////////////////////////////////////
+    const [visibility, setVisibility] = React.useState(true);
+
+    const handleChangeVisibility = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target);
+        console.log(event.target.value);
+        setVisibility((event.target.value as any));
+    };
+    //////////////////////////////////////////////////////////////////////////
+
+    // Coloring ///////////////////////////////////////////////////////////////////////
+    const [coloring, setColoring] = React.useState(true);
+
+    const handleChangeColoring = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target);
+        console.log(event.target.value);
+        setColoring((event.target.value as any));
+    };
+    /////////////////////////////////////////////////////////////////////////
     
     // Submit //////////////////////////////////////////////////////////
     const onSubmit: SubmitHandler<VSPlayOptionData> = (data: VSPlayOptionData) => {
+        setLoading(true);
+        data.wordle_id = props.wordle.id;
+        console.log(data);
+        
         axios.post('/api/wordle/game/create', data).then(res => {
             console.log(res);
             if(res.data.status === true) {
                 swal("送信成功", "送信成功", "success");
                 setLoading(false);
-                // if(props?.post) {
+                // if(props?.game) {
                 //     props?.handleModalClose(false);
                 // }
+                
+                // const game = res.data.game;
+                // history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
             }
             else {
                 const obj: VSPlayOptionErrorData = res.data.validation_errors;
@@ -92,7 +128,23 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         helperText={errors.laps?.message}
                     />
                 </Grid>
-                {/* visibility */}
+                <Grid item xs={12}>
+                    <FormControl error={errors.visibility ? true : false}>
+                        <FormLabel id="demo-controlled-radio-buttons-group">Visibility</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-labelledby="demo-controlled-radio-buttons-group"
+                            id="visibility"
+                            value={visibility}
+                            {...register('visibility')}
+                            onChange={handleChangeVisibility}
+                        >
+                            <FormControlLabel value={true} control={<Radio />} label="Visible" />
+                            <FormControlLabel value={false} control={<Radio />} label="Invisible" />
+                        </RadioGroup>
+                        <FormHelperText>{errors.visibility?.message}</FormHelperText>
+                    </FormControl>
+                </Grid>
                 <Grid item xs={12}>
                     <TextField
                         required
@@ -106,7 +158,23 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         helperText={errors.answer_time_limit?.message}
                     />
                 </Grid>
-                {/* coloring */}
+                <Grid item xs={12}>
+                    <FormControl error={errors.visibility ? true : false}>
+                        <FormLabel id="demo-controlled-radio-buttons-group">Coloring</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-labelledby="demo-controlled-radio-buttons-group"
+                            id="coloring"
+                            value={coloring}
+                            {...register('coloring')}
+                            onChange={handleChangeColoring}
+                        >
+                            <FormControlLabel value={true} control={<Radio />} label="Colored" />
+                            <FormControlLabel value={false} control={<Radio />} label="Plain" />
+                        </RadioGroup>
+                        <FormHelperText>{errors.coloring?.message}</FormHelperText>
+                    </FormControl>
+                </Grid>
             </Grid>
             <LoadingButton
                 type="submit"

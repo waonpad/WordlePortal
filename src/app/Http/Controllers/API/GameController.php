@@ -11,6 +11,7 @@ use App\Models\GameLog;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\GameCreateRequest;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
@@ -26,7 +27,7 @@ class GameController extends Controller
         $wordle = Wordle::find($request->wordle_id);
         $words = $wordle->words;
         $key = array_rand($words, 1);
-        $answer = strtolower($words[$key]);
+        $answer = strtolower($words[intval($key)]);
 
         $lengths = [];
         foreach ($words as $word) {
@@ -46,11 +47,18 @@ class GameController extends Controller
             'input' => $wordle->input,
             'description' => $wordle->description,
             'answer' => $answer,
-            'max_participants' => $request->entry_limit,
+            'max_participants' => $request->max_participants,
             'laps' => $request->laps,
             'visibility' => $request->visibility,
-            'answer_time_limit' => $request->answer_limit,
+            'answer_time_limit' => $request->answer_time_limit,
             'coloring' => $request->coloring,
+            'status' => 'wait',
+        ]);
+
+        // Game作成者は作成時にentryされる
+        $game_user = GameUser::create([
+            'game_id' => $game->uuid,
+            'user_id' => Auth::user()->id,
             'status' => 'wait',
         ]);
 
@@ -62,7 +70,7 @@ class GameController extends Controller
     
     public function show(Request $request)
     {
-        $game = Game::find($request->game_id);
+        $game = Game::find($request->game_uuid);
 
 
     }
@@ -80,15 +88,15 @@ class GameController extends Controller
     public function entry(Request $request)
     {
         $game_user = GameUser::create([
-            'game_id' => $request->game_id,
-            'user_id' => $request->user()->id,
+            'game_id' => $request->game_uuid,
+            'user_id' => Auth::user()->id,
             'status' => 'wait',
         ]);
 
         // 参加通知
         GameLog::create([
-            'game_id' => $request->game_id,
-            'user_id' => $request->user()->id,
+            'game_id' => $request->game_uuid,
+            'user_id' => Auth::user()->id,
             'type' => 'entry',
             'log' => $game_user
         ]);
@@ -100,21 +108,21 @@ class GameController extends Controller
     
     public function leave(Request $request)
     {
-        $game_user = GameUser::where('game_id', $request->game_id)->where('user_id', $request->user()->id)->first()->update([
+        $game_user = GameUser::where('game_id', $request->game_uuid)->where('user_id', Auth::user()->id)->first()->update([
             'status' => 'leave'
         ]);
 
         // 退室通知
         GameLog::create([
-            'game_id' => $request->game_id,
-            'user_id' => $request->user()->id,
+            'game_id' => $request->game_uuid,
+            'user_id' => Auth::user()->id,
             'type' => 'leave',
             'log' => $game_user
         ]);
 
         // 参加ユーザーが0になったらゲームを破棄する
-        if (GameUser::where('game_id', $request->game_id)->where('status', '!=', 'leave')->exists() === false) {
-            Game::find($request->game_id)->update([
+        if (GameUser::where('game_id', $request->game_uuid)->where('status', '!=', 'leave')->exists() === false) {
+            Game::find($request->game_uuid)->update([
                 'status' => 'aborted'
             ]);
         }
@@ -126,14 +134,14 @@ class GameController extends Controller
     
     public function ready(Request $request)
     {
-        $game_user = GameUser::where('game_id', $request->game_id)->where('user_id', $request->user()->id)->first()->update([
+        $game_user = GameUser::where('game_id', $request->game_uuid)->where('user_id', Auth::user()->id)->first()->update([
             'status' => 'ready'
         ]);
 
         // 準備完了通知
         GameLog::create([
-            'game_id' => $request->game_id,
-            'user_id' => $request->user()->id,
+            'game_id' => $request->game_uuid,
+            'user_id' => Auth::user()->id,
             'type' => 'ready',
             'log' => $game_user
         ]);
@@ -146,15 +154,15 @@ class GameController extends Controller
     public function start(Request $request)
     {
         // 参加ユーザーのうち、一番古いユーザーであればホストとしてゲームを開始できる
-        if (GameUser::where('game_id', $request->game_id)->where('status', '!=', 'leave')->first()->user_id === $request->user()->id) {
+        if (GameUser::where('game_id', $request->game_uuid)->where('status', '!=', 'leave')->first()->user_id === Auth::user()->id) {
 
             // ゲームを開始状態にする
-            Game::find($request->game_id)->update([
+            Game::find($request->game_uuid)->update([
                 'status' => 'start'
             ]);
 
             // 参加ユーザー全員を開始状態にする
-            $game_users = GameUser::where('game_id', $request->game_id)->where('status', '!=', 'leave')->update([
+            $game_users = GameUser::where('game_id', $request->game_uuid)->where('status', '!=', 'leave')->update([
                 'status' => 'start'
             ]);
 
@@ -173,10 +181,10 @@ class GameController extends Controller
     
             // 開始通知
             GameLog::create([
-                'game_id' => $request->game_id,
-                'user_id' => $request->user()->id,
+                'game_id' => $request->game_uuid,
+                'user_id' => Auth::user()->id,
                 'type' => 'start',
-                'log' => GameUser::where('game_id', $request->game_id)->where('status', '!=', 'leave')->get()
+                'log' => GameUser::where('game_id', $request->game_uuid)->where('status', '!=', 'leave')->get()
             ]);
     
             return response()->json([
@@ -192,7 +200,7 @@ class GameController extends Controller
     
     public function input(Request $request)
     {
-        $game = Game::where('game_id', $request->game_id);
+        $game = Game::where('game_id', $request->game_uuid);
 
         // answer,inputのアルファベットは共に小文字に変換されている
         $input = strtolower($request->input);
@@ -238,8 +246,8 @@ class GameController extends Controller
         if ($request->input === $game->answer) {
             // 入力通知
             GameLog::create([
-                'game_id' => $request->game_id,
-                'user_id' => $request->user()->id,
+                'game_id' => $request->game_uuid,
+                'user_id' => Auth::user()->id,
                 'type' => 'input',
                 'log' => [
                     'correct' => true,
@@ -251,29 +259,29 @@ class GameController extends Controller
             ]);
 
             // ゲームを終了状態にする
-            Game::find($request->game_id)->update([
+            Game::find($request->game_uuid)->update([
                 'status' => 'end'
             ]);
 
             // 参加ユーザー全員を終了状態にする
-            GameUser::where('game_id', $request->game_id)->where('status', '!=', 'start')->update([
+            GameUser::where('game_id', $request->game_uuid)->where('status', '!=', 'start')->update([
                 'status' => 'end'
             ]);
 
             // 終了通知
             GameLog::create([
-                'game_id' => $request->game_id,
+                'game_id' => $request->game_uuid,
                 'type' => 'end',
                 'log' => [
-                    'winner' => $request->user()->id,
+                    'winner' => Auth::user()->id,
                 ]
             ]);
         }
         else {
             // 入力通知
             GameLog::create([
-                'game_id' => $request->game_id,
-                'user_id' => $request->user()->id,
+                'game_id' => $request->game_uuid,
+                'user_id' => Auth::user()->id,
                 'type' => 'input',
                 'log' => [
                     'correct' => false,

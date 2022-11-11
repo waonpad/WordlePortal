@@ -15,10 +15,11 @@ class GameCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            'wordle_id' => 'required|numeric',
             'max_participants' => 'required|numeric',
             'laps' => 'required|numeric',
             'visibility' => 'required|boolean',
-            'answer_limit' => 'required|numeric',
+            'answer_time_limit' => 'required|numeric',
             'coloring' => 'required|boolean',
         ];
     }

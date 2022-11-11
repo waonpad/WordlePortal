@@ -6,6 +6,7 @@ const customStyles = {
       zIndex: 100
     },
     content: {
+        maxWidth: '90%',
         top: '50%',
         left: '50%',
         right: 'auto',
