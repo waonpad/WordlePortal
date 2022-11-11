@@ -20,7 +20,7 @@ class Game extends Model
         'max',
         'input',
         'description',
-        // 'answer',
+        'answer',
         'max_participants',
         'laps',
         'visibility',
@@ -29,7 +29,7 @@ class Game extends Model
         'status'
     ];
 
-    protected $hedden = [
+    protected $hidden = [
         'answer'
     ];
     

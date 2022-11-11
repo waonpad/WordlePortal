@@ -12,6 +12,7 @@ export type VSPlayOptionProps = {
 //////////////////////////////
 
 export type VSPlayOptionData = {
+    wordle_id: number
     max_participants: number
     laps: number
     visibility: boolean
@@ -21,6 +22,7 @@ export type VSPlayOptionData = {
 }
 
 export type VSPlayOptionErrorData = {
+    wordle_id: string
     max_participants: string
     laps: string
     visibility: string
