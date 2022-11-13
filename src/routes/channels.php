@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\GroupUser;
+use App\Models\Game;
 use App\Models\GameUser;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -58,8 +59,8 @@ Broadcast::channel('wordle_tag_post.{tag_id}', function (){
     return true;
 });
 
-Broadcast::channel('game.{game_id}', function ($user, $game_id){
-    $user_id = GameUser::where('game_id', $game_id)->where('user_id', $user->id)->first()->user_id;
+Broadcast::channel('game.{game_uuid}', function ($user, $game_uuid){
+    $user_id = GameUser::where('game_id', Game::where('uuid', $game_uuid)->first()->id)->where('user_id', $user->id)->first()->user_id;
 
    if ($user->id === $user_id) {
         return [

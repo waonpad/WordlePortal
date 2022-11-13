@@ -75,8 +75,8 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                 //     props?.handleModalClose(false);
                 // }
                 
-                // const game = res.data.game;
-                // history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
+                const game = res.data.game;
+                history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
             }
             else {
                 const obj: VSPlayOptionErrorData = res.data.validation_errors;
