@@ -33,6 +33,6 @@ class GameEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PresenceChannel('game.' . $this->game_log->game_id);
+        return new PresenceChannel('game.' . $this->game_log->game_uuid);
     }
 }

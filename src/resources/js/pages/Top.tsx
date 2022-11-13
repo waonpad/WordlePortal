@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import WordleList from '../components/WordleList';
 
@@ -36,19 +37,19 @@ function Top(): React.ReactElement {
 
     return (
         <ThemeProvider theme={theme}>
-          <Container component="main" maxWidth={'md'} sx={{padding: 0}}>
-            <CssBaseline />
-                {!initial_loading ? (
-                    <WordleList
-                        wordle_get_api_method={wordle_get_api_method}
-                        request_params={request_params}
-                        listening_channel={listening_channel}
-                        listening_event={listening_event}
-                        key={key}
-                    />
-                ) : (
-                    <CircularProgress sx={{textAlign: 'center'}} />
-                )}
+            <Container component="main" maxWidth={'md'} sx={{padding: 0}}>
+                <CssBaseline />
+                    {!initial_loading ? (
+                        <WordleList
+                            wordle_get_api_method={wordle_get_api_method}
+                            request_params={request_params}
+                            listening_channel={listening_channel}
+                            listening_event={listening_event}
+                            key={key}
+                        />
+                    ) : (
+                        <CircularProgress sx={{textAlign: 'center'}} />
+                    )}
             </Container>
         </ThemeProvider>
     );
