@@ -203,10 +203,7 @@ class GameController extends Controller
     
     public function input(Request $request)
     {
-        $game = Game::where('game_id', Game::where('uuid', $request->game_uuid)->first()->id);
-
-        // answer,inputのアルファベットは共に小文字に変換されている
-        $input = strtolower($request->input);
+        $game = Game::find(Game::where('uuid', $request->game_uuid)->first()->id);
 
         // answerは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
         // 最大文字数が9でLaravelがanswerの場合、$answer_splitは[L,a,r,a,v,e,l,foo,foo]になる
@@ -216,7 +213,7 @@ class GameController extends Controller
         }
 
         // inputは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
-        $input_split = str_split($input, 1);
+        $input_split = $request->input;
         for ($i=count($input_split); $i < $game->max; $i++) {
             array_push($input_split, 'bar');
         }
@@ -248,7 +245,7 @@ class GameController extends Controller
         // 入力が答えと一致していたら
         if ($request->input === $game->answer) {
             // 入力通知
-            GameLog::create([
+            $input_log = GameLog::create([
                 'game_id' => Game::where('uuid', $request->game_uuid)->first()->id,
                 'user_id' => Auth::user()->id,
                 'type' => 'input',
@@ -256,7 +253,7 @@ class GameController extends Controller
                     'correct' => true,
                     'matchs' => $matchs,
                     'exists' => $exists,
-                    'input' => $input,
+                    'input' => $request->input,
                     'errata' => $errata,
                 ]
             ]);
@@ -272,7 +269,7 @@ class GameController extends Controller
             ]);
 
             // 終了通知
-            GameLog::create([
+            $game_result = GameLog::create([
                 'game_id' => Game::where('uuid', $request->game_uuid)->first()->id,
                 'type' => 'end',
                 'log' => [
@@ -282,7 +279,7 @@ class GameController extends Controller
         }
         else {
             // 入力通知
-            GameLog::create([
+            $input_log = GameLog::create([
                 'game_id' => Game::where('uuid', $request->game_uuid)->first()->id,
                 'user_id' => Auth::user()->id,
                 'type' => 'input',
@@ -290,10 +287,17 @@ class GameController extends Controller
                     'correct' => false,
                     'matchs' => $matchs,
                     'exists' => $exists,
-                    'input' => $input,
+                    'input' => $request->input,
                     'errata' => $errata,
                 ]
             ]);
         }
+
+        return response()->json([
+            'status' => true,
+            'input_log' => $input_log,
+            'result' => $game_result ?? null
+        ]);
+
     }
 }
