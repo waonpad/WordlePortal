@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import swal from "sweetalert";
 import ReactDOM from 'react-dom';
-import { Button, Card } from '@material-ui/core';
+import { Button, IconButton, Card } from '@material-ui/core';
 import { Link, useParams, useHistory } from "react-router-dom";
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -16,13 +16,26 @@ import Chip from "@material-ui/core/Chip"; // v4
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import { LoadingButton } from '@mui/lab';
-import { alpha, createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { alpha, createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@mui/material/CircularProgress';
 import {useAuth} from "../contexts/AuthContext";
+import yellow from "@material-ui/core/colors/yellow";
+import BackspaceIcon from '@mui/icons-material/Backspace';
 
 const theme = createTheme();
 
+// TODO: characterの大きさ調整、レスポンシブ対応 どうやる？？？？？
+// TODO: Stackの幅とレスポンシブ
 const WordleStyle = makeStyles((theme: Theme) => createStyles({
+    character: {
+        minWidth: '38px',
+        minHeight: '38px',
+        width: '38px',
+        height: '38px',
+        borderRadius: '7px',
+        border: 'solid 1px rgba(0, 0, 0, 0.54)',
+        boxSizing: 'border-box'
+    },
     character_match: {
         backgroundColor: '#4caf50'
     },
@@ -35,6 +48,16 @@ const WordleStyle = makeStyles((theme: Theme) => createStyles({
     character_plain: {
         backgroundColor: '#fff'
     },
+    input_character: {
+        backgroundColor: yellow[500],
+        "&:hover": {
+            backgroundColor: yellow[700],
+            // Reset on touch devices, it doesn't add specificity
+            "@media (hover: none)": {
+                backgroundColor: yellow[500]
+            }
+        }
+    }
 }));
 
 type Game_Words = {
@@ -100,9 +123,14 @@ function Wordle(): React.ReactElement {
                 const game = res.data.game;
 
                 const default_game_words: any[] = [];
-                ([...Array(game.game_users.length * game.laps)]).forEach(() => {
+
+                // const rows = game.game_users.length * game.laps;
+                const rows = 10; // test
+                // const max = game.max;
+                const max = 10; // test
+                ([...Array(rows)]).forEach(() => {
                     const default_game_word: any[] = [];
-                    ([...Array(game.max)]).forEach(() => {
+                    ([...Array(max)]).forEach(() => {
                         default_game_word.push({
                             character: 'A',
                             errata: 'plain',
@@ -147,11 +175,50 @@ function Wordle(): React.ReactElement {
     // input ///////////////////////////////////////////////////////////////////////
     const [input_stack, setInputStack] = useState<string[]>([]);
 
-    const handleInputStack = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const target_character = String(event.currentTarget.getAttribute('data-character-id'));
-        console.log(target_character);
-        setInputStack([...input_stack, target_character]);
-        // game_wordsでplainなcharacterがあるところにtarget_characterを表示させる？
+    const handleInputStack = (event: any) => {
+        // stackが最大文字数未満なら
+        if (input_stack.length < game.max) {
+            const target_character = String(event.currentTarget.getAttribute('data-character-id'));
+            console.log(target_character);
+            setInputStack([...input_stack, target_character]);
+            // TODO: game_wordsでplainなcharacterがあるところにtarget_characterを表示させる？
+        }
+    }
+
+    const handleInputBackSpace = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const backspaced_input_stack = input_stack.slice(0, -1);
+        setInputStack(backspaced_input_stack);
+        // TODO: 表示エリアからも削除
+    }
+
+    useEffect(() => {
+        console.log(input_stack);
+    }, [input_stack]);
+    /////////////////////////////////////////////////////////////////////////
+
+    // enter ///////////////////////////////////////////////////////////////////////
+    const handleInputEnter = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setLoading(true)
+
+        const data = {
+            game_uuid: game_uuid,
+            input: input_stack
+        };
+
+        axios.post('/api/wordle/game/input', data).then(res => {
+            swal("送信成功", "送信成功", "success");
+            console.log(res);
+            setLoading(false);
+        }).catch(error => {
+            console.log(error)
+            swal("送信失敗", "送信失敗", "error");
+            // setError('submit', {
+            //     type: 'manual',
+            //     message: '送信に失敗しました'
+            // })
+            setLoading(false);
+        })
+
     }
     /////////////////////////////////////////////////////////////////////////
     
@@ -163,7 +230,7 @@ function Wordle(): React.ReactElement {
 	else {
         return (
             <ThemeProvider theme={theme}>
-                <Container component="main" maxWidth={'md'} sx={{padding: 0}}>
+                <Container component="main" maxWidth={false} sx={{padding: 0}}>
                     <CssBaseline />
                     <Box
                     sx={{
@@ -176,17 +243,55 @@ function Wordle(): React.ReactElement {
                         <Grid container spacing={2}>
                             {/* words表示エリア */}
                             <Grid item xs={12}>
-                                {game_words.map((word: any, index: number) => (
-                                    <Stack key={index} direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                                        {(word).map((character: {errata: 'match' | 'exist' | 'not_exist', character: string}, index: number) => (
-                                            <Chip className={classes[`character_${character.errata}`]} key={index} style={{borderRadius: '7px', border: 'solid 1px rgba(0, 0, 0, 0.54)', boxSizing: 'border-box'}} label={character.character} />
-                                        ))}
-                                    </Stack>
-                                ))}
+                                <Grid container spacing={1}>
+                                    <Grid item xs={12} md={6}>
+                                        <Grid container spacing={1}>
+                                            {(game_words.slice(0, Math.ceil(game_words.length / 2))).map((word: any, index: number) => (
+                                                <Grid key={index} item xs={12}>
+                                                    <Stack direction="row" justifyContent="center" spacing={0} sx={{ flexWrap: 'nowrap', gap: 1 }}>
+                                                        {(word).map((character: {errata: 'match' | 'exist' | 'not_exist', character: string}, index: number) => (
+                                                            <Chip className={classes.character + " " + classes[`character_${character.errata}`]} key={index} label={character.character} />
+                                                        ))}
+                                                    </Stack>
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <Grid container spacing={1}>
+                                            {(game_words.slice(Math.ceil(game_words.length / 2), game_words.length)).map((word: any, index: number) => (
+                                                <Grid key={index} item xs={12}>
+                                                    <Stack direction="row" justifyContent="center" spacing={0} sx={{ flexWrap: 'nowrap', gap: 1 }}>
+                                                        {(word).map((character: {errata: 'match' | 'exist' | 'not_exist', character: string}, index: number) => (
+                                                            <Chip className={classes.character + " " + classes[`character_${character.errata}`]} key={index} label={character.character} />
+                                                        ))}
+                                                    </Stack>
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             {/* input表示エリア */}
+                            {/* そのターンのプレイヤーしか入力できないようにする */}
                             <Grid item xs={12}>
-                                <Button data-character-id={'B'} onClick={handleInputStack}>B</Button>
+                                <Stack direction="row" spacing={0} sx={{ flexWrap: 'nowrap', gap: 1 }}>
+                                    <Button data-character-id={'B'} className={classes.character + " " + classes.input_character} onClick={handleInputStack}>B</Button>
+                                </Stack>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Stack spacing={2} direction="row">
+                                    <IconButton color='inherit' onClick={handleInputBackSpace}>
+                                        <BackspaceIcon />
+                                    </IconButton>
+                                    <LoadingButton
+                                        loading={loading}
+                                        variant="contained"
+                                        onClick={handleInputEnter}
+                                    >
+                                        Enter
+                                    </LoadingButton>
+                                </Stack>
                             </Grid>
                         </Grid>
                     </Box>
