@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('game_users', function (Blueprint $table) {
+        Schema::create('game_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('game_id')->nullable();
             $table->foreign('game_id')->references('id')->on('games')->nullOnDelete();

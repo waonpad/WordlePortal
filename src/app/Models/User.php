@@ -78,4 +78,8 @@ class User extends Authenticatable
     public function wordleLikes() {
         return $this->belongsToMany('App\Models\Wordle', 'wordle_likes', 'user_id', 'wordle_id');
     }
+
+    public function gameUser() {
+        return $this->hasMany(GameUser::class);
+    }
 }

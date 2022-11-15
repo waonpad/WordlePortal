@@ -19,4 +19,8 @@ class GameLog extends Model
     protected $casts = [
         'log' => 'array',
     ];
+
+    public function game() {
+      return $this->belongsTo(Game::class);
+    }
 }

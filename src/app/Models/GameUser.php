@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class GameUser extends Model
+class GameUser extends Pivot
 {
     use HasFactory;
 
@@ -16,4 +17,12 @@ class GameUser extends Model
         'order',
         'result'
     ];
+    
+    public function game() {
+        return $this->belongsTo(Game::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -112,14 +112,9 @@ function Wordle(): React.ReactElement {
     // }
 
 	useEffect(() => {
-
-        const data = {
-            game_uuid: game_uuid
-        };
-
-        axios.get('/api/wordle/game/show', {params: data}).then(res => {
-            if (res.status === 200) {
-                console.log(res);
+        axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
+            console.log(res);
+            if (res.data.status === true) {
                 const game = res.data.game;
 
                 const default_game_words: any[] = [];
@@ -140,6 +135,10 @@ function Wordle(): React.ReactElement {
                 });
                 console.log(default_game_words);
                 setGameWords(default_game_words);
+                setGameUsers(game.game_users);
+                setGameLog(game.game_log);
+
+                // TODO: ログを追う処理を追加する
 
                 window.Echo.join('game.' + game.uuid)
                 .listen('GameEvent', (e: any) => {
@@ -164,12 +163,13 @@ function Wordle(): React.ReactElement {
 
                 setInitialLoad(false);
             }
-        }).catch((error) => {
-            console.log(error);
-            swal("ゲームがない", "そのゲームは存在しません", "error");
-            // history.push('/');
-            // setInitialLoad(false);
-        });
+            else if(res.data.status === false) {
+                swal("参加失敗", res.data.message, "error");
+            }
+        }).catch(error => {
+            console.log(error)
+            swal("参加失敗", "参加失敗", "error");
+        })
 	}, [])
 
     // input ///////////////////////////////////////////////////////////////////////
