@@ -40,6 +40,10 @@ class Game extends Model
 
     public function gameUsers()
     {
-        return $this->belongsToMany('App\Models\User', 'game_users', 'game_id', 'user_id');
+        return $this->hasMany(GameUser::class);
+    }
+    
+    public function gameLogs() {
+        return $this->hasMany(GameLog::class);
     }
 }

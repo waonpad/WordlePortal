@@ -64,9 +64,7 @@ Broadcast::channel('game.{game_uuid}', function ($user, $game_uuid){
 
    if ($user->id === $user_id) {
         return [
-            'id' => $user->id,
-            'screen_name' => $user->screen_name,
-            'name' => $user->name,
+            'user' => $user
         ];
     }
 });
