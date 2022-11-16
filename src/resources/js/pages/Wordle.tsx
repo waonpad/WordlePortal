@@ -18,23 +18,35 @@ import Grid from '@mui/material/Grid';
 import { LoadingButton } from '@mui/lab';
 import { alpha, createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
 import {useAuth} from "../contexts/AuthContext";
 import yellow from "@material-ui/core/colors/yellow";
 import BackspaceIcon from '@mui/icons-material/Backspace';
+import WordleJapaneseCharacters from '../components/WordleJapaneseCharacters';
+import WordleBoard from '../components/WordleBoard';
 
 const theme = createTheme();
 
 // TODO: characterの大きさ調整、レスポンシブ対応 どうやる？？？？？
 // TODO: Stackの幅とレスポンシブ
-const WordleStyle = makeStyles((theme: Theme) => createStyles({
+const WordleStyle = makeStyles((theme: Theme) => ({
     character: {
-        minWidth: '38px',
-        minHeight: '38px',
-        width: '38px',
-        height: '38px',
+        minWidth: '0px',
+        minHeight: '0px',
+        width: '40px',
+        height: '40px',
         borderRadius: '7px',
         border: 'solid 1px rgba(0, 0, 0, 0.54)',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        // game.maxを参照して拡大の可否を分岐しないといけないがapiから受け取ったgameを使えない・・・？
+        // classにgame.maxの値を入れ込んでそれを元に分岐するか
+        [theme.breakpoints.down("sm")]: {
+            width: '33px',
+            height: '33px',
+        },
+        '& .MuiChip-label': {
+            overflow: 'visible'
+        }
     },
     character_match: {
         backgroundColor: '#4caf50'
@@ -61,8 +73,10 @@ const WordleStyle = makeStyles((theme: Theme) => createStyles({
 }));
 
 type Game_Words = {
-    character: string
-    errata: string
+    [index: number]: {
+        character: string
+        errata: string
+    }
 }
 
 function Wordle(): React.ReactElement {
@@ -74,19 +88,7 @@ function Wordle(): React.ReactElement {
     const {game_uuid} = useParams<{game_uuid: string}>();
 
     const [game, setGame] = useState<any>();
-
-    /*  game_words = [
-            0 => [
-                0 => [
-                    'character' => 'R',
-                    'errata => 'match'
-                ],
-                ...
-            ],
-            ...
-        ]
-    */
-    const [game_words, setGameWords] = useState<any[]>([]);
+    const [game_words, setGameWords] = useState<Game_Words>([]);
     const [game_users, setGameUsers] = useState<any>([]);
     const [game_log, setGameLog] = useState<any>([]);
 
@@ -224,7 +226,9 @@ function Wordle(): React.ReactElement {
     
 	if (initial_load) {
 		return (
-            <CircularProgress sx={{textAlign: 'center'}} />
+			<Backdrop open={true}>
+			  <CircularProgress color="inherit" />
+			</Backdrop>
 		)
 	}
 	else {
@@ -243,41 +247,14 @@ function Wordle(): React.ReactElement {
                         <Grid container spacing={2}>
                             {/* words表示エリア */}
                             <Grid item xs={12}>
-                                <Grid container spacing={1}>
-                                    <Grid item xs={12} md={6}>
-                                        <Grid container spacing={1}>
-                                            {(game_words.slice(0, Math.ceil(game_words.length / 2))).map((word: any, index: number) => (
-                                                <Grid key={index} item xs={12}>
-                                                    <Stack direction="row" justifyContent="center" spacing={0} sx={{ flexWrap: 'nowrap', gap: 1 }}>
-                                                        {(word).map((character: {errata: 'match' | 'exist' | 'not_exist', character: string}, index: number) => (
-                                                            <Chip className={classes.character + " " + classes[`character_${character.errata}`]} key={index} label={character.character} />
-                                                        ))}
-                                                    </Stack>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <Grid container spacing={1}>
-                                            {(game_words.slice(Math.ceil(game_words.length / 2), game_words.length)).map((word: any, index: number) => (
-                                                <Grid key={index} item xs={12}>
-                                                    <Stack direction="row" justifyContent="center" spacing={0} sx={{ flexWrap: 'nowrap', gap: 1 }}>
-                                                        {(word).map((character: {errata: 'match' | 'exist' | 'not_exist', character: string}, index: number) => (
-                                                            <Chip className={classes.character + " " + classes[`character_${character.errata}`]} key={index} label={character.character} />
-                                                        ))}
-                                                    </Stack>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
+                                <WordleBoard game_words={game_words} classes={classes} />
                             </Grid>
                             {/* input表示エリア */}
-                            {/* そのターンのプレイヤーしか入力できないようにする */}
-                            <Grid item xs={12}>
-                                <Stack direction="row" spacing={0} sx={{ flexWrap: 'nowrap', gap: 1 }}>
-                                    <Button data-character-id={'B'} className={classes.character + " " + classes.input_character} onClick={handleInputStack}>B</Button>
-                                </Stack>
+                            {/* <Grid item xs={12}>
+                                <WordleJapaneseCharacters
+                                    classes={classes}
+                                    handleInputStack={handleInputStack}
+                                />
                             </Grid>
                             <Grid item xs={12}>
                                 <Stack spacing={2} direction="row">
@@ -292,7 +269,7 @@ function Wordle(): React.ReactElement {
                                         Enter
                                     </LoadingButton>
                                 </Stack>
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Box>
                 </Container>
