@@ -72,7 +72,7 @@ const WordleStyle = makeStyles((theme: Theme) => ({
     }
 }));
 
-type Game_Words = {
+type GameWords = {
     [index: number]: {
         character: string
         errata: string
@@ -88,9 +88,11 @@ function Wordle(): React.ReactElement {
     const {game_uuid} = useParams<{game_uuid: string}>();
 
     const [game, setGame] = useState<any>();
-    const [game_words, setGameWords] = useState<Game_Words>([]);
+    const [game_words, setGameWords] = useState<GameWords>([]);
     const [game_users, setGameUsers] = useState<any>([]);
-    const [game_log, setGameLog] = useState<any>([]);
+    const [game_logs, setGameLogs] = useState<any>([]);
+
+    const [input_stack, setInputStack] = useState<any[]>([]);
 
     // const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<GroupPostData>();
     const [initial_load, setInitialLoad] = useState(true);
@@ -129,16 +131,27 @@ function Wordle(): React.ReactElement {
                     const default_game_word: any[] = [];
                     ([...Array(max)]).forEach(() => {
                         default_game_word.push({
-                            character: 'A',
+                            character: '',
                             errata: 'plain',
                         })
                     });
                     default_game_words.push(default_game_word);
                 });
                 console.log(default_game_words);
+                setGame(game);
                 setGameWords(default_game_words);
                 setGameUsers(game.game_users);
-                setGameLog(game.game_log);
+                setGameLogs(game.game_logs);
+
+                const default_input_stack: any[] = [];
+                ([...Array(max)]).forEach(() => {
+                    default_input_stack.push({
+                        character: '',
+                        errata: 'plain',
+                    })
+                });
+                console.log(default_input_stack);
+                setInputStack(default_input_stack);
 
                 // TODO: ログを追う処理を追加する
 
@@ -175,22 +188,40 @@ function Wordle(): React.ReactElement {
 	}, [])
 
     // input ///////////////////////////////////////////////////////////////////////
-    const [input_stack, setInputStack] = useState<string[]>([]);
-
     const handleInputStack = (event: any) => {
-        // stackが最大文字数未満なら
-        if (input_stack.length < game.max) {
-            const target_character = String(event.currentTarget.getAttribute('data-character-id'));
-            console.log(target_character);
-            setInputStack([...input_stack, target_character]);
-            // TODO: game_wordsでplainなcharacterがあるところにtarget_characterを表示させる？
-        }
+        const target_character = String(event.currentTarget.getAttribute('data-character-value'));
+        console.log(target_character);
+
+        const target_input_stack_index = input_stack.findIndex(function(character) {
+            return character.character === '';
+        });
+        // 既に全て埋まっている場合indexが無いので無反応で処理が行われない(エラー出す?)
+
+        const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: target_character} : character));
+        setInputStack(updated_input_stack);
+
+        // Boardに表示させる
+        const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
+        const target_board_word_index = game_input_logs.length;
+        
+        console.log(target_board_word_index);
+
+        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_board_word_index ? updated_input_stack : game_word)))
     }
 
     const handleInputBackSpace = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const backspaced_input_stack = input_stack.slice(0, -1);
-        setInputStack(backspaced_input_stack);
-        // TODO: 表示エリアからも削除
+        const filled_input_stack = (input_stack as any[]).filter((character, index) => (character.character !== ''));
+        const target_input_stack_index = filled_input_stack.length - 1;
+        const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: ''} : character));
+        setInputStack(updated_input_stack);
+        
+        // Boardに表示させる
+        const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
+        const target_board_word_index = game_input_logs.length;
+        
+        console.log(target_board_word_index);
+
+        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_board_word_index ? updated_input_stack : game_word)))
     }
 
     useEffect(() => {
@@ -250,7 +281,7 @@ function Wordle(): React.ReactElement {
                                 <WordleBoard game_words={game_words} classes={classes} />
                             </Grid>
                             {/* input表示エリア */}
-                            {/* <Grid item xs={12}>
+                            <Grid item xs={12}>
                                 <WordleJapaneseCharacters
                                     classes={classes}
                                     handleInputStack={handleInputStack}
@@ -269,7 +300,7 @@ function Wordle(): React.ReactElement {
                                         Enter
                                     </LoadingButton>
                                 </Stack>
-                            </Grid> */}
+                            </Grid>
                         </Grid>
                     </Box>
                 </Container>

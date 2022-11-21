@@ -32,20 +32,20 @@ function WordleBoard(props: WordleBoardProps): React.ReactElement {
 
     const BoardAsset = (game_words: any, place: 'left' | 'right') => (
         <Grid container spacing={1}>
-        {game_words.map((word: any, index: number) => (
-            <Grid key={index} item xs={12}>
-                <Grid container spacing={0.5} sx={{flexWrap: 'nowrap', justifyContent: {xs: 'center', md: place === 'left' ? 'right' : 'left'}}}>
-                    {(word).map((character: {errata: 'match' | 'exist' | 'not_exist' | 'plain', character: string}, index: number) => (
-                        <Grid item key={index}>
-                            <Chip className={props.classes.character + " " + props.classes[`character_${character.errata}`]} key={index} label={
-                                <Typography>{character.character}</Typography>
-                            } />
-                        </Grid>
-                    ))}
+            {game_words.map((word: any, index: number) => (
+                <Grid key={index} item xs={12}>
+                    <Grid container spacing={0.5} sx={{flexWrap: 'nowrap', justifyContent: {xs: 'center', md: place === 'left' ? 'right' : 'left'}}}>
+                        {(word).map((character: {errata: 'match' | 'exist' | 'not_exist' | 'plain', character: string}, index: number) => (
+                            <Grid item key={index}>
+                                <Chip className={props.classes.character + " " + props.classes[`character_${character.errata}`]} key={index} label={
+                                    <Typography>{character.character}</Typography>
+                                } />
+                            </Grid>
+                        ))}
+                    </Grid>
                 </Grid>
-            </Grid>
-        ))}
-    </Grid>
+            ))}
+        </Grid>
     )
 
     return (
