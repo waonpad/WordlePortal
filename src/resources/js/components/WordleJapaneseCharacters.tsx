@@ -29,92 +29,133 @@ type WordleJapaneseCharactersProps = {
 
 function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.ReactElement {
 
+    const initial_state: any[] = [
+        {
+            character: 'あ',
+            errata: 'plain'
+        },
+        {
+            character: 'い',
+            errata: 'plain'
+        },
+        {
+            character: 'う',
+            errata: 'plain'
+        },
+        {
+            character: 'え',
+            errata: 'plain'
+        },
+        {
+            character: 'お',
+            errata: 'plain'
+        },
+        {
+            character: 'あ',
+            errata: 'plain'
+        },
+        {
+            character: 'い',
+            errata: 'plain'
+        },
+        {
+            character: 'う',
+            errata: 'plain'
+        },
+        {
+            character: 'え',
+            errata: 'plain'
+        },
+        {
+            character: 'お',
+            errata: 'plain'
+        },
+        {
+            character: 'あ',
+            errata: 'plain'
+        },
+        {
+            character: 'い',
+            errata: 'plain'
+        },
+        {
+            character: 'う',
+            errata: 'plain'
+        },
+        {
+            character: 'え',
+            errata: 'plain'
+        },
+        {
+            character: 'お',
+            errata: 'plain'
+        },
+        {
+            character: 'あ',
+            errata: 'plain'
+        },
+        {
+            character: 'い',
+            errata: 'plain'
+        },
+        {
+            character: 'う',
+            errata: 'plain'
+        },
+        {
+            character: 'え',
+            errata: 'plain'
+        },
+        {
+            character: 'お',
+            errata: 'plain'
+        },
+        {
+            character: 'あ',
+            errata: 'plain'
+        },
+        {
+            character: 'い',
+            errata: 'plain'
+        },
+        {
+            character: 'う',
+            errata: 'plain'
+        },
+        {
+            character: 'え',
+            errata: 'plain'
+        },
+        {
+            character: 'お',
+            errata: 'plain'
+        },
+    ];
+
+    const [japanese_characters, setJapanseCharacters] = useState<any[]>(initial_state);
+
+    useEffect(() => {
+        console.log((japanese_characters.slice(1*10, 1*10+10)));
+    }, []);
+
     return (
-        <Box
-        sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        }}
-        >
+        <Box>
             <Grid container spacing={0}>
                 {/* input表示エリア */}
                 {/* そのターンのプレイヤーしか入力できないようにする */}
-                <Grid item xs={10}>
-                    <Grid container spacing={1} sx={{display: 'flex'}}>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
-                        <Grid item xs>
-                            <Button data-character-value={'B'} className={props.classes.character + " " + props.classes.input_character} onClick={props.handleInputStack}>B</Button>
-                        </Grid>
+                <Grid item xs={12}>
+                    <Grid container spacing={0.5}>
+                        {[...Array(5)].map((item, index) => (
+                            <Grid key={index} item xs={12}>
+                                <Grid container spacing={0.5} sx={{flexWrap: 'nowrap', justifyContent: 'center'}}>
+                                    {(japanese_characters.slice(index*10, index*10+10) as any[]).map((character: {errata: 'match' | 'exist' | 'not_exist' | 'plain', character: string}, index: number) => (
+                                        <Grid item key={index}>
+                                            <Button data-character-value={character.character} className={props.classes.character + " " + props.classes.input_character + " " + props.classes[`character_${character.errata}`]} onClick={props.handleInputStack}>{character.character}</Button>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Grid>
+                        ))}
                     </Grid>
                 </Grid>
             </Grid>
