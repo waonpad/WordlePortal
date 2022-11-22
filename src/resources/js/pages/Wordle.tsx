@@ -24,6 +24,7 @@ import yellow from "@material-ui/core/colors/yellow";
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import WordleJapaneseCharacters from '../components/WordleJapaneseCharacters';
 import WordleBoard from '../components/WordleBoard';
+import { green, grey } from '@mui/material/colors';
 
 const theme = createTheme();
 
@@ -36,8 +37,10 @@ const WordleStyle = makeStyles((theme: Theme) => ({
         width: '40px',
         height: '40px',
         borderRadius: '7px',
-        border: 'solid 1px rgba(0, 0, 0, 0.54)',
+        // border: 'solid 1px rgba(0, 0, 0, 0.54)',
         boxSizing: 'border-box',
+        color: '#fff',
+        fontWeight: 'bold',
         // game.maxを参照して拡大の可否を分岐しないといけないがapiから受け取ったgameを使えない・・・？
         // classにgame.maxの値を入れ込んでそれを元に分岐するか
         [theme.breakpoints.down("sm")]: {
@@ -45,31 +48,69 @@ const WordleStyle = makeStyles((theme: Theme) => ({
             height: '33px',
         },
         '& .MuiChip-label': {
-            overflow: 'visible'
+            overflow: 'visible',
         }
     },
-    character_match: {
-        backgroundColor: '#4caf50'
-    },
-    character_exist: {
-        backgroundColor: '#ffeb3b'
-    },
-    character_not_exist: {
-        backgroundColor: '#9e9e9e'
-    },
-    character_plain: {
+    board_character: {
+        border: 'solid 1px transparent',
         backgroundColor: '#fff'
     },
+    board_character_match: {
+        backgroundColor: green[400]
+    },
+    board_character_exist: {
+        backgroundColor: yellow[400]
+    },
+    board_character_not_exist: {
+        backgroundColor: grey[400]
+    },
+    board_character_plain: {
+        border: 'solid 1px rgba(0, 0, 0, 0.54)',
+        color: '#000000DE'
+    },
     input_character: {
-        backgroundColor: yellow[500],
-        "&:hover": {
-            backgroundColor: yellow[700],
-            // Reset on touch devices, it doesn't add specificity
-            "@media (hover: none)": {
-                backgroundColor: yellow[500]
+        border: 'solid 1px transparent',
+        backgroundColor: grey[200],
+        '&:hover': {
+            backgroundColor: grey[400],
+            '@media (hover: none)': {
+                backgroundColor: grey[200],
             }
-        }
-    }
+        },
+    },
+    input_character_null: {
+        border: 'solid 1px transparent',
+    },
+    input_character_match: {
+        backgroundColor: green[400],
+        '&:hover': {
+            backgroundColor: green[600],
+            '@media (hover: none)': {
+                backgroundColor: green[400],
+            }
+        },
+    },
+    input_character_exist: {
+        backgroundColor: yellow[400],
+        '&:hover': {
+            backgroundColor: yellow[600],
+            '@media (hover: none)': {
+                backgroundColor: yellow[400],
+            }
+        },
+    },
+    input_character_not_exist: {
+        backgroundColor: grey[400],
+        // '&:hover': {
+        //     backgroundColor: grey[600],
+        //     '@media (hover: none)': {
+        //         backgroundColor: grey[400],
+        //     }
+        // },
+    },
+    input_character_plain: {
+        color: '#000000DE'
+    },
 }));
 
 type GameWords = {
@@ -93,6 +134,7 @@ function Wordle(): React.ReactElement {
     const [game_logs, setGameLogs] = useState<any>([]);
 
     const [input_stack, setInputStack] = useState<any[]>([]);
+    const [turn_flag, setTurnFlag] = useState<boolean>(true); // TODO: フラグを操作する処理を追加する
 
     // const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<GroupPostData>();
     const [initial_load, setInitialLoad] = useState(true);
@@ -199,14 +241,7 @@ function Wordle(): React.ReactElement {
 
         const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: target_character} : character));
         setInputStack(updated_input_stack);
-
-        // Boardに表示させる
-        const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
-        const target_board_word_index = game_input_logs.length;
-        
-        console.log(target_board_word_index);
-
-        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_board_word_index ? updated_input_stack : game_word)))
+        updateBoard(updated_input_stack);
     }
 
     const handleInputBackSpace = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -214,19 +249,15 @@ function Wordle(): React.ReactElement {
         const target_input_stack_index = filled_input_stack.length - 1;
         const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: ''} : character));
         setInputStack(updated_input_stack);
-        
+        updateBoard(updated_input_stack);
+    }
+
+    const updateBoard = (updated_input_stack: any[]) => {
         // Boardに表示させる
         const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
         const target_board_word_index = game_input_logs.length;
-        
-        console.log(target_board_word_index);
-
-        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_board_word_index ? updated_input_stack : game_word)))
+        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_board_word_index ? updated_input_stack : game_word)));
     }
-
-    useEffect(() => {
-        console.log(input_stack);
-    }, [input_stack]);
     /////////////////////////////////////////////////////////////////////////
 
     // enter ///////////////////////////////////////////////////////////////////////
@@ -235,7 +266,7 @@ function Wordle(): React.ReactElement {
 
         const data = {
             game_uuid: game_uuid,
-            input: input_stack
+            input: input_stack.map(character => character['character'])
         };
 
         axios.post('/api/wordle/game/input', data).then(res => {
@@ -284,6 +315,7 @@ function Wordle(): React.ReactElement {
                             <Grid item xs={12}>
                                 <WordleJapaneseCharacters
                                     classes={classes}
+                                    enable={turn_flag}
                                     handleInputStack={handleInputStack}
                                 />
                             </Grid>
