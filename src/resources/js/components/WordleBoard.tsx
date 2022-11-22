@@ -28,17 +28,20 @@ type WordleBoardProps = {
     classes: any
 }
 
+// Boardに表示されるcharacterはmatchした後exsitが入る可能性もあるため、input側と同期して管理しない
+// input側ではcharacter毎に最高成績のerrataの色を表示する
+
 function WordleBoard(props: WordleBoardProps): React.ReactElement {
 
-    const BoardAsset = (game_words: any, place: 'left' | 'right') => (
+    const BoardAsset = (game_words: any, place: 'left' | 'right', classes: any) => (
         <Grid container spacing={1}>
             {game_words.map((word: any, index: number) => (
                 <Grid key={index} item xs={12}>
                     <Grid container spacing={0.5} sx={{flexWrap: 'nowrap', justifyContent: {xs: 'center', md: place === 'left' ? 'right' : 'left'}}}>
                         {(word).map((character: {errata: 'match' | 'exist' | 'not_exist' | 'plain', character: string}, index: number) => (
                             <Grid item key={index}>
-                                <Chip className={props.classes.character + " " + props.classes[`character_${character.errata}`]} key={index} label={
-                                    <Typography>{character.character}</Typography>
+                                <Chip className={classes.character + " " + classes.board_character + " " + classes[`board_character_${character.errata}`]} key={index} label={
+                                    <Typography sx={{fontWeight: 'bold'}}>{character.character}</Typography>
                                 } />
                             </Grid>
                         ))}
@@ -49,17 +52,13 @@ function WordleBoard(props: WordleBoardProps): React.ReactElement {
     )
 
     return (
-        <Box
-            // sx={{
-            //     marginTop: 2,
-            // }}
-        >
+        <Box>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    {BoardAsset((props.game_words.slice(0, Math.ceil(props.game_words.length / 2))), 'left')}
+                    {BoardAsset((props.game_words.slice(0, Math.ceil(props.game_words.length / 2))), 'left', props.classes)}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    {BoardAsset((props.game_words.slice(Math.ceil(props.game_words.length / 2), props.game_words.length)), 'right')}
+                    {BoardAsset((props.game_words.slice(Math.ceil(props.game_words.length / 2), props.game_words.length)), 'right', props.classes)}
                 </Grid>
             </Grid>
         </Box>
