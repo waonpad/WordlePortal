@@ -25,6 +25,7 @@ import BackspaceIcon from '@mui/icons-material/Backspace';
 import WordleJapaneseCharacters from '../components/WordleJapaneseCharacters';
 import WordleBoard from '../components/WordleBoard';
 import { green, grey } from '@mui/material/colors';
+import { Console } from 'console';
 
 const theme = createTheme();
 
@@ -285,6 +286,70 @@ function Wordle(): React.ReactElement {
 
     }
     /////////////////////////////////////////////////////////////////////////
+
+    // turn_flag ///////////////////////////////////////////////////////////////////////
+    useEffect(() => {
+        if(game_logs.length > 0) { // stateの初期更新を待つ
+            if(game_logs.slice(-1)[0].type === 'input') {
+                hgandleErrata();
+                handleTurnChange();
+            }
+        }
+    }, [game_logs]);
+
+    const hgandleErrata = () => {
+        // game_logsからerrataの情報を全て集めて同期する？
+        // boardとinputエリアはerrataの扱いが違う
+        // 色が変わるアニメーションをつける場合、初期表示とchannelからの受信で処理を分けるか、配列の最後だけ処理を分ける
+    }
+
+    const handleTurnChange = () => {
+        // 自分のこのgameにおける情報を取得する
+        const my_game_status = (game_users as any[]).filter((game_user, index) => (game_user.user.id === auth?.user?.id))[0];
+        console.log(my_game_status);
+
+        // game_logs type: inputのみを取得する
+        const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
+
+        // inputがまだ1つもされていなければ、orderが1のユーザーがターンプレイヤーになる            
+        if(game_input_logs.length === 0) {
+            if(my_game_status.order === 1) {
+                // 自分がターンプレイヤーになる
+                setTurnFlag(true);
+            }
+            else {
+                // ターンプレイヤーにならない
+                setTurnFlag(false);
+            }
+        }
+        else {
+            // 最後のデータを誰がinputしたのかを取得
+            const game_input_logs_last = game_input_logs.slice(-1)[0];
+            console.log(game_input_logs_last);
+            const last_input_user = (game_users as any[]).filter((game_user, index) => (game_user.user.id === game_input_logs_last.user_id))[0];
+            console.log(last_input_user);
+
+            // 上で取得したユーザーの次のorderを持つユーザーを取得する
+            const next_input_user = (game_users as any[]).filter((game_user, index) => (game_user.order === last_input_user.order + 1))[0];
+            console.log(next_input_user);
+
+            // next_input_userがターンプレイヤーになる
+            // undefinedの場合、orderが1のユーザーが次のターンプレイヤーになる
+            if(next_input_user === undefined && my_game_status.order === 1) {
+                // 自分がターンプレイヤーになる
+                setTurnFlag(true);
+            }
+            else if(my_game_status.order === next_input_user.order) {
+                // 自分がターンプレイヤーになる
+                setTurnFlag(true);
+            }
+            else {
+                // ターンプレイヤーにならない
+                setTurnFlag(false);
+            }
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////
     
 	if (initial_load) {
 		return (
@@ -315,7 +380,7 @@ function Wordle(): React.ReactElement {
                             <Grid item xs={12}>
                                 <WordleJapaneseCharacters
                                     classes={classes}
-                                    enable={turn_flag}
+                                    turn_flag={turn_flag}
                                     handleInputStack={handleInputStack}
                                 />
                             </Grid>

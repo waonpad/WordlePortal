@@ -5,11 +5,11 @@ import Grid from '@mui/material/Grid';
 
 type WordleJapaneseCharactersProps = {
     classes: any,
-    enable: boolean,
+    turn_flag: boolean,
     handleInputStack: MouseEventHandler
 }
 
-// TODO: enterして返ってきた情報を元にerrataを更新する処理を追加する
+// TODO: game_logsの情報を元にerrataを更新する処理を追加する
 // matchはexistにならない, matchはnot_existにならない, existはnot_existにならない
 
 function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.ReactElement {
@@ -34,10 +34,10 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
 
     const [japanese_characters, setJapanseCharacters] = useState<any[]>(initial_japanese_characters_state);
 
-    const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: MouseEventHandler, enable: boolean) => (
+    const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: MouseEventHandler, turn_flag: boolean) => (
         <Grid container spacing={0}>
             {/* input表示エリア */}
-            {/* そのターンのプレイヤーしか入力できないようにする */}
+            {/* そのターンのプレイヤーしか入力できないようにする ※済 */}
             <Grid item xs={12}>
                 <Grid container spacing={0.5}>
                     {[...Array(5)].map((item, index) => (
@@ -46,7 +46,7 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
                                 {(characters.slice(index*10, index*10+10) as any[]).map((character: {errata: 'match' | 'exist' | 'not_exist' | 'plain', character: string}, index: number) => (
                                     <Grid item key={index}>
                                         {character.character !== null ? (
-                                                <Button data-character-value={character.character} disabled={!enable} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${character.errata}`]} onClick={handleInputStack}>{character.character}</Button>
+                                                <Button data-character-value={character.character} disabled={!turn_flag} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${character.errata}`]} onClick={handleInputStack}>{character.character}</Button>
                                             ) : (
                                                 <Box className={classes.character + " " + classes.input_character_null} />
                                             )
@@ -65,10 +65,10 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
         <Box>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    {JapaneseCharactersAsset(japanese_characters.slice(0, 50), 'left', props.classes, props.handleInputStack, props.enable)}
+                    {JapaneseCharactersAsset(japanese_characters.slice(0, 50), 'left', props.classes, props.handleInputStack, props.turn_flag)}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    {JapaneseCharactersAsset(japanese_characters.slice(50, 100), 'right', props.classes, props.handleInputStack, props.enable)}
+                    {JapaneseCharactersAsset(japanese_characters.slice(50, 100), 'right', props.classes, props.handleInputStack, props.turn_flag)}
                 </Grid>
             </Grid>
         </Box>
