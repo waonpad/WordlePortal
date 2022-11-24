@@ -267,33 +267,51 @@ class GameController extends Controller
         }
 
         // inputは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
+        // ※
+        // js側で最大文字数分になるように要素を作ってpostするようにした
         $input_split = $request->input;
         for ($i=count($input_split); $i < $game->max; $i++) {
-            array_push($input_split, 'bar');
+            array_push($input_split, '');
         }
 
         $matchs = [];
         $exists = [];
+        $not_exists = [];
         $errata = [];
-        // answer: Laravel
-        // input: ReactJS
+        // $answer_split: [L,a,r,a,v,e,l,foo,foo]
+        // $input_split: [R,e,a,c,t,J,S,空白文字,空白文字]
         // max: 9
         // matchs: []
         // exists: [R,e,a]
+        // not_exists: [c,t,J,S]
         // errata: ['exist', 'exist', 'exist', 'not_exist'...]
         for ($i=0; $i < $game->max; $i++) {
             // 場所一致
             if ($answer_split[$i] === $input_split[$i]) {
+                array_push($matchs, $input_split[$i]);
                 array_push($errata, 'match');
             }
             // 存在
             else if (false !== strpos($game->answer, $input_split[$i])) {
+                array_push($exists, $input_split[$i]);
                 array_push($errata, 'exist');
             }
             // 存在しない
             else {
+                if($input_split[$i] !== '') {
+                    array_push($not_exists, $input_split[$i]);
+                }
                 array_push($errata, 'not_exist');
             }
+        }
+
+        $input_and_errata = [];
+
+        for ($i=0; $i < $game->max; $i++) {
+            array_push($input_and_errata, [
+                'character' => $input_split[$i],
+                'errata' => $errata[$i]
+            ]);
         }
 
         // 入力が答えと一致していたら
@@ -307,8 +325,8 @@ class GameController extends Controller
                     'correct' => true,
                     'matchs' => $matchs,
                     'exists' => $exists,
-                    'input' => $request->input,
-                    'errata' => $errata,
+                    'not_exists' => $not_exists,
+                    'input_and_errata' => $input_and_errata
                 ]
             ]);
 
@@ -353,8 +371,8 @@ class GameController extends Controller
                     'correct' => false,
                     'matchs' => $matchs,
                     'exists' => $exists,
-                    'input' => $request->input,
-                    'errata' => $errata,
+                    'not_exists' => $not_exists,
+                    'input_and_errata' => $input_and_errata
                 ]
             ]);
             
