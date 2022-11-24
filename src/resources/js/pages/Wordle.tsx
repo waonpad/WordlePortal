@@ -197,11 +197,19 @@ function Wordle(): React.ReactElement {
                 setInputStack(default_input_stack);
 
                 // TODO: ログを追う処理を追加する
+                // 要検証
+                GameLogsFunctionWrapper(game.game_logs);
 
                 window.Echo.join('game.' + game.uuid)
                 .listen('GameEvent', (e: any) => {
                     console.log(e);
-                    // setGameLog(game_log => [...game_log,{text: e.group_post.text}]);
+
+                    // 要検証
+                    const game_log = e.game_log;
+                    const updated_game_logs = game_logs;
+                    updated_game_logs.push(game_log);
+                    GameLogsFunctionWrapper(updated_game_logs);
+                    setGameLogs(updated_game_logs);
                 })
                 .here((users: any)=> {
                     console.log('here');
@@ -286,24 +294,29 @@ function Wordle(): React.ReactElement {
 
     }
     /////////////////////////////////////////////////////////////////////////
-
-    // turn_flag ///////////////////////////////////////////////////////////////////////
-    useEffect(() => {
-        if(game_logs.length > 0) { // stateの初期更新を待つ
-            if(game_logs.slice(-1)[0].type === 'input') {
-                hgandleErrata();
-                handleTurnChange();
-            }
-        }
-    }, [game_logs]);
-
-    const hgandleErrata = () => {
-        // game_logsからerrataの情報を全て集めて同期する？
-        // boardとinputエリアはerrataの扱いが違う
-        // 色が変わるアニメーションをつける場合、初期表示とchannelからの受信で処理を分けるか、配列の最後だけ処理を分ける
+    
+    // game_logsが更新された時の処理をラップして関数化する
+    const GameLogsFunctionWrapper = (game_logs: any) => {
+        hgandleErrata(game_logs);
+        handleTurnChange(game_logs);
     }
 
-    const handleTurnChange = () => {
+    // errata ///////////////////////////////////////////////////////////////////////
+    const hgandleErrata = (game_logs: any) => {
+        // メモ ///////////////////////////////////////////////////////////////////////
+        // game_logsからerrataの情報を全て集めて同期する？
+        // boardとinputエリアはerrataの扱いが違う
+        // inputエリアにどうやって知らせる？charactersはWordle.tsxで一括管理する / game_logが更新された時の処理を個別に書く
+        // 色が変わるアニメーションをつける場合、初期表示とchannelからの受信で処理を分けるか、配列の最後だけ処理を分ける
+        // 初期表示かどうかはどうやって判別する？ → initial_loadがtrueであれば初期表示
+        // ターンプレイヤーはgame_wordsの中に既にplainなcharacterが入っているのでその他のプレイヤーと処理を分ける(errataだけ更新する)必要がある
+        // ターンプレイヤーかどうかはどうやって判別する？
+        /////////////////////////////////////////////////////////////////////////
+    }
+    /////////////////////////////////////////////////////////////////////////
+
+    // turn_flag ///////////////////////////////////////////////////////////////////////
+    const handleTurnChange = (game_logs: any) => {
         // 自分のこのgameにおける情報を取得する
         const my_game_status = (game_users as any[]).filter((game_user, index) => (game_user.user.id === auth?.user?.id))[0];
         console.log(my_game_status);
