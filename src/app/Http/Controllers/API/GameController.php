@@ -71,7 +71,7 @@ class GameController extends Controller
     
     public function show(Request $request)
     {
-        $game = Game::with('gameUsers', 'gameLogs')->find(Game::where('uuid', $request->game_uuid)->first()->id);
+        $game = Game::with('gameUsers.user', 'gameLogs')->find(Game::where('uuid', $request->game_uuid)->first()->id);
 
         return response()->json([
             'game' => $game,
@@ -257,6 +257,9 @@ class GameController extends Controller
     
     public function input(Request $request)
     {
+        // TODO: ターンプレイヤーかどうか判定
+        // 終了していないか判定
+
         $game = Game::find(Game::where('uuid', $request->game_uuid)->first()->id);
 
         // answerは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
@@ -268,11 +271,8 @@ class GameController extends Controller
 
         // inputは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
         // ※
-        // js側で最大文字数分になるように要素を作ってpostするようにした
+        // js側で最大文字数分になるようにnull要素を作ってpostするようにした
         $input_split = $request->input;
-        for ($i=count($input_split); $i < $game->max; $i++) {
-            array_push($input_split, '');
-        }
 
         $matchs = [];
         $exists = [];
@@ -292,18 +292,27 @@ class GameController extends Controller
                 array_push($errata, 'match');
             }
             // 存在
-            else if (false !== strpos($game->answer, $input_split[$i])) {
-                array_push($exists, $input_split[$i]);
-                array_push($errata, 'exist');
+            else if (false !== strpos($game->answer, (string)$input_split[$i])) {
+                if($input_split[$i] === null) {
+                    array_push($errata, 'not_exist');
+                }
+                else {
+                    array_push($exists, $input_split[$i]);
+                    array_push($errata, 'exist');
+                }
             }
             // 存在しない
             else {
-                if($input_split[$i] !== '') {
+                if($input_split[$i] !== null) {
                     array_push($not_exists, $input_split[$i]);
                 }
                 array_push($errata, 'not_exist');
             }
         }
+
+        $matchs = array_values(array_unique($matchs));
+        $exists = array_values(array_unique($exists));
+        $not_exists = array_values(array_unique($not_exists));
 
         $input_and_errata = [];
 
@@ -351,15 +360,15 @@ class GameController extends Controller
             event(new GameEvent($input_log));
 
             // // 終了通知
-            // $game_result = GameLog::create([
-            //     'game_id' => Game::where('uuid', $request->game_uuid)->first()->id,
-            //     'type' => 'end',
-            //     'log' => [
-            //         'winner' => Auth::user()->id,
-            //     ]
-            // ]);
+            $game_result = GameLog::create([
+                'game_id' => Game::where('uuid', $request->game_uuid)->first()->id,
+                'type' => 'end',
+                'log' => [
+                    'winner' => Auth::user()->id,
+                ]
+            ]);
 
-            // event(new GameEvent($game_result));
+            event(new GameEvent($game_result));
         }
         else {
             // 入力通知
@@ -382,7 +391,9 @@ class GameController extends Controller
         return response()->json([
             'status' => true,
             'input_log' => $input_log,
-            'result' => $game_result ?? null
+            'result' => $game_result ?? null,
+            'input_split' => $input_split,
+            'answer_split' => $answer_split
         ]);
 
     }

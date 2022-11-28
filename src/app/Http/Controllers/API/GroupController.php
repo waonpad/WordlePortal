@@ -10,7 +10,7 @@ class GroupController extends Controller
 {
     public function show(Request $request)
     {
-        $group = Group::with('groupUser')->where('screen_name', $request->screen_name)->first();
+        $group = Group::with('groupUsers')->where('screen_name', $request->screen_name)->first();
 
         return response()->json([
             'status' => true,

@@ -76,10 +76,10 @@ function PrivateChat(): React.ReactElement {
 
         axios.get('/api/user/show', {params: data}).then(res => {
             if (res.status === 200) {
-                setDispUserId(res.data.id);
                 console.log(res);
+                setDispUserId(res.data.user.id);
 
-                const channelname = auth!.user!.id < res.data.id ? auth!.user!.id.toString() + '-' + res.data.id.toString() : res.data.id.toString() + '-' + auth!.user!.id.toString();
+                const channelname = auth!.user!.id < res.data.id ? auth!.user!.id.toString() + '-' + res.data.user.id.toString() : res.data.user.id.toString() + '-' + auth!.user!.id.toString();
 
                 console.log(channelname);
 
@@ -92,10 +92,10 @@ function PrivateChat(): React.ReactElement {
                 setInitialLoad(false);
             }
         }).catch((error) => {
-            // console.log(error);
+            console.log(error);
             swal("ユーザーがいない", "そのユーザーは存在しません", "error");
-            history.push('/');
-            // setInitialLoad(false);
+            // history.push('/');
+            setInitialLoad(false);
         });
 	}, [])
 

@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Events\PrivatePosted;
 use App\Models\PrivatePost;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PrivatePostController extends Controller
 {
     public function privatePost(Request $request) {
         
-        $user = $request->user();
+        $user = Auth::user();
 
         $private_post = PrivatePost::create([
             'send_user_id' => $user->id,

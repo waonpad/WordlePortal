@@ -20,105 +20,24 @@ import { alpha, createStyles, makeStyles, withStyles, Theme } from '@material-ui
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import {useAuth} from "../contexts/AuthContext";
-import yellow from "@material-ui/core/colors/yellow";
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import WordleJapaneseCharacters from '../components/WordleJapaneseCharacters';
 import WordleBoard from '../components/WordleBoard';
-import { green, grey } from '@mui/material/colors';
-import { Console } from 'console';
+import { WordleStyle } from '../styles/WordleStyle';
 
 const theme = createTheme();
-
-// TODO: characterの大きさ調整、レスポンシブ対応 どうやる？？？？？
-// TODO: Stackの幅とレスポンシブ
-const WordleStyle = makeStyles((theme: Theme) => ({
-    character: {
-        minWidth: '0px',
-        minHeight: '0px',
-        width: '40px',
-        height: '40px',
-        borderRadius: '7px',
-        // border: 'solid 1px rgba(0, 0, 0, 0.54)',
-        boxSizing: 'border-box',
-        color: '#fff',
-        fontWeight: 'bold',
-        // game.maxを参照して拡大の可否を分岐しないといけないがapiから受け取ったgameを使えない・・・？
-        // classにgame.maxの値を入れ込んでそれを元に分岐するか
-        [theme.breakpoints.down("sm")]: {
-            width: '33px',
-            height: '33px',
-        },
-        '& .MuiChip-label': {
-            overflow: 'visible',
-        }
-    },
-    board_character: {
-        border: 'solid 1px transparent',
-        backgroundColor: '#fff'
-    },
-    board_character_match: {
-        backgroundColor: green[400]
-    },
-    board_character_exist: {
-        backgroundColor: yellow[400]
-    },
-    board_character_not_exist: {
-        backgroundColor: grey[400]
-    },
-    board_character_plain: {
-        border: 'solid 1px rgba(0, 0, 0, 0.54)',
-        color: '#000000DE'
-    },
-    input_character: {
-        border: 'solid 1px transparent',
-        backgroundColor: grey[200],
-        '&:hover': {
-            backgroundColor: grey[400],
-            '@media (hover: none)': {
-                backgroundColor: grey[200],
-            }
-        },
-    },
-    input_character_null: {
-        border: 'solid 1px transparent',
-    },
-    input_character_match: {
-        backgroundColor: green[400],
-        '&:hover': {
-            backgroundColor: green[600],
-            '@media (hover: none)': {
-                backgroundColor: green[400],
-            }
-        },
-    },
-    input_character_exist: {
-        backgroundColor: yellow[400],
-        '&:hover': {
-            backgroundColor: yellow[600],
-            '@media (hover: none)': {
-                backgroundColor: yellow[400],
-            }
-        },
-    },
-    input_character_not_exist: {
-        backgroundColor: grey[400],
-        // '&:hover': {
-        //     backgroundColor: grey[600],
-        //     '@media (hover: none)': {
-        //         backgroundColor: grey[400],
-        //     }
-        // },
-    },
-    input_character_plain: {
-        color: '#000000DE'
-    },
-}));
 
 type GameWords = {
     [index: number]: {
         character: string
         errata: string
     }
+}
+
+type ErrataList = {
+    matchs: any[],
+    exists: any[],
+    not_exists: any[]
 }
 
 function Wordle(): React.ReactElement {
@@ -131,13 +50,20 @@ function Wordle(): React.ReactElement {
 
     const [game, setGame] = useState<any>();
     const [game_words, setGameWords] = useState<GameWords>([]);
-    const [game_users, setGameUsers] = useState<any>([]);
+    const [game_users, setGameUsers] = useState<any>([]); // TODO: 開始したらstart状態のユーザーだけに書き換える
     const [game_logs, setGameLogs] = useState<any>([]);
 
     const [input_stack, setInputStack] = useState<any[]>([]);
+    const [errata_list, setErrataList] = useState<ErrataList>({
+        matchs: [],
+        exists: [],
+        not_exists: []
+    });
     const [turn_flag, setTurnFlag] = useState<boolean>(true); // TODO: フラグを操作する処理を追加する
 
     // const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<GroupPostData>();
+    const [data_load, setDataLoad] = useState(true);
+    const [new_game_log, setNewGameLog] = useState<any>();
     const [initial_load, setInitialLoad] = useState(true);
     const [loading, setLoading] = useState(false);
 
@@ -160,16 +86,18 @@ function Wordle(): React.ReactElement {
 
 	useEffect(() => {
         axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
+        // axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
                 const game = res.data.game;
+                console.log(game);
 
                 const default_game_words: any[] = [];
 
                 // const rows = game.game_users.length * game.laps;
                 const rows = 10; // test
                 // const max = game.max;
-                const max = 10; // test
+                const max = 6; // test
                 ([...Array(rows)]).forEach(() => {
                     const default_game_word: any[] = [];
                     ([...Array(max)]).forEach(() => {
@@ -197,21 +125,19 @@ function Wordle(): React.ReactElement {
                 setInputStack(default_input_stack);
 
                 // TODO: ログを追う処理を追加する
-                // 要検証
-                GameLogsFunctionWrapper(game.game_logs);
+                handleErrata(game.game_logs, default_game_words);
+                handleTurnChange(game.game_logs, game.game_users);
 
-                window.Echo.join('game.' + game.uuid)
+                // here以下は使わない？バックで管理したものをlistenで反映させるほうが考えること少なそう
+                window.Echo.join('game.' + '7ceb7e91-f845-4212-a4ce-6c0e8ca5105e')
                 .listen('GameEvent', (e: any) => {
+                    console.log('listen');
                     console.log(e);
 
                     // 要検証
-                    const game_log = e.game_log;
-                    const updated_game_logs = game_logs;
-                    updated_game_logs.push(game_log);
-                    GameLogsFunctionWrapper(updated_game_logs);
-                    setGameLogs(updated_game_logs);
+                    setNewGameLog(e.game_log);
                 })
-                .here((users: any)=> {
+                .here((users: any) => {
                     console.log('here');
                     console.log(users);
                 })
@@ -227,7 +153,8 @@ function Wordle(): React.ReactElement {
                     console.log(error);
                 });
 
-                setInitialLoad(false);
+                // setInitialLoad(false);
+                setDataLoad(false);
             }
             else if(res.data.status === false) {
                 swal("参加失敗", res.data.message, "error");
@@ -264,8 +191,8 @@ function Wordle(): React.ReactElement {
     const updateBoard = (updated_input_stack: any[]) => {
         // Boardに表示させる
         const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
-        const target_board_word_index = game_input_logs.length;
-        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_board_word_index ? updated_input_stack : game_word)));
+        const target_game_word_index = game_input_logs.length;
+        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_game_word_index ? updated_input_stack : game_word)));
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -275,12 +202,23 @@ function Wordle(): React.ReactElement {
 
         const data = {
             game_uuid: game_uuid,
-            input: input_stack.map(character => character['character'])
+            input: input_stack.map((character) => (character['character']))
         };
 
         axios.post('/api/wordle/game/input', data).then(res => {
             swal("送信成功", "送信成功", "success");
             console.log(res);
+
+            const default_input_stack: any[] = [];
+            ([...Array(game.max)]).forEach(() => {
+                default_input_stack.push({
+                    character: '',
+                    errata: 'plain',
+                })
+            });
+            console.log(default_input_stack);
+            setInputStack(default_input_stack);
+
             setLoading(false);
         }).catch(error => {
             console.log(error)
@@ -294,15 +232,33 @@ function Wordle(): React.ReactElement {
 
     }
     /////////////////////////////////////////////////////////////////////////
-    
-    // game_logsが更新された時の処理をラップして関数化する
-    const GameLogsFunctionWrapper = (game_logs: any) => {
-        hgandleErrata(game_logs);
-        handleTurnChange(game_logs);
-    }
+
+    useEffect(() => {
+        if(data_load === false) {
+            console.log('data_load');
+
+            handleErrata(game_logs, game_words);
+            handleTurnChange(game_logs, game_users);
+
+            setInitialLoad(false);
+        }
+    }, [data_load])
+
+    useEffect(() => {
+        if(new_game_log !== undefined) {
+            console.log('new_game_log');
+
+            const updated_game_logs = [...game_logs, new_game_log];
+            
+            handleErrata(updated_game_logs, game_words);
+            handleTurnChange(updated_game_logs, game_users);
+
+            setGameLogs(updated_game_logs);
+        }
+    }, [new_game_log])
 
     // errata ///////////////////////////////////////////////////////////////////////
-    const hgandleErrata = (game_logs: any) => {
+    const handleErrata = (game_logs: any, game_words: any) => {
         // メモ ///////////////////////////////////////////////////////////////////////
         // game_logsからerrataの情報を全て集めて同期する？
         // boardとinputエリアはerrataの扱いが違う
@@ -312,11 +268,110 @@ function Wordle(): React.ReactElement {
         // ターンプレイヤーはgame_wordsの中に既にplainなcharacterが入っているのでその他のプレイヤーと処理を分ける(errataだけ更新する)必要がある
         // ターンプレイヤーかどうかはどうやって判別する？
         /////////////////////////////////////////////////////////////////////////
+
+        // game_logs type: inputのみを取得する
+        const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
+        console.log(game_input_logs);
+        // inputがまだ1つもされていなければ、処理を行わない
+        if(game_input_logs.length > 0) {
+            console.log('do errata');
+            if(initial_load === true) {
+                console.log('initial errata');
+                // Boardに表示する
+                const input_and_errata_list = (game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.input_and_errata));
+                const updated_game_words = (game_words as any[]).map((game_word, index) => (input_and_errata_list[index] ?? game_word));
+                setGameWords(updated_game_words);
+    
+                // errataを取得
+                const matchs_list = Array.from(new Set((game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.matchs)).flat()));
+                const exists_list = Array.from(new Set((game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.exists)).flat()));
+                const not_exists_list = Array.from(new Set((game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.not_exists)).flat()));
+
+                // errataが上位のものに変わった場合のため、リスト間での重複を削除する
+                const merged_exists_list = (exists_list as any[]).map((exist_character, index) => (
+                    matchs_list.includes(exist_character) ? undefined : exist_character
+                )).filter(exist_character => typeof exist_character !== undefined);
+
+                const merged_not_exists_list = (not_exists_list as any[]).map((not_exist_character, index) => (
+                    matchs_list.includes(not_exist_character) && merged_exists_list.includes(not_exist_character) ? undefined : not_exist_character
+                )).filter(not_exist_character => typeof not_exist_character !== undefined);
+
+                // 取得できたのでsetする
+                setErrataList({
+                    matchs: matchs_list,
+                    exists: merged_exists_list,
+                    not_exists: merged_not_exists_list
+                });
+            }
+            else {
+                const prev_game_input_logs = game_input_logs.slice(0, -1);
+                console.log(prev_game_input_logs);
+                
+                // Boardに表示する
+                const input_and_errata_list = (prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.input_and_errata));
+                console.log(input_and_errata_list);
+                const updated_game_words = (game_words as any[]).map((game_word, index) => (input_and_errata_list[index] ?? game_word));
+                console.log(updated_game_words);
+                setGameWords(updated_game_words); // ターンプレイヤーはcharacterが既に表示されている
+    
+                // errataを取得
+                const matchs_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.matchs)).flat()));
+                const exists_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.exists)).flat()));
+                const not_exists_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.not_exists)).flat()));
+
+                // errataが上位のものに変わった場合のため、リスト間での重複を削除する
+                const merged_exists_list = (exists_list as any[]).map((exist_character, index) => (
+                    matchs_list.includes(exist_character) ? undefined : exist_character
+                )).filter(exist_character => typeof exist_character !== undefined);
+
+                const merged_not_exists_list = (not_exists_list as any[]).map((not_exist_character, index) => (
+                    matchs_list.includes(not_exist_character) && merged_exists_list.includes(not_exist_character) ? undefined : not_exist_character
+                )).filter(not_exist_character => typeof not_exist_character !== undefined);
+
+                console.log({
+                    matchs: matchs_list,
+                    exists: merged_exists_list,
+                    not_exists: merged_not_exists_list
+                });
+
+                // 取得できたのでsetする
+                setErrataList({
+                    matchs: matchs_list,
+                    exists: merged_exists_list,
+                    not_exists: merged_not_exists_list
+                });
+
+                // ここから1文字ずつ更新する処理 ///////////////////////////////////////////////////////////////////////
+                const new_game_input_log = game_input_logs.slice(-1)[0];
+                console.log(new_game_input_log);
+
+                const target_game_word_index = game_input_logs.length - 1;
+                const new_input_and_errata = new_game_input_log.log.input_and_errata;
+
+                (async () => {
+                    const sleep = (second: number) => new Promise(resolve => setTimeout(resolve, second * 1000))
+
+                    for(var i = 0; i < new_input_and_errata.length; i++) {
+                        const updated_game_words = (game_words as any[]).map((game_word, index) => (
+                            index === target_game_word_index ? (game_word as any[]).map((character, index) => (
+                                new_input_and_errata.slice(0, i + 1)[index] ?? character
+                            )) : game_word
+                        ));
+                        setGameWords(updated_game_words);
+
+                        // TODO: inputエリアも同期する
+
+                        await sleep(1);
+                    }
+                })()
+                /////////////////////////////////////////////////////////////////////////
+            }
+        }
     }
     /////////////////////////////////////////////////////////////////////////
 
     // turn_flag ///////////////////////////////////////////////////////////////////////
-    const handleTurnChange = (game_logs: any) => {
+    const handleTurnChange = (game_logs: any, game_users: any) => {
         // 自分のこのgameにおける情報を取得する
         const my_game_status = (game_users as any[]).filter((game_user, index) => (game_user.user.id === auth?.user?.id))[0];
         console.log(my_game_status);
@@ -352,7 +407,7 @@ function Wordle(): React.ReactElement {
                 // 自分がターンプレイヤーになる
                 setTurnFlag(true);
             }
-            else if(my_game_status.order === next_input_user.order) {
+            else if(my_game_status.order === (next_input_user?.order)) {
                 // 自分がターンプレイヤーになる
                 setTurnFlag(true);
             }
@@ -395,6 +450,7 @@ function Wordle(): React.ReactElement {
                                     classes={classes}
                                     turn_flag={turn_flag}
                                     handleInputStack={handleInputStack}
+                                    errata={errata_list}
                                 />
                             </Grid>
                             <Grid item xs={12}>

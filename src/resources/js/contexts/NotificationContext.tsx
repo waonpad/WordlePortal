@@ -25,7 +25,7 @@ export const useNotification = () => {
 const useProvideNoification = () => {
     const auth = useAuth();
 
-    const [unread_notifications, setUnreadNotifications] = useState<any>();
+    const [unread_notifications, setUnreadNotifications] = useState<any[]>([]);
 
     useEffect(() => {
     if(auth?.user !== null) {
