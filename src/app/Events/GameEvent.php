@@ -9,30 +9,21 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Game;
 
 class GameEvent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use SerializesModels;
 
     public $game_log;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct($game_log)
     {
         $this->game_log = $game_log;
     }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
+    
     public function broadcastOn()
     {
-        return new PresenceChannel('game.' . $this->game_log->game_uuid);
+        return new PresenceChannel('game.' . Game::find($this->game_log->game_id)->uuid);
     }
 }

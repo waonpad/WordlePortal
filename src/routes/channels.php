@@ -29,8 +29,7 @@ Broadcast::channel('post', function (){
 // https://laracasts.com/discuss/channels/laravel/laravel-echo-server-with-sanctum
 
 Broadcast::channel('private_post.{channelname}', function ($user, $channelname){
-    // return (int) $user->id === (int) $id;
-    return preg_match('/' . $user->id . '/', $channelname);
+    return true;
 });
 
 Broadcast::channel('group_post.{group_id}', function ($user, $group_id){

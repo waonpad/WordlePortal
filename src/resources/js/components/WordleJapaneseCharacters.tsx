@@ -6,7 +6,8 @@ import Grid from '@mui/material/Grid';
 type WordleJapaneseCharactersProps = {
     classes: any,
     turn_flag: boolean,
-    handleInputStack: MouseEventHandler
+    handleInputStack: MouseEventHandler,
+    errata: any
 }
 
 // TODO: game_logsの情報を元にerrataを更新する処理を追加する
@@ -14,7 +15,7 @@ type WordleJapaneseCharactersProps = {
 
 function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.ReactElement {
 
-    const base_japanese_characters: any[] = [
+    const japanese_characters: any[] = [
         'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ',
         'イ', 'キ', 'シ', 'チ', 'ニ', 'ヒ', 'ミ', null, 'リ', null,
         'ウ', 'ク', 'ス', 'ツ', 'ヌ', 'フ', 'ム', 'ユ', 'ル', 'ヲ',
@@ -27,14 +28,7 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
         'ォ', 'ゴ', 'ゾ', 'ド', null, 'ボ', 'ポ', 'ョ', null, null,
     ];
 
-    const initial_japanese_characters_state = (base_japanese_characters as any[]).map(character => ({
-        character: character,
-        errata: 'plain'
-    }));
-
-    const [japanese_characters, setJapanseCharacters] = useState<any[]>(initial_japanese_characters_state);
-
-    const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: MouseEventHandler, turn_flag: boolean) => (
+    const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: MouseEventHandler, turn_flag: boolean, errata: any) => (
         <Grid container spacing={0}>
             {/* input表示エリア */}
             {/* そのターンのプレイヤーしか入力できないようにする ※済 */}
@@ -43,10 +37,10 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
                     {[...Array(5)].map((item, index) => (
                         <Grid key={index} item xs={12}>
                             <Grid container spacing={0.5} sx={{flexWrap: 'nowrap', justifyContent: {xs: 'center', md: place === 'left' ? 'right' : 'left'}}}>
-                                {(characters.slice(index*10, index*10+10) as any[]).map((character: {errata: 'match' | 'exist' | 'not_exist' | 'plain', character: string}, index: number) => (
+                                {(characters.slice(index*10, index*10+10) as any[]).map((character: any, index: number) => (
                                     <Grid item key={index}>
-                                        {character.character !== null ? (
-                                                <Button data-character-value={character.character} disabled={!turn_flag} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${character.errata}`]} onClick={handleInputStack}>{character.character}</Button>
+                                        {character !== null ? (
+                                                <Button data-character-value={character} disabled={!turn_flag} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${errata.matchs?.includes(character) ? 'match' : errata.exists?.includes(character) ? 'exist' : errata.not_exists?.includes(character) ? 'not_exist' : 'plain'}`]} onClick={handleInputStack}>{character}</Button>
                                             ) : (
                                                 <Box className={classes.character + " " + classes.input_character_null} />
                                             )
@@ -65,10 +59,10 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
         <Box>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    {JapaneseCharactersAsset(japanese_characters.slice(0, 50), 'left', props.classes, props.handleInputStack, props.turn_flag)}
+                    {JapaneseCharactersAsset(japanese_characters.slice(0, 50), 'left', props.classes, props.handleInputStack, props.turn_flag, props.errata)}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    {JapaneseCharactersAsset(japanese_characters.slice(50, 100), 'right', props.classes, props.handleInputStack, props.turn_flag)}
+                    {JapaneseCharactersAsset(japanese_characters.slice(50, 100), 'right', props.classes, props.handleInputStack, props.turn_flag, props.errata)}
                 </Grid>
             </Grid>
         </Box>

@@ -59,6 +59,11 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Models\User', 'follows', 'following_user_id', 'followed_user_id');
     }
 
+    // ユーザーが所属しているグループ一覧
+    public function groups() {
+        return $this->belongsToMany('App\Models\Group', 'group_user', 'user_id', 'group_id');
+    }
+
     // ユーザーのpost一覧
     public function posts() {
         return $this->hasMany(Post::class);

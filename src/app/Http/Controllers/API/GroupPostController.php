@@ -9,12 +9,13 @@ use App\Models\Group;
 use App\Events\GroupPosted;
 use App\Notifications\CommonNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class GroupPostController extends Controller
 {
     public function post(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         $group_post = GroupPost::create([
             'user_id' => $user->id,

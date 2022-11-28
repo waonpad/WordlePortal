@@ -76,16 +76,16 @@ function GroupChat(): React.ReactElement {
 
         axios.get('/api/group/show', {params: data}).then(res => {
             if (res.status === 200) {
-                setGroupId(res.data.group.id);
                 console.log(res);
+                setGroupId(res.data.group.id);
 
-                console.log(res.data.id);
+                console.log(res.data.group.id);
                 
                 // グループにユーザーを登録する処理 後からつくる
 
                 // https://readouble.com/laravel/8.x/ja/broadcasting.html
 
-                window.Echo.join('group_post.' + res.data.id)
+                window.Echo.join('group_post.' + res.data.group.id)
                 .listen('GroupPosted', (e: any) => {
                     console.log(e);
                     console.log(e.group_post.text);
@@ -110,10 +110,10 @@ function GroupChat(): React.ReactElement {
                 setInitialLoad(false);
             }
         }).catch((error) => {
-            // console.log(error);
+            console.log(error);
             swal("グループがない", "そのグループは存在しません", "error");
-            history.push('/');
-            // setInitialLoad(false);
+            // history.push('/');
+            setInitialLoad(false);
         });
 	}, [])
 

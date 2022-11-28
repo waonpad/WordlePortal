@@ -40,7 +40,7 @@ class PrivatePosted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        if($this->user->id < $this->disp_user_id) {
+        if($this->user->id > $this->disp_user_id) {
             $channelname = $this->user->id . '-' . $this->disp_user_id;
         }
         else {
