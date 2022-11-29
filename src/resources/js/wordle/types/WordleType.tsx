@@ -35,7 +35,7 @@ export type WordleBoardProps = {
     classes: any
 }
 
-export type WordleJapaneseCharactersProps = {
+export type WordleCharactersProps = {
     classes: any,
     turn_flag: boolean,
     handleInputStack: MouseEventHandler,
