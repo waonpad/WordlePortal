@@ -2,20 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter, Route, Switch, Link} from 'react-router-dom';
 
-import Top from './pages/Top';
-import Example from './pages/Example';
-import About from './pages/About';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import User from './pages/User';
-import Chat from './pages/Chat';
-import PrivateChat from './pages/PrivateChat';
-import GroupChat from './pages/GroupChat';
-import HeaderPrimary from './components/HeaderPrimary';
-import Wordle from './pages/Wordle';
-import WordleManage from './pages/WordleManage';
-import Search from './pages/Search';
-import Page404 from './pages/Page404';
+import Top from './common/pages/Top';
+import Example from './common/pages/Example';
+import About from './common/pages/About';
+import Register from './auth/register/Register';
+import LogIn from './auth/login/Login';
+import User from './user/User';
+import Chat from './chat/chat/Chat';
+import PrivateChat from './chat/privatechat/PrivateChat';
+import GroupChat from './chat/groupchat/GroupChat';
+import HeaderPrimary from './common/header/components/HeaderPrimary';
+import Wordle from './wordle/Wordle';
+import WordleManage from './wordle/WordleManage';
+import Page404 from './common/pages/Page404';
 
 import AxiosInterceptors from './contexts/AxiosInterceptors';
 import ProvideAuth, { PrivateRoute, PublicRoute } from './contexts/AuthContext'
@@ -35,7 +34,7 @@ function App(): React.ReactElement {
                                     <Route path='/example' exact component={Example} />
                                     <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                     <PublicRoute path='/register' exact><Register/></PublicRoute>
-                                    <PublicRoute path='/login' exact><Login/></PublicRoute>
+                                    <PublicRoute path='/login' exact><LogIn/></PublicRoute>
                                     <Route path='/user/:id' exact component={User} />
                                     <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
                                     <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
@@ -47,7 +46,6 @@ function App(): React.ReactElement {
                                     {/* リンクから直接飛んで来たらページ内で固有ゲームIDを付与してURLを書き換える？ */}
                                     {/* <PrivateRoute path='/wordle/game/:id' exact><Wordle/></PrivateRoute> */}
                                     <PrivateRoute path='/wordle/game/:wordle_id/:game_uuid' exact><Wordle/></PrivateRoute>
-                                    <Route path='/search' exact component={Search} />
                                     <Route path='*' exact component={Page404} />
                                 </Switch>
                             </HeaderPrimary>

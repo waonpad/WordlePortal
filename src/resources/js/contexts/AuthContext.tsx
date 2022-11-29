@@ -4,7 +4,7 @@ import {Route, Redirect, useHistory} from "react-router-dom"
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { User, LoginData, RegisterData, authProps, Props, RouteProps, From } from "../@types/AuthType";
+import { User, LogInData, RegisterData, authProps, Props, RouteProps, From } from "../auth/types/AuthType";
 
 const authContext = createContext<authProps | null>(null)
 
@@ -60,7 +60,7 @@ const useProvideAuth = () => {
 		})
 	}
 
-	const signin = async (loginData: LoginData) => {
+	const signin = async (loginData: LogInData) => {
 		return axios.post('/api/login', loginData).then((res) => {
 			console.log(res);
 			if (res.data.status === true) {
