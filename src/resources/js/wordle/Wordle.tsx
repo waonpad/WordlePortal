@@ -22,6 +22,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import {useAuth} from "../contexts/AuthContext";
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import WordleJapaneseCharacters from './components/WordleJapaneseCharacters';
+import WordleEnglishCharacters from './components/WordleEnglishCharacters';
 import WordleBoard from './components/WordleBoard';
 import { WordleStyle } from './styles/WordleStyle';
 
@@ -456,6 +457,14 @@ function Wordle(): React.ReactElement {
                             {/* input表示エリア */}
                             <Grid item xs={12}>
                                 <WordleJapaneseCharacters
+                                    classes={classes}
+                                    turn_flag={turn_flag}
+                                    handleInputStack={handleInputStack}
+                                    errata={errata_list}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <WordleEnglishCharacters
                                     classes={classes}
                                     turn_flag={turn_flag}
                                     handleInputStack={handleInputStack}

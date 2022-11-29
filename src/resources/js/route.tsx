@@ -6,7 +6,7 @@ import Top from './common/pages/Top';
 import Example from './common/pages/Example';
 import About from './common/pages/About';
 import Register from './auth/register/Register';
-import LogIn from './auth/login/Login';
+import LogIn from './auth/login/LogIn';
 import User from './user/User';
 import Chat from './chat/chat/Chat';
 import PrivateChat from './chat/privatechat/PrivateChat';
