@@ -10,9 +10,6 @@ type WordleJapaneseCharactersProps = {
     errata: any
 }
 
-// TODO: game_logsの情報を元にerrataを更新する処理を追加する
-// matchはexistにならない, matchはnot_existにならない, existはnot_existにならない
-
 function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.ReactElement {
 
     const japanese_characters: any[] = [
@@ -30,8 +27,6 @@ function WordleJapaneseCharacters(props: WordleJapaneseCharactersProps): React.R
 
     const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: MouseEventHandler, turn_flag: boolean, errata: any) => (
         <Grid container spacing={0}>
-            {/* input表示エリア */}
-            {/* そのターンのプレイヤーしか入力できないようにする ※済 */}
             <Grid item xs={12}>
                 <Grid container spacing={0.5}>
                     {[...Array(5)].map((item, index) => (
