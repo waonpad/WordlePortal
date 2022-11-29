@@ -257,10 +257,49 @@ class GameController extends Controller
     
     public function input(Request $request)
     {
-        // TODO: ターンプレイヤーかどうか判定
-        // 終了していないか判定
 
         $game = Game::find(Game::where('uuid', $request->game_uuid)->first()->id);
+        
+        // 終了していないか判定
+        if($game->status !== 'start') {
+            return response()->json([
+                'status' => false,
+                'message' => 'ゲームが開始していないか既に終了している'
+            ]);
+        }
+
+        $input_player = Auth::user();
+        $last_input_user = GameUser::where('game_id', $game->id)->where('user_id', GameLog::where('game_id', $game->id)->where('type', 'input')->latest('id')->first()->user_id ?? null)->first();
+        
+        
+        // ターンプレイヤーかどうか判定
+        if($last_input_user === null) {
+            if($input_player->id !== 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ターンプレイヤーではない'
+                ]);
+            }
+        }
+        else {
+            $turn_player = GameUser::where('order', $last_input_user->order + 1)->first();
+            if($turn_player === null) {
+                if($input_player->id !== 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'ターンプレイヤーではない'
+                    ]);
+                }
+            }
+            else {
+                if($input_player->id !== $turn_player->user_id) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'ターンプレイヤーではない'
+                    ]);
+                }
+            }
+        }
 
         // answerは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
         // 最大文字数が9でLaravelがanswerの場合、$answer_splitは[L,a,r,a,v,e,l,foo,foo]になる

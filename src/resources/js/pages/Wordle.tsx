@@ -108,7 +108,6 @@ function Wordle(): React.ReactElement {
                     });
                     default_game_words.push(default_game_word);
                 });
-                console.log(default_game_words);
                 setGame(game);
                 setGameWords(default_game_words);
                 setGameUsers(game.game_users);
@@ -121,7 +120,6 @@ function Wordle(): React.ReactElement {
                         errata: 'plain',
                     })
                 });
-                console.log(default_input_stack);
                 setInputStack(default_input_stack);
 
                 // TODO: ログを追う処理を追加する
@@ -168,8 +166,6 @@ function Wordle(): React.ReactElement {
     // input ///////////////////////////////////////////////////////////////////////
     const handleInputStack = (event: any) => {
         const target_character = String(event.currentTarget.getAttribute('data-character-value'));
-        console.log(target_character);
-
         const target_input_stack_index = input_stack.findIndex(function(character) {
             return character.character === '';
         });
@@ -216,7 +212,6 @@ function Wordle(): React.ReactElement {
                     errata: 'plain',
                 })
             });
-            console.log(default_input_stack);
             setInputStack(default_input_stack);
 
             setLoading(false);
@@ -233,10 +228,9 @@ function Wordle(): React.ReactElement {
     }
     /////////////////////////////////////////////////////////////////////////
 
+    // game_log 初期表示時
     useEffect(() => {
         if(data_load === false) {
-            console.log('data_load');
-
             handleErrata(game_logs, game_words);
             handleTurnChange(game_logs, game_users);
 
@@ -244,10 +238,9 @@ function Wordle(): React.ReactElement {
         }
     }, [data_load])
 
+    // game_log 更新時
     useEffect(() => {
         if(new_game_log !== undefined) {
-            console.log('new_game_log');
-
             const updated_game_logs = [...game_logs, new_game_log];
             
             handleErrata(updated_game_logs, game_words);
@@ -259,24 +252,11 @@ function Wordle(): React.ReactElement {
 
     // errata ///////////////////////////////////////////////////////////////////////
     const handleErrata = (game_logs: any, game_words: any) => {
-        // メモ ///////////////////////////////////////////////////////////////////////
-        // game_logsからerrataの情報を全て集めて同期する？
-        // boardとinputエリアはerrataの扱いが違う
-        // inputエリアにどうやって知らせる？charactersはWordle.tsxで一括管理する / game_logが更新された時の処理を個別に書く
-        // 色が変わるアニメーションをつける場合、初期表示とchannelからの受信で処理を分けるか、配列の最後だけ処理を分ける
-        // 初期表示かどうかはどうやって判別する？ → initial_loadがtrueであれば初期表示
-        // ターンプレイヤーはgame_wordsの中に既にplainなcharacterが入っているのでその他のプレイヤーと処理を分ける(errataだけ更新する)必要がある
-        // ターンプレイヤーかどうかはどうやって判別する？
-        /////////////////////////////////////////////////////////////////////////
-
         // game_logs type: inputのみを取得する
         const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
-        console.log(game_input_logs);
         // inputがまだ1つもされていなければ、処理を行わない
         if(game_input_logs.length > 0) {
-            console.log('do errata');
             if(initial_load === true) {
-                console.log('initial errata');
                 // Boardに表示する
                 const input_and_errata_list = (game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.input_and_errata));
                 const updated_game_words = (game_words as any[]).map((game_word, index) => (input_and_errata_list[index] ?? game_word));
@@ -305,13 +285,10 @@ function Wordle(): React.ReactElement {
             }
             else {
                 const prev_game_input_logs = game_input_logs.slice(0, -1);
-                console.log(prev_game_input_logs);
                 
                 // Boardに表示する
                 const input_and_errata_list = (prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.input_and_errata));
-                console.log(input_and_errata_list);
                 const updated_game_words = (game_words as any[]).map((game_word, index) => (input_and_errata_list[index] ?? game_word));
-                console.log(updated_game_words);
                 setGameWords(updated_game_words); // ターンプレイヤーはcharacterが既に表示されている
     
                 // errataを取得
@@ -328,12 +305,6 @@ function Wordle(): React.ReactElement {
                     matchs_list.includes(not_exist_character) && merged_exists_list.includes(not_exist_character) ? undefined : not_exist_character
                 )).filter(not_exist_character => typeof not_exist_character !== undefined);
 
-                console.log({
-                    matchs: matchs_list,
-                    exists: merged_exists_list,
-                    not_exists: merged_not_exists_list
-                });
-
                 // 取得できたのでsetする
                 setErrataList({
                     matchs: matchs_list,
@@ -343,7 +314,6 @@ function Wordle(): React.ReactElement {
 
                 // ここから1文字ずつ更新する処理 ///////////////////////////////////////////////////////////////////////
                 const new_game_input_log = game_input_logs.slice(-1)[0];
-                console.log(new_game_input_log);
 
                 const target_game_word_index = game_input_logs.length - 1;
                 const new_input_and_errata = new_game_input_log.log.input_and_errata;
@@ -352,6 +322,7 @@ function Wordle(): React.ReactElement {
                     const sleep = (second: number) => new Promise(resolve => setTimeout(resolve, second * 1000))
 
                     for(var i = 0; i < new_input_and_errata.length; i++) {
+                        // stateの仕組みの都合、i番目の要素だけでなくそれまでの要素も更新する
                         const updated_game_words = (game_words as any[]).map((game_word, index) => (
                             index === target_game_word_index ? (game_word as any[]).map((character, index) => (
                                 new_input_and_errata.slice(0, i + 1)[index] ?? character
@@ -359,7 +330,50 @@ function Wordle(): React.ReactElement {
                         ));
                         setGameWords(updated_game_words);
 
-                        // TODO: inputエリアも同期する
+                        // inputエリアの同期
+                        const current_new_input_and_errata: any[] = new_input_and_errata.slice(0, i + 1);
+                        const current_new_input_list = (new_input_and_errata.slice(0, i + 1) as any[]).map((character, index) => (character.character));
+
+                        // ターゲットのcharacterを全ての配列から一度削除する
+                        const updated_matchs_list = (matchs_list as any[]).filter((match_character, index) => (
+                            current_new_input_list.indexOf(match_character) == -1
+                        ));
+
+                        const updated_exists_list = (exists_list as any[]).filter((exist_character, index) => (
+                            current_new_input_list.indexOf(exist_character) == -1
+                        ));
+
+                        const updated_not_exists_list = (not_exists_list as any[]).filter((not_exist_character, index) => (
+                            current_new_input_list.indexOf(not_exist_character) == -1
+                        ));
+
+                        // 振り分け
+                        (current_new_input_and_errata).forEach((character, index) => {
+                            if(character.errata === 'match') {
+                                updated_matchs_list.push(character.character);
+                            }
+                            if(character.errata === 'exist') {
+                                updated_exists_list.push(character.character);
+                            }
+                            if(character.errata === 'not_exist') {
+                                updated_not_exists_list.push(character.character);
+                            }
+                        });
+
+                        // errataが上位のものに変わった場合のため、リスト間での重複を削除する
+                        const merged_updated_exists_list = (updated_exists_list as any[]).map((exist_character, index) => (
+                            updated_matchs_list.includes(exist_character) ? undefined : exist_character
+                        )).filter(exist_character => typeof exist_character !== undefined);
+        
+                        const merged_updated_not_exists_list = (updated_not_exists_list as any[]).map((not_exist_character, index) => (
+                            updated_matchs_list.includes(not_exist_character) && merged_updated_exists_list.includes(not_exist_character) ? undefined : not_exist_character
+                        )).filter(not_exist_character => typeof not_exist_character !== undefined);
+
+                        setErrataList({
+                            matchs: Array.from(new Set(updated_matchs_list)),
+                            exists: Array.from(new Set(merged_updated_exists_list)),
+                            not_exists: Array.from(new Set(merged_updated_not_exists_list)),
+                        });
 
                         await sleep(1);
                     }
@@ -374,8 +388,6 @@ function Wordle(): React.ReactElement {
     const handleTurnChange = (game_logs: any, game_users: any) => {
         // 自分のこのgameにおける情報を取得する
         const my_game_status = (game_users as any[]).filter((game_user, index) => (game_user.user.id === auth?.user?.id))[0];
-        console.log(my_game_status);
-
         // game_logs type: inputのみを取得する
         const game_input_logs = (game_logs as any[]).filter((game_log, index) => (game_log.type === 'input'));
 
@@ -393,13 +405,10 @@ function Wordle(): React.ReactElement {
         else {
             // 最後のデータを誰がinputしたのかを取得
             const game_input_logs_last = game_input_logs.slice(-1)[0];
-            console.log(game_input_logs_last);
             const last_input_user = (game_users as any[]).filter((game_user, index) => (game_user.user.id === game_input_logs_last.user_id))[0];
-            console.log(last_input_user);
 
             // 上で取得したユーザーの次のorderを持つユーザーを取得する
             const next_input_user = (game_users as any[]).filter((game_user, index) => (game_user.order === last_input_user.order + 1))[0];
-            console.log(next_input_user);
 
             // next_input_userがターンプレイヤーになる
             // undefinedの場合、orderが1のユーザーが次のターンプレイヤーになる
