@@ -23,6 +23,7 @@ import {useAuth} from "../contexts/AuthContext";
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import WordleJapaneseCharacters from './components/WordleJapaneseCharacters';
 import WordleEnglishCharacters from './components/WordleEnglishCharacters';
+import WordleNumberCharacters from './components/WordleNumberCharacters';
 import WordleBoard from './components/WordleBoard';
 import { WordleStyle } from './styles/WordleStyle';
 
@@ -285,100 +286,103 @@ function Wordle(): React.ReactElement {
                 });
             }
             else {
-                const prev_game_input_logs = game_input_logs.slice(0, -1);
-                
-                // Boardに表示する
-                const input_and_errata_list = (prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.input_and_errata));
-                const updated_game_words = (game_words as any[]).map((game_word, index) => (input_and_errata_list[index] ?? game_word));
-                setGameWords(updated_game_words); // ターンプレイヤーはcharacterが既に表示されている
-    
-                // errataを取得
-                const matchs_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.matchs)).flat()));
-                const exists_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.exists)).flat()));
-                const not_exists_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.not_exists)).flat()));
-
-                // errataが上位のものに変わった場合のため、リスト間での重複を削除する
-                const merged_exists_list = (exists_list as any[]).map((exist_character, index) => (
-                    matchs_list.includes(exist_character) ? undefined : exist_character
-                )).filter(exist_character => typeof exist_character !== undefined);
-
-                const merged_not_exists_list = (not_exists_list as any[]).map((not_exist_character, index) => (
-                    matchs_list.includes(not_exist_character) && merged_exists_list.includes(not_exist_character) ? undefined : not_exist_character
-                )).filter(not_exist_character => typeof not_exist_character !== undefined);
-
-                // 取得できたのでsetする
-                setErrataList({
-                    matchs: matchs_list,
-                    exists: merged_exists_list,
-                    not_exists: merged_not_exists_list
-                });
-
-                // ここから1文字ずつ更新する処理 ///////////////////////////////////////////////////////////////////////
-                const new_game_input_log = game_input_logs.slice(-1)[0];
-
-                const target_game_word_index = game_input_logs.length - 1;
-                const new_input_and_errata = new_game_input_log.log.input_and_errata;
-
-                (async () => {
-                    const sleep = (second: number) => new Promise(resolve => setTimeout(resolve, second * 1000))
-
-                    for(var i = 0; i < new_input_and_errata.length; i++) {
-                        // stateの仕組みの都合、i番目の要素だけでなくそれまでの要素も更新する
-                        const updated_game_words = (game_words as any[]).map((game_word, index) => (
-                            index === target_game_word_index ? (game_word as any[]).map((character, index) => (
-                                new_input_and_errata.slice(0, i + 1)[index] ?? character
-                            )) : game_word
-                        ));
-                        setGameWords(updated_game_words);
-
-                        // inputエリアの同期
-                        const current_new_input_and_errata: any[] = new_input_and_errata.slice(0, i + 1);
-                        const current_new_input_list = (new_input_and_errata.slice(0, i + 1) as any[]).map((character, index) => (character.character));
-
-                        // ターゲットのcharacterを全ての配列から一度削除する
-                        const updated_matchs_list = (matchs_list as any[]).filter((match_character, index) => (
-                            current_new_input_list.indexOf(match_character) == -1
-                        ));
-
-                        const updated_exists_list = (exists_list as any[]).filter((exist_character, index) => (
-                            current_new_input_list.indexOf(exist_character) == -1
-                        ));
-
-                        const updated_not_exists_list = (not_exists_list as any[]).filter((not_exist_character, index) => (
-                            current_new_input_list.indexOf(not_exist_character) == -1
-                        ));
-
-                        // 振り分け
-                        (current_new_input_and_errata).forEach((character, index) => {
-                            if(character.errata === 'match') {
-                                updated_matchs_list.push(character.character);
-                            }
-                            if(character.errata === 'exist') {
-                                updated_exists_list.push(character.character);
-                            }
-                            if(character.errata === 'not_exist') {
-                                updated_not_exists_list.push(character.character);
-                            }
-                        });
-
-                        // errataが上位のものに変わった場合のため、リスト間での重複を削除する
-                        const merged_updated_exists_list = (updated_exists_list as any[]).map((exist_character, index) => (
-                            updated_matchs_list.includes(exist_character) ? undefined : exist_character
-                        )).filter(exist_character => typeof exist_character !== undefined);
+                if(game_logs.slice(-1)[0].type === 'input') { // type: entry等で発火しない
+                    
+                    const prev_game_input_logs = game_input_logs.slice(0, -1);
+                    
+                    // Boardに表示する
+                    const input_and_errata_list = (prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.input_and_errata));
+                    const updated_game_words = (game_words as any[]).map((game_word, index) => (input_and_errata_list[index] ?? game_word));
+                    setGameWords(updated_game_words); // ターンプレイヤーはcharacterが既に表示されている
         
-                        const merged_updated_not_exists_list = (updated_not_exists_list as any[]).map((not_exist_character, index) => (
-                            updated_matchs_list.includes(not_exist_character) && merged_updated_exists_list.includes(not_exist_character) ? undefined : not_exist_character
-                        )).filter(not_exist_character => typeof not_exist_character !== undefined);
+                    // errataを取得
+                    const matchs_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.matchs)).flat()));
+                    const exists_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.exists)).flat()));
+                    const not_exists_list = Array.from(new Set((prev_game_input_logs as any[]).map((game_input_log, index) => (game_input_log.log.not_exists)).flat()));
 
-                        setErrataList({
-                            matchs: Array.from(new Set(updated_matchs_list)),
-                            exists: Array.from(new Set(merged_updated_exists_list)),
-                            not_exists: Array.from(new Set(merged_updated_not_exists_list)),
-                        });
+                    // errataが上位のものに変わった場合のため、リスト間での重複を削除する
+                    const merged_exists_list = (exists_list as any[]).map((exist_character, index) => (
+                        matchs_list.includes(exist_character) ? undefined : exist_character
+                    )).filter(exist_character => typeof exist_character !== undefined);
 
-                        await sleep(1);
-                    }
-                })()
+                    const merged_not_exists_list = (not_exists_list as any[]).map((not_exist_character, index) => (
+                        matchs_list.includes(not_exist_character) && merged_exists_list.includes(not_exist_character) ? undefined : not_exist_character
+                    )).filter(not_exist_character => typeof not_exist_character !== undefined);
+
+                    // 取得できたのでsetする
+                    setErrataList({
+                        matchs: matchs_list,
+                        exists: merged_exists_list,
+                        not_exists: merged_not_exists_list
+                    });
+
+                    // ここから1文字ずつ更新する処理 ///////////////////////////////////////////////////////////////////////
+                    const new_game_input_log = game_input_logs.slice(-1)[0];
+
+                    const target_game_word_index = game_input_logs.length - 1;
+                    const new_input_and_errata = new_game_input_log.log.input_and_errata;
+
+                    (async () => {
+                        const sleep = (second: number) => new Promise(resolve => setTimeout(resolve, second * 1000))
+
+                        for(var i = 0; i < new_input_and_errata.length; i++) {
+                            // stateの仕組みの都合、i番目の要素だけでなくそれまでの要素も更新する
+                            const updated_game_words = (game_words as any[]).map((game_word, index) => (
+                                index === target_game_word_index ? (game_word as any[]).map((character, index) => (
+                                    new_input_and_errata.slice(0, i + 1)[index] ?? character
+                                )) : game_word
+                            ));
+                            setGameWords(updated_game_words);
+
+                            // inputエリアの同期
+                            const current_new_input_and_errata: any[] = new_input_and_errata.slice(0, i + 1);
+                            const current_new_input_list = (new_input_and_errata.slice(0, i + 1) as any[]).map((character, index) => (character.character));
+
+                            // ターゲットのcharacterを全ての配列から一度削除する
+                            const updated_matchs_list = (matchs_list as any[]).filter((match_character, index) => (
+                                current_new_input_list.indexOf(match_character) == -1
+                            ));
+
+                            const updated_exists_list = (exists_list as any[]).filter((exist_character, index) => (
+                                current_new_input_list.indexOf(exist_character) == -1
+                            ));
+
+                            const updated_not_exists_list = (not_exists_list as any[]).filter((not_exist_character, index) => (
+                                current_new_input_list.indexOf(not_exist_character) == -1
+                            ));
+
+                            // 振り分け
+                            (current_new_input_and_errata).forEach((character, index) => {
+                                if(character.errata === 'match') {
+                                    updated_matchs_list.push(character.character);
+                                }
+                                if(character.errata === 'exist') {
+                                    matchs_list.includes(character.character) ? updated_matchs_list.push(character.character) : updated_exists_list.push(character.character);
+                                }
+                                if(character.errata === 'not_exist') {
+                                    updated_not_exists_list.push(character.character);
+                                }
+                            });
+
+                            // errataが上位のものに変わった場合のため、リスト間での重複を削除する
+                            const merged_updated_exists_list = (updated_exists_list as any[]).map((exist_character, index) => (
+                                updated_matchs_list.includes(exist_character) ? undefined : exist_character
+                            )).filter(exist_character => typeof exist_character !== undefined);
+            
+                            const merged_updated_not_exists_list = (updated_not_exists_list as any[]).map((not_exist_character, index) => (
+                                updated_matchs_list.includes(not_exist_character) || merged_updated_exists_list.includes(not_exist_character) ? undefined : not_exist_character
+                            )).filter(not_exist_character => typeof not_exist_character !== undefined);
+
+                            setErrataList({
+                                matchs: Array.from(new Set(updated_matchs_list)),
+                                exists: Array.from(new Set(merged_updated_exists_list)),
+                                not_exists: Array.from(new Set(merged_updated_not_exists_list)),
+                            });
+
+                            await sleep(1);
+                        }
+                    })()
+                }
                 /////////////////////////////////////////////////////////////////////////
             }
         }
@@ -465,6 +469,14 @@ function Wordle(): React.ReactElement {
                             </Grid>
                             <Grid item xs={12}>
                                 <WordleEnglishCharacters
+                                    classes={classes}
+                                    turn_flag={turn_flag}
+                                    handleInputStack={handleInputStack}
+                                    errata={errata_list}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <WordleNumberCharacters
                                     classes={classes}
                                     turn_flag={turn_flag}
                                     handleInputStack={handleInputStack}

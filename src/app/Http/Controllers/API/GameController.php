@@ -28,7 +28,7 @@ class GameController extends Controller
         $wordle = Wordle::find($request->wordle_id);
         $words = $wordle->words;
         $key = array_rand($words, 1);
-        $answer = strtolower($words[intval($key)]);
+        $answer = strtoupper($words[intval($key)]);
 
         $lengths = [];
         foreach ($words as $word) {
@@ -311,7 +311,7 @@ class GameController extends Controller
         // inputは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
         // ※
         // js側で最大文字数分になるようにnull要素を作ってpostするようにした
-        $input_split = $request->input;
+        $input_split = array_map('strtoupper', $request->input);
 
         $matchs = [];
         $exists = [];
@@ -332,7 +332,7 @@ class GameController extends Controller
             }
             // 存在
             else if (false !== strpos($game->answer, (string)$input_split[$i])) {
-                if($input_split[$i] === null) {
+                if($input_split[$i] === '') {
                     array_push($errata, 'not_exist');
                 }
                 else {
@@ -342,7 +342,7 @@ class GameController extends Controller
             }
             // 存在しない
             else {
-                if($input_split[$i] !== null) {
+                if($input_split[$i] !== '') {
                     array_push($not_exists, $input_split[$i]);
                 }
                 array_push($errata, 'not_exist');
