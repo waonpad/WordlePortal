@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import swal from "sweetalert";
 import ReactDOM from 'react-dom';
 import { Button, IconButton, Card } from '@material-ui/core';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { Link, useParams, useHistory } from "react-router-dom";
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -21,26 +22,14 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import {useAuth} from "../contexts/AuthContext";
 import BackspaceIcon from '@mui/icons-material/Backspace';
-import WordleJapaneseCharacters from './components/WordleJapaneseCharacters';
-import WordleEnglishCharacters from './components/WordleEnglishCharacters';
-import WordleNumberCharacters from './components/WordleNumberCharacters';
+
+import WordleInput from './components/WordleInput';
+import WordleInputSelectButtonGroup from './components/WordleInputSelectButtonGroup';
 import WordleBoard from './components/WordleBoard';
 import { WordleStyle } from './styles/WordleStyle';
+import { GameWords, ErrataList, DisplayInputComponent } from './types/WordleType';
 
 const theme = createTheme();
-
-type GameWords = {
-    [index: number]: {
-        character: string
-        errata: string
-    }
-}
-
-type ErrataList = {
-    matchs: any[],
-    exists: any[],
-    not_exists: any[]
-}
 
 function Wordle(): React.ReactElement {
 
@@ -61,7 +50,8 @@ function Wordle(): React.ReactElement {
         exists: [],
         not_exists: []
     });
-    const [turn_flag, setTurnFlag] = useState<boolean>(true); // TODO: フラグを操作する処理を追加する
+    const [turn_flag, setTurnFlag] = useState<boolean>(true);
+    const [display_input_component, setDisplayInputComponent] = useState<DisplayInputComponent>(null); 
 
     // const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<GroupPostData>();
     const [data_load, setDataLoad] = useState(true);
@@ -87,8 +77,8 @@ function Wordle(): React.ReactElement {
     // }
 
 	useEffect(() => {
-        axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
-        // axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
+        // axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
+        axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
                 const game = res.data.game;
@@ -114,6 +104,7 @@ function Wordle(): React.ReactElement {
                 setGameWords(default_game_words);
                 setGameUsers(game.game_users);
                 setGameLogs(game.game_logs);
+                setDisplayInputComponent(game.input[0]);
 
                 const default_input_stack: any[] = [];
                 ([...Array(max)]).forEach(() => {
@@ -124,34 +115,32 @@ function Wordle(): React.ReactElement {
                 });
                 setInputStack(default_input_stack);
 
-                // TODO: ログを追う処理を追加する
                 handleErrata(game.game_logs, default_game_words);
                 handleTurnChange(game.game_logs, game.game_users);
 
-                // here以下は使わない？バックで管理したものをlistenで反映させるほうが考えること少なそう
-                window.Echo.join('game.' + '7ceb7e91-f845-4212-a4ce-6c0e8ca5105e')
-                .listen('GameEvent', (e: any) => {
-                    console.log('listen');
-                    console.log(e);
+                // window.Echo.join('game.' + '7ceb7e91-f845-4212-a4ce-6c0e8ca5105e')
+                // .listen('GameEvent', (e: any) => {
+                //     console.log('listen');
+                //     console.log(e);
 
-                    // 要検証
-                    setNewGameLog(e.game_log);
-                })
-                .here((users: any) => {
-                    console.log('here');
-                    console.log(users);
-                })
-                .joining((user: any) => {
-                    console.log('joining');
-                    console.log(user);
-                })
-                .leaving((user: any) => {
-                    console.log('leaving');
-                    console.log(user);
-                })
-                .error((error: any) => {
-                    console.log(error);
-                });
+                //     // 要検証
+                //     setNewGameLog(e.game_log);
+                // })
+                // .here((users: any) => {
+                //     console.log('here');
+                //     console.log(users);
+                // })
+                // .joining((user: any) => {
+                //     console.log('joining');
+                //     console.log(user);
+                // })
+                // .leaving((user: any) => {
+                //     console.log('leaving');
+                //     console.log(user);
+                // })
+                // .error((error: any) => {
+                //     console.log(error);
+                // });
 
                 // setInitialLoad(false);
                 setDataLoad(false);
@@ -432,6 +421,13 @@ function Wordle(): React.ReactElement {
         }
     }
     /////////////////////////////////////////////////////////////////////////
+
+    // display input component ///////////////////////////////////////////////////////////////////////
+    const handleDisplayInputComponentSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const target_input = event.currentTarget.value;
+        setDisplayInputComponent((target_input as DisplayInputComponent));
+    }
+    /////////////////////////////////////////////////////////////////////////
     
 	if (initial_load) {
 		return (
@@ -460,27 +456,19 @@ function Wordle(): React.ReactElement {
                             </Grid>
                             {/* input表示エリア */}
                             <Grid item xs={12}>
-                                <WordleJapaneseCharacters
+                                <WordleInput
                                     classes={classes}
                                     turn_flag={turn_flag}
                                     handleInputStack={handleInputStack}
                                     errata={errata_list}
+                                    display_input_component={display_input_component}
                                 />
                             </Grid>
+                            {/* input切り替えボタングループ */}
                             <Grid item xs={12}>
-                                <WordleEnglishCharacters
-                                    classes={classes}
-                                    turn_flag={turn_flag}
-                                    handleInputStack={handleInputStack}
-                                    errata={errata_list}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <WordleNumberCharacters
-                                    classes={classes}
-                                    turn_flag={turn_flag}
-                                    handleInputStack={handleInputStack}
-                                    errata={errata_list}
+                                <WordleInputSelectButtonGroup
+                                    input={game.input}
+                                    handleDisplayInputComponentSelect={handleDisplayInputComponentSelect}
                                 />
                             </Grid>
                             <Grid item xs={12}>
