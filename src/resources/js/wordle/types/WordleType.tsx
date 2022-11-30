@@ -35,9 +35,33 @@ export type WordleBoardProps = {
     classes: any
 }
 
+export type WordleInputProps = {
+    classes: any,
+    turn_flag: boolean,
+    handleInputStack: MouseEventHandler,
+    errata: any,
+    display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null
+}
+
 export type WordleCharactersProps = {
     classes: any,
     turn_flag: boolean,
     handleInputStack: MouseEventHandler,
     errata: any
 }
+
+
+export type GameWords = {
+    [index: number]: {
+        character: string
+        errata: string
+    }
+}
+
+export type ErrataList = {
+    matchs: any[],
+    exists: any[],
+    not_exists: any[]
+}
+
+export type DisplayInputComponent = 'japanese' | 'english' | 'number' | 'typing' | null;
