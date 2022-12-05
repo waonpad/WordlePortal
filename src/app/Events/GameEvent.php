@@ -15,15 +15,15 @@ class GameEvent implements ShouldBroadcast
 {
     use SerializesModels;
 
-    public $game_log;
+    public $current_game_status;
 
-    public function __construct($game_log)
+    public function __construct($current_game_status)
     {
-        $this->game_log = $game_log;
+        $this->current_game_status = $current_game_status;
     }
     
     public function broadcastOn()
     {
-        return new PresenceChannel('game.' . Game::find($this->game_log->game_id)->uuid);
+        return new PresenceChannel('game.' . $this->current_game_status['game']['uuid']);
     }
 }

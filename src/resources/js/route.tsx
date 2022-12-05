@@ -12,8 +12,8 @@ import Chat from './chat/chat/Chat';
 import PrivateChat from './chat/privatechat/PrivateChat';
 import GroupChat from './chat/groupchat/GroupChat';
 import HeaderPrimary from './common/header/components/HeaderPrimary';
-import Wordle from './wordle/Wordle';
-import WordleManage from './wordle/WordleManage';
+import Wordle from './wordle/wordle/Wordle';
+import WordleManage from './wordle/wordlemanage/WordleManage';
 import Page404 from './common/pages/Page404';
 
 import AxiosInterceptors from './contexts/AxiosInterceptors';
