@@ -40,6 +40,8 @@ export type WordleInputProps = {
     turn_flag: boolean,
     handleInputStack: MouseEventHandler,
     errata: any,
+    input_stack: any,
+    handleTypingStack: any
     display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null
 }
 
@@ -50,6 +52,12 @@ export type WordleCharactersProps = {
     errata: any
 }
 
+export type WordleTypingProps = {
+    classes: any,
+    turn_flag: boolean,
+    input_stack: any,
+    handleTypingStack: any
+}
 
 export type GameWords = {
     [index: number]: {
