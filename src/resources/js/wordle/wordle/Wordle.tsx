@@ -161,6 +161,18 @@ function Wordle(): React.ReactElement {
         })
 	}, [])
 
+    useEffect(() => {
+        console.log(input_stack);
+    }, [input_stack])
+    
+    // update board ///////////////////////////////////////////////////////////////////////
+    const updateBoard = (updated_input_stack: any[]) => {
+        // Boardに表示させる
+        const target_game_word_index = game_status.board.length;
+        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_game_word_index ? updated_input_stack : game_word)));
+    }
+    /////////////////////////////////////////////////////////////////////////
+
     // input ///////////////////////////////////////////////////////////////////////
     const handleInputStack = (event: any) => {
         const target_character = String(event.currentTarget.getAttribute('data-character-value'));
@@ -181,11 +193,35 @@ function Wordle(): React.ReactElement {
         setInputStack(updated_input_stack);
         updateBoard(updated_input_stack);
     }
+    /////////////////////////////////////////////////////////////////////////
 
-    const updateBoard = (updated_input_stack: any[]) => {
-        // Boardに表示させる
-        const target_game_word_index = game_status.board.length;
-        setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_game_word_index ? updated_input_stack : game_word)));
+    // typing ///////////////////////////////////////////////////////////////////////
+    const handleTypingStack = (event: any) => {
+        const current_value = event.currentTarget.value.split('');
+
+        console.log('typing');
+        console.log(current_value);
+
+        // const updated_input_stack = input_stack.map((character, index) => (current_value[index] ? {...character, character: current_value[index]} : {...character, character: ''}));
+        const updated_input_stack: any[] = [];
+        
+        input_stack.forEach((character, index) => {
+            if(current_value[index] !== '' && current_value[index] !== undefined) {
+                updated_input_stack.push({
+                    character: current_value[index],
+                    errata: 'plain'
+                })
+            }
+            else {
+                updated_input_stack.push({
+                    character: '',
+                    errata: 'plain'
+                })
+            }
+        })
+
+        setInputStack(updated_input_stack);
+        updateBoard(updated_input_stack);
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -351,6 +387,8 @@ function Wordle(): React.ReactElement {
                                 game_words={game_words}
                                 turn_flag={turn_flag}
                                 handleInputStack={handleInputStack}
+                                input_stack={input_stack}
+                                handleTypingStack={handleTypingStack}
                                 handleDisplayInputComponentSelect={handleDisplayInputComponentSelect}
                                 handleInputBackSpace={handleInputBackSpace}
                                 handleInputEnter={handleInputEnter}

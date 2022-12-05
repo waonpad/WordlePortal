@@ -18,6 +18,8 @@ type WordleGameProps = {
     game_words: GameWords
     turn_flag: boolean,
     handleInputStack: any,
+    input_stack: any,
+    handleTypingStack: any,
     handleDisplayInputComponentSelect: any,
     handleInputBackSpace: any,
     handleInputEnter: any,
@@ -41,6 +43,8 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                         turn_flag={props.turn_flag}
                         handleInputStack={props.handleInputStack}
                         errata={props.errata_list}
+                        input_stack={props.input_stack}
+                        handleTypingStack={props.handleTypingStack}
                         display_input_component={props.display_input_component}
                     />
                 </Grid>
