@@ -258,7 +258,7 @@ class GameController extends Controller
             ]
         ]);
         
-        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first(), true);
+        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
         event(new GameEvent($current_game_status));
 
         // 参加ユーザーが0になったらゲームを破棄する
@@ -338,7 +338,7 @@ class GameController extends Controller
                 ]
             ]);
             
-            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first(), true);
+            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
             event(new GameEvent($current_game_status));
     
             return response()->json([
@@ -493,7 +493,7 @@ class GameController extends Controller
                 'status' => 'end'
             ]);
 
-            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first(), true);
+            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
             event(new GameEvent($current_game_status));
 
             // // 終了通知
@@ -505,7 +505,7 @@ class GameController extends Controller
                 ]
             ]);
 
-            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first(), true);
+            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
             event(new GameEvent($current_game_status));
         }
         else {
@@ -523,7 +523,7 @@ class GameController extends Controller
                 ]
             ]);
             
-            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first(), true);
+            $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
             event(new GameEvent($current_game_status));
         }
 

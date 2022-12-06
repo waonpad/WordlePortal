@@ -160,10 +160,6 @@ function Wordle(): React.ReactElement {
             swal("参加失敗", "参加失敗", "error");
         })
 	}, [])
-
-    useEffect(() => {
-        console.log(input_stack);
-    }, [input_stack])
     
     // update board ///////////////////////////////////////////////////////////////////////
     const updateBoard = (updated_input_stack: any[]) => {
@@ -196,32 +192,26 @@ function Wordle(): React.ReactElement {
     /////////////////////////////////////////////////////////////////////////
 
     // typing ///////////////////////////////////////////////////////////////////////
-    const handleTypingStack = (event: any) => {
+    const handleTypingStack = (event: React.ChangeEvent<HTMLInputElement>) => {
         const current_value = event.currentTarget.value.split('');
-
-        console.log('typing');
-        console.log(current_value);
-
-        // const updated_input_stack = input_stack.map((character, index) => (current_value[index] ? {...character, character: current_value[index]} : {...character, character: ''}));
         const updated_input_stack: any[] = [];
-        
-        input_stack.forEach((character, index) => {
-            if(current_value[index] !== '' && current_value[index] !== undefined) {
-                updated_input_stack.push({
-                    character: current_value[index],
-                    errata: 'plain'
-                })
-            }
-            else {
-                updated_input_stack.push({
-                    character: '',
-                    errata: 'plain'
-                })
-            }
+
+        current_value.forEach((character: any, index: number) => {
+            updated_input_stack.push({
+                character: current_value[index],
+                errata: 'plain'
+            })
         })
 
+        for(var i = current_value.length; i < game.max; i++) {
+            updated_input_stack.push({
+                character: '',
+                errata: 'plain'
+            })
+        }
+
         setInputStack(updated_input_stack);
-        updateBoard(updated_input_stack);
+        updateBoard(updated_input_stack.slice(0, game.max));
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -231,7 +221,7 @@ function Wordle(): React.ReactElement {
 
         const data = {
             game_uuid: game_uuid,
-            input: input_stack.map((character) => (character['character']))
+            input: input_stack.map((character) => (character['character'])).slice(0, game.max)
         };
 
         axios.post('/api/wordle/game/input', data).then(res => {
@@ -261,7 +251,7 @@ function Wordle(): React.ReactElement {
     }
     /////////////////////////////////////////////////////////////////////////
 
-    // game_log 初期表示時
+    // ゲームの状態が変わったとき
     useEffect(() => {
         if(game_status !== undefined) {
             // ターン(inputエリアの入力可否)切り替え
@@ -303,7 +293,6 @@ function Wordle(): React.ReactElement {
 
         // ここから1文字ずつ更新する処理 ///////////////////////////////////////////////////////////////////////
         const new_game_input_log = game_input_logs.slice(-1)[0];
-
         const target_game_word_index = game_status.board.length - 1;
         const new_input_and_errata = new_game_input_log.log.input_and_errata;
 
@@ -328,7 +317,7 @@ function Wordle(): React.ReactElement {
                         matchs.push(character.character);
                     }
                     if(character.errata === 'exist') {
-                        matchs.includes(character.character) ? matchs.push(character.character) : exists.push(character.character);
+                        exists.push(character.character);
                     }
                     if(character.errata === 'not_exist') {
                         not_exists.push(character.character);
@@ -344,7 +333,7 @@ function Wordle(): React.ReactElement {
                 await sleep(1);
             }
         })()
-                /////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////
     }
     /////////////////////////////////////////////////////////////////////////
 
