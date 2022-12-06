@@ -21,6 +21,8 @@ import ProvideAuth, { PrivateRoute, PublicRoute } from './contexts/AuthContext'
 import ProvideNoification from './contexts/NotificationContext';
 import YupCustom from './contexts/YupCustom';
 
+import FirebaseTest from './firebase/FirebaseTest';
+
 function App(): React.ReactElement {
     return (
         <AxiosInterceptors>
@@ -30,6 +32,10 @@ function App(): React.ReactElement {
                         <BrowserRouter>
                             <HeaderPrimary>
                                 <Switch>
+
+                                    {/* テスト用 */}
+                                    <Route path='/firebasetest' exact component={FirebaseTest} />
+
                                     <Route path='/' exact component={Top} />
                                     <Route path='/example' exact component={Example} />
                                     <PrivateRoute path='/about' exact><About/></PrivateRoute>
