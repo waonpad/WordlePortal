@@ -34,7 +34,7 @@ function App(): React.ReactElement {
                                 <Switch>
 
                                     {/* テスト用 */}
-                                    <Route path='/firebasetest' exact component={FirebaseTest} />
+                                    <Route path='/firebasetest/:room_id' exact component={FirebaseTest} />
 
                                     <Route path='/' exact component={Top} />
                                     <Route path='/example' exact component={Example} />
