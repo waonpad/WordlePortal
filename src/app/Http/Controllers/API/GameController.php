@@ -40,7 +40,7 @@ class GameController extends Controller
 
             $board = array_values(array_map(function($game_input_log) {
                 return ($game_input_log['log']['input_and_errata']);  
-            }, ($initial_load ? $game_input_logs : $sliced_game_input_logs)));
+            }, $game_input_logs));
     
             // errataを取得
             // php側では初期表示なのか否かを判定できないため、最後のinput以外でまずerrataを整形
