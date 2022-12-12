@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import swal from "sweetalert";
 import ReactDOM from 'react-dom';
 import { Button, IconButton, Card } from '@material-ui/core';
@@ -31,6 +31,10 @@ import { GameWords, ErrataList, DisplayInputComponent, GameStatus } from '../typ
 import WordleLobby from './components/WordleLobby';
 import WordleGame from './components/WordleGame';
 
+import firebaseApp from '../../contexts/FirebaseConfig';
+import { getDatabase, push, ref, set, update, onValue, onDisconnect, child, orderByChild, equalTo, startAt, endAt } from '@firebase/database'
+import { serverTimestamp } from 'firebase/database';
+
 const theme = createTheme();
 
 function Wordle(): React.ReactElement {
@@ -43,10 +47,10 @@ function Wordle(): React.ReactElement {
 
     const [game, setGame] = useState<any>();
     const [game_status, setGameStatus] = useState<any>();
-    // const [game_status, setGameStatus] = useState<GameStatus>(null);
     const [game_words, setGameWords] = useState<GameWords>([]);
-    // const [game_users, setGameUsers] = useState<any>([]); // TODO: 開始したらstart状態のユーザーだけに書き換える
-    // const [game_logs, setGameLogs] = useState<any>([]);
+
+    // firebaseで管理
+    const [game_users, setGameUsers] = useState<any>([]); // TODO: 開始したらstart状態のユーザーだけに書き換える
 
     const [input_stack, setInputStack] = useState<any[]>([]);
     const [errata_list, setErrataList] = useState<ErrataList>({
@@ -61,24 +65,60 @@ function Wordle(): React.ReactElement {
     const [initial_load, setInitialLoad] = useState(true);
     const [loading, setLoading] = useState(false);
 
-    // const onSubmit: SubmitHandler<GroupPostData> = (data: GroupPostData) => {
-    //     setLoading(true)
-
-    //     axios.post('/api/grouppost', data).then(res => {
-    //         swal("送信成功", "送信成功", "success");
-    //         console.log(res);
-    //         setLoading(false);
-    //     }).catch(error => {
-    //         console.log(error)
-    //         setError('submit', {
-    //         type: 'manual',
-    //         message: '送信に失敗しました'
-    //     })
-    //         setLoading(false);
-    //     })
-    // }
+    const ref = firebaseApp.database().ref(`wordle/games/${game_uuid}`);
+    const [counter, setCounter] = useState<number>(); // 制限時間機能 後から作る
+    
+    const connection = useRef<{
+        listener: number | null;
+        // ref: ThenableReference | null;
+        ref: any;
+    }>({ listener: null, ref: null });
 
 	useEffect(() => {
+        const connected_info_ref = firebaseApp.database().ref(".info/connected");
+        const user_id = auth!.user!.id.toString();
+    
+        const connect = async () => {
+            // 接続状態を監視する
+            const onValueUnsubscribe = connected_info_ref.on('value', async (snapshot) => {
+                if (!snapshot.val()) {
+                    return;
+                }
+
+                if (!connection.current.ref) {
+                    connection.current.ref = push(ref);
+                }
+        
+                // 切断されたら接続情報を削除する処理を予約する
+                await ref.child(`users/u${user_id}`).onDisconnect().update({
+                    status: 'disconnect'
+                });
+
+                // 誰もいなくなった時にgame自体を削除したいがやり方が分からない
+                
+
+                // 参加中のルームを設定する
+                await ref.child(`users/u${user_id}`).set({
+                    status: 'connect'
+                });
+            });
+        };
+    
+        connect().catch(() => {
+        });
+
+        // データの変更を監視
+        ref.on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                setGameUsers(snapshot.val().users)
+            }
+            else {
+                console.log("No data available");
+            }
+        })
+        
+        /////////////////////////////////////////////////////////////////////////
         axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
         // axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
             console.log(res);
@@ -273,9 +313,10 @@ function Wordle(): React.ReactElement {
     // errata ///////////////////////////////////////////////////////////////////////
     const handleErrata = (game_status: any, game_words: any) => {
         const game_input_logs = game_status.game_input_logs;
+        const sliced_board = game_status.board.slice(0, game_status.board.length);
         
         // Boardに表示する
-        const updated_game_words = (game_words as any[]).map((game_word, index) => (game_status.board[index] ?? game_word));
+        const updated_game_words = (game_words as any[]).map((game_word, index) => (sliced_board[index] ?? game_word));
         setGameWords(updated_game_words); // ターンプレイヤーはcharacterが既に表示されている
 
         // errataを取得
@@ -293,7 +334,7 @@ function Wordle(): React.ReactElement {
 
         // ここから1文字ずつ更新する処理 ///////////////////////////////////////////////////////////////////////
         const new_game_input_log = game_input_logs.slice(-1)[0];
-        const target_game_word_index = game_status.board.length - 1;
+        const target_game_word_index = sliced_board.length - 1;
         const new_input_and_errata = new_game_input_log.log.input_and_errata;
 
         (async () => {
@@ -306,7 +347,7 @@ function Wordle(): React.ReactElement {
                         new_input_and_errata.slice(0, i + 1)[index] ?? character
                     )) : game_word
                 ));
-                setGameWords(updated_game_words);
+                setGameWords(updated_game_words); // NOTICE: この更新中に入力があるとstackが消えたり見えたりするが動作自体はする 軽微な不具合
 
                 // inputエリアの同期
                 const current_new_input_and_errata: any[] = new_input_and_errata.slice(0, i + 1);
@@ -336,6 +377,68 @@ function Wordle(): React.ReactElement {
         /////////////////////////////////////////////////////////////////////////
     }
     /////////////////////////////////////////////////////////////////////////
+
+    useEffect(() => {
+        // 制限時間機能
+        if(game_status !== undefined) {
+            if(initial_load === false) {
+                if(game.answer_time_limit !== null) {
+                    if(game_status.latest_game_log.type === 'input') {
+                        console.log('reset counter');
+                        setCounter(game.answer_time_limit);
+                        var i = game.answer_time_limit;
+                
+                        const timer = setInterval(() => {
+                            i--
+                            setCounter(i);
+                            if(i === 0) {
+                                clearInterval(timer);
+                            }
+                        }, 1000)
+                
+                        return () => {
+                            clearInterval(timer);
+                            console.log('clear counter');
+                        }
+                    }
+                }
+            }
+        }
+    }, [game_status]);
+
+    useEffect(() => {
+        console.log(counter);
+        // 指定時間更新が無かったら
+        // ホストユーザーがログを更新する責務を負う
+        // firebaseのstatusがconnectなユーザーの中でキーが若いユーザー順にホストになる
+        if(counter === 0) {
+
+            const connect_users = Object.keys(game_users).map((key: any) => (
+                game_users[key].status === 'connect'
+            ));
+
+            const host = Object.keys(connect_users)[0].slice(1); // idを配列のindexにしないために最初にuをつけているので外す
+
+            console.log('ターンスキップ');
+
+            // if(auth!.user!.id.toString() === host) {
+            //     skip用APIを作る
+            //     axios.post('/api/wordle/game/skip', {game_uuid: game_uuid}).then(res => {
+            //         console.log(res);
+            //         if(res.data.status === true) {
+            //             // ターンスキップイベントをバックで発火する
+            //             console.log('送信成功');
+            //         }
+            //         else {
+            //             console.log('送信失敗');
+            //         }
+            //     }).catch(error => {
+            //         console.log(error)
+            //         swal("送信失敗", "送信失敗", "error");
+            //     })
+            // }
+        }
+    }, [counter]);
 
     // display input component ///////////////////////////////////////////////////////////////////////
     const handleDisplayInputComponentSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
