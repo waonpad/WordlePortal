@@ -16,6 +16,9 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '../types/VSPlayOptionType';
+import firebaseApp from '../../contexts/FirebaseConfig';
+import { getDatabase, push, ref, set, update, onValue, onDisconnect, child, orderByChild, equalTo, startAt, endAt } from '@firebase/database'
+import { serverTimestamp } from 'firebase/database';
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const basicSchema = Yup.object().shape({
@@ -76,6 +79,12 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                 // }
                 
                 const game = res.data.game;
+
+                firebaseApp.database().ref(`wordle/games/${game.uuid}`).set({
+                    created_at: serverTimestamp(),
+                    status: 'create'
+                });
+
                 history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
             }
             else {
