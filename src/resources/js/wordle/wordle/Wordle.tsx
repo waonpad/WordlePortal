@@ -75,122 +75,158 @@ function Wordle(): React.ReactElement {
     }>({ listener: null, ref: null });
 
 	useEffect(() => {
-        const connected_info_ref = firebaseApp.database().ref(".info/connected");
-        const user_id = auth!.user!.id.toString();
-    
-        const connect = async () => {
-            // 接続状態を監視する
-            const onValueUnsubscribe = connected_info_ref.on('value', async (snapshot) => {
-                if (!snapshot.val()) {
-                    return;
-                }
-
-                if (!connection.current.ref) {
-                    connection.current.ref = push(ref);
-                }
-        
-                // 切断されたら接続情報を削除する処理を予約する
-                await ref.child(`users/u${user_id}`).onDisconnect().update({
-                    status: 'disconnect'
-                });
-
-                // 誰もいなくなった時にgame自体を削除したいがやり方が分からない
-                
-
-                // 参加中のルームを設定する
-                await ref.child(`users/u${user_id}`).set({
-                    status: 'connect'
-                });
-            });
-        };
-    
-        connect().catch(() => {
-        });
-
-        // データの変更を監視
-        ref.on('value', (snapshot) => {
-            if (snapshot.exists()) {
-                console.log(snapshot.val());
-                setGameUsers(snapshot.val().users)
-            }
-            else {
-                console.log("No data available");
-            }
-        })
-        
         /////////////////////////////////////////////////////////////////////////
         axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
         // axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
+                
+                const user_id = auth!.user!.id.toString();
                 const game = res.data.game;
-                const current_game_status = res.data.current_game_status;
-                console.log(game);
-                console.log(current_game_status);
 
-                const default_game_words: any[] = [];
+                const firebase_game = ref.once('value', (snapshot) => {
+                    if (snapshot.val()) {
+                        const firbase_game_users = snapshot.val().users;
+                        const connected_firebase_game_users = Object.keys(firbase_game_users).filter((key) => (
+                            snapshot.val().users[key].status === 'connect'
+                        )).map((key) => (
+                            snapshot.val().users[key]
+                        ))
+                        
+                        console.log(connected_firebase_game_users);
+                        if(
+                            // (connected_firebase_game_users.length === 0 && snapshot.val().status !== 'create') // 参加ユーザーがいない
+                            // ||
+                            (game.status === 'end') // 終了している
+                            ||
+                            // (game.status === 'start' && ('order' in snapshot.val().users[(`u${user_id}` as any)]) === false) //startしていてゲーム参加者ではない
+                            // ||
+                            (connected_firebase_game_users.length === game.max_participants) // 満員
+                        ) {  
+                            swal("ゲームが存在しないか参加できない", "ゲームが存在しないか参加できない", "error");
+                        }
+                        else {
+                            console.log('接続');
 
-                // const rows = game.game_users.length * game.laps;
-                const rows = 10; // test
-                // const max = game.max;
-                const max = 6; // test
-                ([...Array(rows)]).forEach((row, index) => {
-                    if(current_game_status.board[index]) {
-                        default_game_words.push(current_game_status.board[index]);
+                            // game作成から一人目が入るまではconnectしているユーザーが0でも参加できるようにフラグがある
+                            ref.update({
+                                ...snapshot.val(),
+                                status: 'joined'
+                            })
+
+                            const connected_info_ref = firebaseApp.database().ref(".info/connected");
+                        
+                            const connect = async () => {
+                                // 接続状態を監視する
+                                const onValueUnsubscribe = connected_info_ref.on('value', async (snapshot) => {
+                                    if (!snapshot.val()) {
+                                        return;
+                                    }
+                    
+                                    if (!connection.current.ref) {
+                                        connection.current.ref = push(ref);
+                                    }
+                            
+                                    // 切断されたら接続情報を削除する処理を予約する
+                                    await ref.child(`users/u${user_id}`).onDisconnect().update({
+                                        status: 'disconnect'
+                                    });
+                    
+                                    // 参加中のルームを設定する
+                                    await ref.child(`users/u${user_id}`).update({
+                                        status: 'connect'
+                                    });
+                                });
+                            };
+                        
+                            connect().catch(() => {
+                            });
+                    
+                            // データの変更を監視
+                            ref.on('value', (snapshot) => {
+                                if (snapshot.exists()) {
+                                    console.log(snapshot.val());
+                                    setGameUsers(snapshot.val().users)
+                                }
+                                else {
+                                    console.log("No data available");
+                                }
+                            })
+            
+                            // const game = res.data.game;
+                            const current_game_status = res.data.current_game_status;
+                            console.log(game);
+                            console.log(current_game_status);
+            
+                            const default_game_words: any[] = [];
+            
+                            // const rows = game.game_users.length * game.laps;
+                            const rows = 10; // test
+                            // const max = game.max;
+                            const max = 6; // test
+                            ([...Array(rows)]).forEach((row, index) => {
+                                if(current_game_status.board[index]) {
+                                    default_game_words.push(current_game_status.board[index]);
+                                }
+                                else {
+                                    const default_game_word: any[] = [];
+                                    ([...Array(max)]).forEach(() => {
+                                        default_game_word.push({
+                                            character: '',
+                                            errata: 'plain',
+                                        })
+                                    });
+                                    default_game_words.push(default_game_word);
+                                }
+                            });
+            
+                            console.log(default_game_words);
+            
+                            setGame(game);
+                            setGameStatus(current_game_status);
+                            setErrataList(current_game_status.errata);
+                            setGameWords(default_game_words);
+                            setDisplayInputComponent(game.input[0]);
+            
+                            const default_input_stack: any[] = [];
+                            ([...Array(max)]).forEach(() => {
+                                default_input_stack.push({
+                                    character: '',
+                                    errata: 'plain',
+                                })
+                            });
+                            setInputStack(default_input_stack);
+            
+                            window.Echo.join('game.' + game.uuid)
+                            .listen('GameEvent', (e: any) => {
+                                console.log('listen');
+                                console.log(e);
+            
+                                setGameStatus(e.current_game_status);
+                            })
+                            .here((users: any) => {
+                                console.log('here');
+                                console.log(users);
+                            })
+                            .joining((user: any) => {
+                                console.log('joining');
+                                console.log(user);
+                            })
+                            .leaving((user: any) => {
+                                console.log('leaving');
+                                console.log(user);
+                            })
+                            .error((error: any) => {
+                                console.log(error);
+                            });
+            
+                            setInitialLoad(false);
+                        }
                     }
                     else {
-                        const default_game_word: any[] = [];
-                        ([...Array(max)]).forEach(() => {
-                            default_game_word.push({
-                                character: '',
-                                errata: 'plain',
-                            })
-                        });
-                        default_game_words.push(default_game_word);
+                        swal("ゲームが存在しない", "ゲームが存在しない", "error");
                     }
                 });
-
-                console.log(default_game_words);
-
-                setGame(game);
-                setGameStatus(current_game_status);
-                setErrataList(current_game_status.errata);
-                setGameWords(default_game_words);
-                setDisplayInputComponent(game.input[0]);
-
-                const default_input_stack: any[] = [];
-                ([...Array(max)]).forEach(() => {
-                    default_input_stack.push({
-                        character: '',
-                        errata: 'plain',
-                    })
-                });
-                setInputStack(default_input_stack);
-
-                window.Echo.join('game.' + game.uuid)
-                .listen('GameEvent', (e: any) => {
-                    console.log('listen');
-                    console.log(e);
-
-                    setGameStatus(e.current_game_status);
-                })
-                .here((users: any) => {
-                    console.log('here');
-                    console.log(users);
-                })
-                .joining((user: any) => {
-                    console.log('joining');
-                    console.log(user);
-                })
-                .leaving((user: any) => {
-                    console.log('leaving');
-                    console.log(user);
-                })
-                .error((error: any) => {
-                    console.log(error);
-                });
-
-                setInitialLoad(false);
             }
             else if(res.data.status === false) {
                 swal("参加失敗", res.data.message, "error");
