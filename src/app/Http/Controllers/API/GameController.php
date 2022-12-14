@@ -124,6 +124,7 @@ class GameController extends Controller
             'max' => $max,
             'input' => $wordle->input,
             'description' => $wordle->description,
+            'game_create_user_id' => Auth::user()->id,
             'answer' => $answer,
             'max_participants' => $request->max_participants,
             'laps' => $request->laps,
@@ -149,10 +150,13 @@ class GameController extends Controller
     public function show(Request $request)
     {
         $game = Game::with('gameUsers.user', 'gameLogs')->where('uuid', $request->game_uuid)->first() ?? null;
+        
+        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
 
         return response()->json([
             'game' => $game,
-            'status' => true
+            'status' => true,
+            'current_game_status' => $current_game_status
         ]);
     }
     
