@@ -29,15 +29,12 @@ type WordleLobbyProps =  {
     game: any
     game_status: any
     firebase_game_data: any
+    handleGameStart: any
 }
 
 function WordleLobby(props: WordleLobbyProps): React.ReactElement {
 
     const auth = useAuth();
-
-    useEffect(() => {
-        console.log(props.firebase_game_data);
-    }, []);
 
     if(!props.firebase_game_data) {
 		return (
@@ -85,7 +82,7 @@ function WordleLobby(props: WordleLobbyProps): React.ReactElement {
                                         :
                                         true
                                     }
-                                    // onClick={props.handleGameStart}
+                                    onClick={props.handleGameStart}
                                 >
                                     Game Start
                                 </Button>
