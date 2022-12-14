@@ -20,6 +20,7 @@ class Game extends Model
         'max',
         'input',
         'description',
+        'game_create_user_id',
         'answer',
         'max_participants',
         'laps',

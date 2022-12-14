@@ -26,6 +26,8 @@ return new class extends Migration
             $table->integer('max');
             $table->json('input');
             $table->string('description')->nullable();
+            $table->unsignedBigInteger('game_create_user_id')->nullable();
+            $table->foreign('game_create_user_id')->references('id')->on('users')->nullOnDelete();
             $table->string('answer');
             $table->integer('max_participants');
             $table->integer('laps');
