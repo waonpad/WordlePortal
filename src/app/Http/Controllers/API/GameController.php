@@ -15,9 +15,19 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
-    private function currentGameStatus($game, $initial_load = false)
+    // start時にorder等込みのusersを保存するカラムを作る？
+
+    private function currentGameStatus($game, $initial_load = false, $firebase_game_users = null)
     {
-        $game_users = $game->gameUsers->toArray();
+        // if($firebase_game_users !== null) {
+        //     $firebase_game_users = (array)$firebase_game_users;
+        //     $game_users = [];
+            
+        //     foreach(array_keys($firebase_game_users) as $key) {
+        //         $firebase_game_users[$key]['user_id'] = substr($key, 0, 1);
+        //         array_push($game_users, $firebase_game_users[$key]);
+        //     }
+        // }
 
         // // game_usersの中で、leaveではないユーザーのみを取り出す
         // $filtered_game_users = array_values(array_filter($game_users, function($game_user) {
@@ -58,22 +68,22 @@ class GameController extends Controller
             $exists = array_values(array_unique($exists));
             $not_exists = array_values(array_unique($not_exists));
 
-            $latest_input_user = array_values(array_filter($game_users, function($game_user) use($game_input_logs) {
-                return ($game_user['user_id'] === $game_input_logs[count($game_input_logs) - 1]['user_id']);
-            }))[0];
+            // $latest_input_user = array_values(array_filter($game_users, function($game_user) use($game_input_logs) {
+            //     return ($game_user['user_id'] === $game_input_logs[count($game_input_logs) - 1]['user_id']);
+            // }))[0];
     
-            $next_input_user = array_values(array_filter($game_users, function($game_user) use($latest_input_user) {
-                return ($game_user['order'] === ($latest_input_user['order'] + 1));
-            }))[0]['user_id']
-            ??
-            array_values(array_filter($game_users, function($game_user) {
-                return ($game_user['order'] === 1);
-            }))[0]['user_id'];;
+            // $next_input_user = array_values(array_filter($game_users, function($game_user) use($latest_input_user) {
+            //     return ($game_user['order'] === ($latest_input_user['order'] + 1));
+            // }))[0]['user_id']
+            // ??
+            // array_values(array_filter($game_users, function($game_user) {
+            //     return ($game_user['order'] === 1);
+            // }))[0]['user_id'];
         }
         else {
-            $next_input_user = array_values(array_filter($game_users, function($game_user) {
-                return ($game_user['order'] === 1);
-            }))[0]['user_id'];
+            // $next_input_user = array_values(array_filter($game_users, function($game_user) {
+            //     return ($game_user['order'] === 1);
+            // }))[0]['user_id'];
         }
 
         return [
@@ -81,8 +91,8 @@ class GameController extends Controller
             // 'game_users' => $filtered_game_users,
             // startした時にfirebseと同期するためのusers情報を送る
             // 'latest_input_user' => $latest_input_user ?? null,
-            'next_input_user' => $next_input_user,
-            'latest_game_log' => $game->gameLogs()->latest()->first()->attributesToArray(),
+            // 'next_input_user' => $next_input_user ?? null,
+            'latest_game_log' => count($game->gameLogs->toArray()) > 0 ? $game->gameLogs()->latest()->first()->attributesToArray() : null,
             'game_input_logs' => $game_input_logs,
             'board' => $board,
             'errata' => [
@@ -310,21 +320,19 @@ class GameController extends Controller
         // // 参加ユーザーのうち、一番古いユーザーであればホストとしてゲームを開始できる
         // if (GameUser::where('game_id', Game::where('uuid', $request->game_uuid)->first()->id)->where('status', '!=', 'leave')->first()->user_id === Auth::user()->id) {
 
-            // ゲームを開始状態にする
-            $game->update([
-                'status' => 'start'
-            ]);
-
             // // 参加ユーザー全員を開始状態にする
             // $game_users = GameUser::where('game_id', $game->id)->where('status', '!=', 'leave')->update([
             //     'status' => 'start'
             // ]);
 
             // 要テスト オブジェクトが送られてくる
-            $game_users = $request->game_users;
+            $game_users = (array)$request->game_users;
+            $connect_game_users = array_filter($game_users, function($game_user) {
+                return ($game_user['status'] !== 'disconnect');
+            });
 
             $order_list = [];
-            for ($i=0; $i < count($game_users); $i++) { 
+            for ($i=0; $i < count($connect_game_users); $i++) { 
                 array_push($order_list, $i+1);
             }
             shuffle($order_list);
@@ -337,9 +345,10 @@ class GameController extends Controller
             // }
 
             // 入力順を決定する
-            for ($i=0; $i < count($game_users); $i++) {
-                $game_users[$i]['order'] = $order_list[$i];
-            }
+            $updated_game_users = array_map(function($game_user, $index) use($order_list) {
+                $game_user['order'] = $order_list[$index];
+                return $game_user;
+            }, $connect_game_users, range(0, count($connect_game_users) - 1));
     
             // 開始通知
             $start_log = GameLog::create([
@@ -347,15 +356,23 @@ class GameController extends Controller
                 'user_id' => Auth::user()->id,
                 'type' => 'start',
                 'log' => [
-                    'users' => $game_users
+                    'users' => $updated_game_users
                 ]
             ]);
+
+            // // ゲームを開始状態にする
+            // $game->update([
+            //     'status' => 'start'
+            // ]);
             
             $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
             event(new GameEvent($current_game_status));
     
+            // firebaseに入力順を知らせる責務はstartしたユーザーが負う
             return response()->json([
-                'status' => true
+                'status' => true,
+                'game_users' => $updated_game_users,
+                // 'order_list' => $order_list
             ]);
         // }
         // else {
