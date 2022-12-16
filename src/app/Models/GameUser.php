@@ -13,7 +13,7 @@ class GameUser extends Pivot
     protected $fillable = [
         'game_id',
         'user_id',
-        'status',
+        'status', // 多分いらない
         'order',
         'result'
     ];

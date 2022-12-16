@@ -83,7 +83,8 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                 firebaseApp.database().ref(`wordle/games/${game.uuid}`).set({
                     created_at: serverTimestamp(),
                     host: game.game_create_user_id,
-                    status: 'create'
+                    status: 'wait',
+                    joined: false
                 });
 
                 history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);

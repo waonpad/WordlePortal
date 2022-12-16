@@ -95,7 +95,7 @@ function Wordle(): React.ReactElement {
                         
                         console.log(connected_firebase_game_users);
                         if(
-                            // (connected_firebase_game_users.length === 0 && snapshot.val().status !== 'create') // 参加ユーザーがいない
+                            // (connected_firebase_game_users.length === 0 && snapshot.val().joined !== false) // 参加ユーザーがいない
                             // ||
                             (game.status === 'end') // 終了している
                             ||
@@ -111,7 +111,7 @@ function Wordle(): React.ReactElement {
                             // game作成から一人目が入るまではconnectしているユーザーが0でも参加できるようにフラグがある
                             ref.update({
                                 ...snapshot.val(),
-                                status: 'joined'
+                                joined: true
                             })
 
                             const connected_info_ref = firebaseApp.database().ref(".info/connected");
@@ -203,6 +203,20 @@ function Wordle(): React.ReactElement {
                             .listen('GameEvent', (e: any) => {
                                 console.log('listen');
                                 console.log(e);
+
+                                // バックでゲームが開始されていてfirebaseに反映されていなければ反映する
+                                // TODO: firebase_game_dataがundefinedで固定されているのでどうにかする
+                                if(e.current_game_status.game.status === 'start') {
+                                    if(firebase_game_data.status === 'wait') {
+                                        const actual_game_users = e.current_game_status.game.game_users;
+
+                                        actual_game_users.map((actual_game_user: any) => {
+                                            ref.child(`users/u${actual_game_user.user_id}`).update({
+                                                order: actual_game_user.order
+                                            })
+                                        })
+                                    }
+                                }
             
                                 setGameStatus(e.current_game_status);
                             })
@@ -504,10 +518,6 @@ function Wordle(): React.ReactElement {
             console.log(res);
             if(res.data.status === true) {
                 console.log('start');
-
-                // firebaseにorderを反映させる
-                const updated_game_users = res.data.game_users;
-                console.log(updated_game_users);
             }
             else {
                 swal("送信失敗", "送信失敗", "error");
