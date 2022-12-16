@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('game_id')->references('id')->on('games')->nullOnDelete();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
-            $table->string('status');
+            $table->string('status')->nullable(); // 多分いらない
             $table->integer('order')->nullable();
             $table->integer('result')->nullable();
             $table->timestamps();
