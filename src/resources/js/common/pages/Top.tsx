@@ -36,22 +36,19 @@ function Top(): React.ReactElement {
     }, [location]);
 
     return (
-        <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth={'md'} sx={{padding: 0}}>
-                <CssBaseline />
-                    {!initial_loading ? (
-                        <WordleList
-                            wordle_get_api_method={wordle_get_api_method}
-                            request_params={request_params}
-                            listening_channel={listening_channel}
-                            listening_event={listening_event}
-                            key={key}
-                        />
-                    ) : (
-                        <CircularProgress sx={{textAlign: 'center'}} />
-                    )}
-            </Container>
-        </ThemeProvider>
+        <React.Fragment>
+            {!initial_loading ? (
+                <WordleList
+                    wordle_get_api_method={wordle_get_api_method}
+                    request_params={request_params}
+                    listening_channel={listening_channel}
+                    listening_event={listening_event}
+                    key={key}
+                />
+            ) : (
+                <CircularProgress sx={{textAlign: 'center'}} />
+            )}
+        </React.Fragment>
     );
 }
 

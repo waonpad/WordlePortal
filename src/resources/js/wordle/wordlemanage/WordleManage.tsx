@@ -106,7 +106,7 @@ function WordleManage(): React.ReactElement {
         });
     };
 
-    const handleSetDefaultInput = (default_input: string) => {
+    const mergeDefaultInput = (default_input: string) => {
         setInput({
             ...input,
             [default_input]: true,
@@ -173,7 +173,7 @@ function WordleManage(): React.ReactElement {
                     setWordleDefaultData(wordle);
                     setTags(wordle.tags.map(tag => tag.name));
                     wordle.input.forEach(target_input => {
-                        handleSetDefaultInput(target_input);
+                        mergeDefaultInput(target_input);
                     });
                     setWords([...wordle.words, '']);
                 }
@@ -208,137 +208,132 @@ function WordleManage(): React.ReactElement {
 	}
 	else {
         return (
-            <ThemeProvider theme={theme}>
-              <Container component="main" maxWidth={false}>
-                <CssBaseline />
-                    <Box
-                        sx={{
-                            marginTop: 8,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                        >
-                        <Typography component="h1" variant="h5">
-                            Wordle {wordle_id ? 'Manage' : 'Create'}
-                        </Typography>
-                        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="wordle_name"
-                                        label="Wordle Name"
-                                        autoComplete="wordle-name"
-                                        defaultValue={wordle_default_data?.name}
-                                        {...register('name')}
-                                        error={errors.name ? true : false}
-                                        helperText={errors.name?.message}
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+                >
+                <Typography component="h1" variant="h5">
+                    Wordle {wordle_id ? 'Manage' : 'Create'}
+                </Typography>
+                <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                fullWidth
+                                id="wordle_name"
+                                label="Wordle Name"
+                                autoComplete="wordle-name"
+                                defaultValue={wordle_default_data?.name}
+                                {...register('name')}
+                                error={errors.name ? true : false}
+                                helperText={errors.name?.message}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <MuiChipsInput
+                                value={(tags as string[])}
+                                onChange={handleSelecetedTags}
+                                fullWidth
+                                variant='outlined'
+                                id='tags'
+                                // name='tags'
+                                label='Tags'
+                                placeholder=''
+                                aria-multiline
+                                maxRows={10}
+                                validate={(chipValue) => {
+                                    return {
+                                        isError: chipValue.length > 50,
+                                        textError: 'the value must be at least 50 characters long'
+                                    }
+                                }}
+                            />
+                            <FormHelperText sx={{mt: 1, ml: 2}}>Double click to edit a tag</FormHelperText>
+                        </Grid>
+                        <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                            <FormLabel component="legend">Using Language Set</FormLabel>
+                            <FormGroup>
+                                {input_values.map((input_value, index) => 
+                                    <FormControlLabel
+                                        key={index}
+                                        control={
+                                        <Checkbox value={input_value} checked={input[input_value]} {...register('input')} onChange={handleInputChange} id={input_value} />
+                                        }
+                                        label={input_value}
                                     />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <MuiChipsInput
-                                        value={(tags as string[])}
-                                        onChange={handleSelecetedTags}
+                                )}
+                            </FormGroup>
+                            <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.input?.message}</FormHelperText>
+                        </FormControl>
+                        <Grid item xs={12}>
+                            <TextField
+                                required
+                                fullWidth
+                                id="description"
+                                label="Description"
+                                autoComplete="description"
+                                defaultValue={wordle_default_data?.description}
+                                {...register('description')}
+                                error={errors.description ? true : false}
+                                helperText={errors.description?.message}
+                            />
+                        </Grid>
+                        <Grid container spacing={2} item xs={12}>
+                            {words.map((word, index) => 
+                                <Grid item xs={12} key={index}>
+                                    <TextField
                                         fullWidth
-                                        variant='outlined'
-                                        id='tags'
-                                        // name='tags'
-                                        label='Tags'
-                                        placeholder=''
-                                        aria-multiline
-                                        maxRows={10}
-                                        validate={(chipValue) => {
-                                            return {
-                                                isError: chipValue.length > 50,
-                                                textError: 'the value must be at least 50 characters long'
+                                        autoComplete="words"
+                                        value={word}
+                                        label="word"
+                                        id={String(index)}
+                                        InputProps={{
+                                            endAdornment: 
+                                                <IconButton aria-label='delete-word-by-index' id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
+                                                    <HighlightOffIcon />
+                                                </IconButton>,
+                                            style: {
+                                                padding: 0
                                             }
                                         }}
-                                    />
-                                    <FormHelperText sx={{mt: 1, ml: 2}}>Double click to edit a tag</FormHelperText>
-                                </Grid>
-                                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                                    <FormLabel component="legend">Using Language Set</FormLabel>
-                                    <FormGroup>
-                                        {input_values.map((input_value, index) => 
-                                            <FormControlLabel
-                                                key={index}
-                                                control={
-                                                <Checkbox value={input_value} checked={input[input_value]} {...register('input')} onChange={handleInputChange} id={input_value} />
-                                                }
-                                                label={input_value}
-                                            />
-                                        )}
-                                    </FormGroup>
-                                    <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.input?.message}</FormHelperText>
-                                </FormControl>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="description"
-                                        label="Description"
-                                        autoComplete="description"
-                                        defaultValue={wordle_default_data?.description}
-                                        {...register('description')}
-                                        error={errors.description ? true : false}
-                                        helperText={errors.description?.message}
+                                        {...register(`words.${index}`)}
+                                        onChange={handleChangeWord}
+                                        error={errors.words ? errors.words[index]? true : false : false}
+                                        helperText={errors.words ? errors.words[index]?.message : ''}
                                     />
                                 </Grid>
-                                <Grid container spacing={2} item xs={12}>
-                                    {words.map((word, index) => 
-                                        <Grid item xs={12} key={index}>
-                                            <TextField
-                                                fullWidth
-                                                autoComplete="words"
-                                                value={word}
-                                                label="word"
-                                                id={String(index)}
-                                                InputProps={{
-                                                    endAdornment: 
-                                                        <IconButton aria-label='delete-word-by-index' id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
-                                                            <HighlightOffIcon />
-                                                        </IconButton>,
-                                                    style: {
-                                                        padding: 0
-                                                    }
-                                                }}
-                                                {...register(`words.${index}`)}
-                                                onChange={handleChangeWord}
-                                                error={errors.words ? errors.words[index]? true : false : false}
-                                                helperText={errors.words ? errors.words[index]?.message : ''}
-                                            />
-                                        </Grid>
-                                    )}
-                                    <Grid item xs={3} sx={{ mt: 1, mb: 1 }}>
-                                        <Button
-                                            type="button"
-                                            fullWidth
-                                            variant="contained"
-                                            onClick={handleAddWord}
-                                        >
-                                            Add
-                                        </Button>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.words?.message}</FormHelperText>
-                                    </Grid>
-                                </Grid>
+                            )}
+                            <Grid item xs={3} sx={{ mt: 1, mb: 1 }}>
+                                <Button
+                                    type="button"
+                                    fullWidth
+                                    variant="contained"
+                                    onClick={handleAddWord}
+                                >
+                                    Add
+                                </Button>
                             </Grid>
-                            <LoadingButton
-                                type="submit"
-                                loading={loading}
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Wordle {wordle_id ? 'Update' : 'Create'}
-                            </LoadingButton>
-                        </Box>
-                    </Box>
-                </Container>
-            </ThemeProvider>
+                            <Grid item xs={12}>
+                                <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.words?.message}</FormHelperText>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <LoadingButton
+                        type="submit"
+                        loading={loading}
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Wordle {wordle_id ? 'Update' : 'Create'}
+                    </LoadingButton>
+                </Box>
+            </Box>
         );
 	}
 }

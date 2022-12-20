@@ -1,29 +1,29 @@
 import { ReactNode } from "react"
 
 export type User = {
-	id: number
-	screen_name: string
-	name: string
-	email: string
-	email_verified_at: string | null
-	two_factor_recovery_codes: string | null
-	two_factor_secret: string | null
-	created_at: string
-	updated_at: string | null
+	id: number;
+	screen_name: string;
+	name: string;
+	email: string;
+	email_verified_at: string | null;
+	two_factor_recovery_codes: string | null;
+	two_factor_secret: string | null;
+	created_at: string;
+	updated_at: string | null;
     description: string;
     age: number;
     gender: 'male' | 'female';
 }
 
 export type LogInData = {
-	email: string,
-	password: string,
+	email: string;
+	password: string;
     submit: string;
 }
 
 export type LogInErrorData = {
-	email: string,
-	password: string,
+	email: string;
+	password: string;
     submit: string;
 }
 
@@ -53,21 +53,21 @@ export type RegisterErrorData = {
 
 export type authProps = {
 	user: User | null;
-	register: (registerData: RegisterData) => Promise<void>
+	register: (registerData: RegisterData) => Promise<void>;
 	signin: (loginData: LogInData) => Promise<void>;
 	signout: () => Promise<void>;
 }
 
 export type Props = {
-  	children: ReactNode
+  	children: ReactNode;
 }
 
 export type RouteProps = {
-	children: ReactNode,
-	path: string,
-	exact?: boolean
+	children: ReactNode;
+	path: string;
+	exact?: boolean;
 }
 
 export type From = {
-  	from: Location
+  	from: Location;
 }

@@ -107,10 +107,11 @@ Route::prefix('wordle')->group(function (){
         Route::post('create', [GameController::class, 'create'])->middleware('auth');
         Route::get('show', [GameController::class, 'show'])->middleware('auth');
         Route::get('search', [GameController::class, 'search']);
-        Route::post('entry', [GameController::class, 'entry'])->middleware('auth');
-        Route::post('leave', [GameController::class, 'leave'])->middleware('auth');
-        Route::post('ready', [GameController::class, 'ready'])->middleware('auth');
+        // Route::post('entry', [GameController::class, 'entry'])->middleware('auth');
+        // Route::post('leave', [GameController::class, 'leave'])->middleware('auth');
+        // Route::post('ready', [GameController::class, 'ready'])->middleware('auth');
         Route::post('start', [GameController::class, 'start'])->middleware('auth');
         Route::post('input', [GameController::class, 'input'])->middleware('auth');
+        // Route::post('skip', [GameController::class, 'skip'])->middleware('auth');
     });
 });

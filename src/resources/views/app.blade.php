@@ -17,7 +17,6 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
         <!-- Styles -->
-        <link href="css/bootstrap-reboot.css" rel="stylesheet"> <!-- Reset -->
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     </head>
 

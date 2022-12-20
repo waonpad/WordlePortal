@@ -31,47 +31,70 @@ export type WordleDefaultData = {
 }
 
 export type WordleBoardProps = {
-    game_words: any
-    classes: any
+    game_words: any;
+    classes: any;
 }
 
 export type WordleInputProps = {
-    classes: any,
-    turn_flag: boolean,
-    handleInputStack: MouseEventHandler,
-    errata: any,
-    input_stack: any,
+    classes: any;
+    turn_flag: boolean;
+    handleInputStack: MouseEventHandler;
+    errata: any;
+    input_stack: any;
     handleTypingStack: any
     display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null
 }
 
 export type WordleCharactersProps = {
-    classes: any,
-    turn_flag: boolean,
-    handleInputStack: MouseEventHandler,
-    errata: any
+    classes: any;
+    turn_flag: boolean;
+    handleInputStack: MouseEventHandler;
+    errata: any;
 }
 
 export type WordleTypingProps = {
-    classes: any,
-    turn_flag: boolean,
-    input_stack: any,
-    handleTypingStack: any
+    classes: any;
+    turn_flag: boolean;
+    input_stack: any;
+    handleTypingStack: any;
 }
 
 export type GameWords = {
     [index: number]: {
-        character: string
-        errata: string
-    }
+        character: string;
+        errata: string;
+    };
 }
 
 export type ErrataList = {
-    matchs: any[],
-    exists: any[],
-    not_exists: any[]
+    matchs: any[];
+    exists: any[];
+    not_exists: any[];
 }
 
 export type DisplayInputComponent = 'japanese' | 'english' | 'number' | 'typing' | null;
 
 export type GameStatus = 'wait' | 'start' | 'end' | null;
+
+export type WordleGameProps = {
+    classes: any;
+    game_status: any;
+    game_words: GameWords
+    turn_flag: boolean;
+    handleInputStack: any;
+    input_stack: any;
+    handleTypingStack: any;
+    handleDisplayInputComponentSelect: any;
+    handleInputBackSpace: any;
+    handleInputEnter: any;
+    loading: boolean;
+    errata_list: ErrataList;
+    display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null;
+}
+
+export type WordleLobbyProps = {
+    classes: any;
+    game_status: any;
+    firebase_game_data: any;
+    handleGameStart: any;
+}
