@@ -124,6 +124,7 @@ function WordleList(props: any): React.ReactElement {
     return (
         <Box
             sx={{
+                maxWidth: 'md',
                 marginTop: 2,
             }}
         >

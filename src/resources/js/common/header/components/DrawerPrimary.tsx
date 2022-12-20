@@ -14,7 +14,6 @@ import { Link, useHistory } from "react-router-dom";
 function DrawerPrimary(props: any): React.ReactElement {
 
     return (
-        
         <Drawer
             className={props.classes.drawer}
             variant='persistent'

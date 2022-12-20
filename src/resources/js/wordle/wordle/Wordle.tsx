@@ -1,31 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import swal from "sweetalert";
-import ReactDOM from 'react-dom';
-import { Button, IconButton, Card } from '@material-ui/core';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import { Link, useParams, useHistory } from "react-router-dom";
 import axios from 'axios';
-import { useForm, SubmitHandler } from "react-hook-form";
-import TextField from '@mui/material/TextField';
-import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-// import Chip from '@mui/material/Chip';
-import Chip from "@material-ui/core/Chip"; // v4
-import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
-import { LoadingButton } from '@mui/lab';
-import { alpha, createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles'
+import { Button, IconButton, Card } from '@material-ui/core';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import {useAuth} from "../../contexts/AuthContext";
-import BackspaceIcon from '@mui/icons-material/Backspace';
-
-import WordleInput from './components/wordlegame/WordleInput';
-import WordleInputSelectButtonGroup from './components/wordlegame/WordleInputSelectButtonGroup';
-import WordleBoard from './components/wordlegame/WordleBoard';
 import { WordleStyle } from './styles/WordleStyle';
 import { GameWords, ErrataList, DisplayInputComponent, GameStatus } from '../types/WordleType';
 import WordleLobby from './components/WordleLobby';
@@ -35,8 +16,6 @@ import firebaseApp from '../../contexts/FirebaseConfig';
 import { getDatabase, push, ref, set, update, onValue, onDisconnect, child, orderByChild, equalTo, startAt, endAt } from '@firebase/database'
 import { serverTimestamp } from 'firebase/database';
 
-const theme = createTheme();
-
 function Wordle(): React.ReactElement {
 
     const auth = useAuth();
@@ -45,7 +24,6 @@ function Wordle(): React.ReactElement {
     
     const {game_uuid} = useParams<{game_uuid: string}>();
 
-    const [game, setGame] = useState<any>();
     const [game_status, setGameStatus] = useState<any>();
     const [game_words, setGameWords] = useState<GameWords>([]);
 
@@ -66,7 +44,7 @@ function Wordle(): React.ReactElement {
     const [loading, setLoading] = useState(false);
 
     const ref = firebaseApp.database().ref(`wordle/games/${game_uuid}`);
-    const [counter, setCounter] = useState<number>(); // 制限時間機能 後から作る
+    const [counter, setCounter] = useState<number>();
     
     const connection = useRef<{
         listener: number | null;
@@ -76,8 +54,7 @@ function Wordle(): React.ReactElement {
 
 	useEffect(() => {
         /////////////////////////////////////////////////////////////////////////
-        axios.post('/api/wordle/game/entry', {game_uuid: game_uuid}).then(res => {
-        // axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
+        axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
                 
@@ -128,6 +105,7 @@ function Wordle(): React.ReactElement {
                                     }
                             
                                     // 切断されたら接続情報を削除する処理を予約する
+                                    // TODO: ページ遷移でdisconnectするようにする
                                     await ref.child(`users/u${user_id}`).onDisconnect().update({
                                         user: auth!.user,
                                         status: 'disconnect'
@@ -147,6 +125,7 @@ function Wordle(): React.ReactElement {
                             // データの変更を監視
                             ref.on('value', (snapshot) => {
                                 if (snapshot.exists()) {
+                                    console.log('firebaseのデータが更新された');
                                     console.log(snapshot.val());
                                     setFirebaseGameData(snapshot.val())
                                 }
@@ -184,7 +163,6 @@ function Wordle(): React.ReactElement {
             
                             console.log(default_game_words);
             
-                            setGame(game);
                             setGameStatus(current_game_status);
                             setErrataList(current_game_status.errata);
                             setGameWords(default_game_words);
@@ -203,20 +181,6 @@ function Wordle(): React.ReactElement {
                             .listen('GameEvent', (e: any) => {
                                 console.log('listen');
                                 console.log(e);
-
-                                // バックでゲームが開始されていてfirebaseに反映されていなければ反映する
-                                // TODO: firebase_game_dataがundefinedで固定されているのでどうにかする
-                                if(e.current_game_status.game.status === 'start') {
-                                    if(firebase_game_data.status === 'wait') {
-                                        const actual_game_users = e.current_game_status.game.game_users;
-
-                                        actual_game_users.map((actual_game_user: any) => {
-                                            ref.child(`users/u${actual_game_user.user_id}`).update({
-                                                order: actual_game_user.order
-                                            })
-                                        })
-                                    }
-                                }
             
                                 setGameStatus(e.current_game_status);
                             })
@@ -255,7 +219,6 @@ function Wordle(): React.ReactElement {
     
     // update board ///////////////////////////////////////////////////////////////////////
     const updateBoard = (updated_input_stack: any[]) => {
-        // Boardに表示させる
         const target_game_word_index = game_status.board.length;
         setGameWords((game_words) => (game_words as any[]).map((game_word, index) => (index === target_game_word_index ? updated_input_stack : game_word)));
     }
@@ -267,7 +230,6 @@ function Wordle(): React.ReactElement {
         const target_input_stack_index = input_stack.findIndex(function(character) {
             return character.character === '';
         });
-        // 既に全て埋まっている場合indexが無いので無反応で処理が行われない(エラー出す?)
 
         const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: target_character} : character));
         setInputStack(updated_input_stack);
@@ -277,6 +239,7 @@ function Wordle(): React.ReactElement {
     const handleInputBackSpace = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const filled_input_stack = (input_stack as any[]).filter((character, index) => (character.character !== ''));
         const target_input_stack_index = filled_input_stack.length - 1;
+        
         const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: ''} : character));
         setInputStack(updated_input_stack);
         updateBoard(updated_input_stack);
@@ -295,7 +258,7 @@ function Wordle(): React.ReactElement {
             })
         })
 
-        for(var i = current_value.length; i < game.max; i++) {
+        for(var i = current_value.length; i < game_status.game.max; i++) {
             updated_input_stack.push({
                 character: '',
                 errata: 'plain'
@@ -303,7 +266,7 @@ function Wordle(): React.ReactElement {
         }
 
         setInputStack(updated_input_stack);
-        updateBoard(updated_input_stack.slice(0, game.max));
+        updateBoard(updated_input_stack.slice(0, game_status.game.max));
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -313,7 +276,7 @@ function Wordle(): React.ReactElement {
 
         const data = {
             game_uuid: game_uuid,
-            input: input_stack.map((character) => (character['character'])).slice(0, game.max),
+            input: input_stack.map((character) => (character['character'])).slice(0, game_status.game.max),
             game_users: firebase_game_data.users
         };
 
@@ -322,7 +285,7 @@ function Wordle(): React.ReactElement {
             console.log(res);
 
             const default_input_stack: any[] = [];
-            ([...Array(game.max)]).forEach(() => {
+            ([...Array(game_status.game.max)]).forEach(() => {
                 default_input_stack.push({
                     character: '',
                     errata: 'plain',
@@ -344,27 +307,166 @@ function Wordle(): React.ReactElement {
     }
     /////////////////////////////////////////////////////////////////////////
 
-    // ゲームの状態が変わったとき
+    // ゲームの状態が変わったときの処理まとめ ///////////////////////////////////////////////////////////////////////
     useEffect(() => {
         if(game_status !== undefined) {
-            // ターン(inputエリアの入力可否)切り替え
-            if(auth?.user?.id === game_status.next_input_user) {
-                setTurnFlag(true);
-            }
-            else {
-                setTurnFlag(false);
-            }
 
-            if(initial_load === false) {
-                if(game_status.latest_game_log.type === 'input') {
-                    handleErrata(game_status, game_words);
+            if(game_status.game.status === 'start') {
+                // ターン(inputエリアの入力可否)切り替え
+                if(auth?.user?.id === game_status.next_input_user) {
+                    console.log('ターンプレイヤーです');
+                    setTurnFlag(true);
+                }
+                else {
+                    console.log('ターンプレイヤーではありません');
+                    setTurnFlag(false);
+                }
+
+                // inputの反映
+                if(game_status.latest_game_log !== null) {
+                    if(game_status.latest_game_log.type === 'input') {
+                        mergeErrata(game_status, game_words);
+                    }
+                }
+
+                if(firebase_game_data !== undefined) {
+                    // カウンターを動かすためのパラメータの処理
+                    if(firebase_game_data.log_length < game_status.game_input_logs.length) {
+                        console.log('firebaseのタイムスタンプを更新');
+        
+                        ref.update({
+                            input_timestamp: serverTimestamp(),
+                            log_length: game_status.game_input_logs.length
+                        })
+                    }
+                    
+                    // バックでゲームが開始されていてfirebaseに反映されていなければ反映する
+                    if(firebase_game_data.status === 'wait') {
+                        console.log('start');
+            
+                        ref.update({
+                            status: 'start',
+                            input_timestamp: serverTimestamp(),
+                            log_length: 0
+                        });
+            
+                        const actual_game_users = game_status.game_users;
+    
+                        console.log(actual_game_users);
+            
+                        actual_game_users.map((actual_game_user: any) => {
+                            ref.child(`users/u${actual_game_user.user_id}`).update({
+                                order: actual_game_user.order
+                            })
+                        })
+                    }
+                }
+            }
+            
+            if(firebase_game_data !== undefined) {
+                // バックでゲームが終了していてfirebaseに反映されていなければ反映する
+                if(game_status.game.status === 'end') {
+                    if(firebase_game_data.status === 'start') {
+                        console.log('end');
+            
+                        ref.update({
+                            status: 'end'
+                        });
+            
+                        const actual_game_users = game_status.game_users;
+            
+                        actual_game_users.map((actual_game_user: any) => {
+                            ref.child(`users/u${actual_game_user.user_id}`).update({
+                                result: actual_game_user.result
+                            })
+                        })
+                    }
                 }
             }
         }
     }, [game_status])
 
+    // 
+    useEffect(() => {
+        if(game_status !== undefined && firebase_game_data !== undefined) {
+            console.log('firebaseのデータが更新された');
+            console.log(firebase_game_data);
+
+            // テスト済み 邪魔なのでコメントアウト
+            // if(game_status.game.status === 'start') {
+            //     // カウント
+            //     if(game_status.game.answer_time_limit !== null) {
+            //         console.log('reset counter');
+
+            //         const input_timestamp = new Date((firebase_game_data.input_timestamp as any)).getTime();
+            //         const answer_time_limit = game_status.game.answer_time_limit * 1000;
+            //         const target_time = input_timestamp + answer_time_limit;
+        
+            //         setCounter(answer_time_limit);
+            
+            //         const timer = setInterval(() => {
+            //             const remaining_time = target_time - new Date().getTime();
+        
+            //             setCounter(remaining_time / 1000 | 0);
+        
+            //             if(remaining_time <= 0) {
+            //                 clearInterval(timer);
+            //             }
+            //         }, 1000)
+            
+            //         return () => {
+            //             clearInterval(timer);
+            //             console.log('clear counter');
+            //         }
+            //     }
+            // }
+        }
+    }, [firebase_game_data]);
+    /////////////////////////////////////////////////////////////////////////
+
+    // counter ///////////////////////////////////////////////////////////////////////
+    useEffect(() => {
+        if(counter !== undefined) {
+            console.log(counter);
+            // 指定時間更新が無かったら
+            // ホストユーザーがログを更新する責務を負う
+            // firebaseのstatusがconnectなユーザーの中でキーが若いユーザー順にホストになる
+            if(counter <= 0) {
+                console.log('ターンスキップ');
+    
+                if(
+                    auth!.user!.id === firebase_game_data.host ? true //自分がゲーム作成者である
+                    :
+                    (`u${firebase_game_data.host}` in Object.keys(firebase_game_data.users).filter((key) => (
+                        firebase_game_data.users[key].status === 'connect'
+                    ))) === false
+                    &&
+                    `u${auth!.user!.id.toString()}` === Object.keys(firebase_game_data.users).filter((key) => (
+                        firebase_game_data.users[key].status === 'connect'
+                    ))[0] ? true // ゲーム作成者が居ない場合、idが若いユーザー
+                    :
+                    false
+                ) {
+                    axios.post('/api/wordle/game/input', {game_uuid: game_uuid, skip: true, skip_user_id: game_status.next_input_user}).then(res => {
+                        console.log(res);
+                        if(res.data.status === true) {
+                            console.log('送信成功');
+                        }
+                        else {
+                            console.log('送信失敗');
+                        }
+                    }).catch(error => {
+                        console.log(error)
+                        swal("送信失敗", "送信失敗", "error");
+                    })
+                }
+            }
+        }
+    }, [counter]);
+    /////////////////////////////////////////////////////////////////////////
+
     // errata ///////////////////////////////////////////////////////////////////////
-    const handleErrata = (game_status: any, game_words: any) => {
+    const mergeErrata = (game_status: any, game_words: any) => {
         const game_input_logs = game_status.game_input_logs;
         const sliced_board = game_status.board.slice(0, game_status.board.length);
         
@@ -431,75 +533,6 @@ function Wordle(): React.ReactElement {
     }
     /////////////////////////////////////////////////////////////////////////
 
-    // counter ///////////////////////////////////////////////////////////////////////
-    useEffect(() => {
-        // 制限時間機能
-        if(game_status !== undefined) {
-            if(initial_load === false) {
-                if(game.answer_time_limit !== null) {
-                    if(game_status.latest_game_log.type === 'input') {
-                        console.log('reset counter');
-                        setCounter(game.answer_time_limit);
-                        var i = game.answer_time_limit;
-                
-                        const timer = setInterval(() => {
-                            i--
-                            setCounter(i);
-                            if(i === 0) {
-                                clearInterval(timer);
-                            }
-                        }, 1000)
-                
-                        return () => {
-                            clearInterval(timer);
-                            console.log('clear counter');
-                        }
-                    }
-                }
-            }
-        }
-    }, [game_status]);
-
-    useEffect(() => {
-        console.log(counter);
-        // 指定時間更新が無かったら
-        // ホストユーザーがログを更新する責務を負う
-        // firebaseのstatusがconnectなユーザーの中でキーが若いユーザー順にホストになる
-        if(counter === 0) {
-            console.log('ターンスキップ');
-
-            // if(
-            //     auth!.user!.id === firebase_game_data.host ? true //自分がゲーム作成者である
-            //     :
-            //     (`u${firebase_game_data.host}` in Object.keys(firebase_game_data.users).filter((key) => (
-            //         firebase_game_data.users[key].status === 'connect'
-            //     ))) === false
-            //     &&
-            //     `u${auth!.user!.id.toString()}` === Object.keys(firebase_game_data.users).filter((key) => (
-            //         firebase_game_data.users[key].status === 'connect'
-            //     ))[0] ? true // ゲーム作成者が居ない場合、idが若いユーザー
-            //     :
-            //     false
-            // ) {
-            //     // skip用APIを作る
-            //     axios.post('/api/wordle/game/skip', {game_uuid: game_uuid}).then(res => {
-            //         console.log(res);
-            //         if(res.data.status === true) {
-            //             // ターンスキップイベントをバックで発火する
-            //             console.log('送信成功');
-            //         }
-            //         else {
-            //             console.log('送信失敗');
-            //         }
-            //     }).catch(error => {
-            //         console.log(error)
-            //         swal("送信失敗", "送信失敗", "error");
-            //     })
-            // }
-        }
-    }, [counter]);
-    /////////////////////////////////////////////////////////////////////////
-
     // display input component ///////////////////////////////////////////////////////////////////////
     const handleDisplayInputComponentSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const target_input = event.currentTarget.value;
@@ -517,7 +550,7 @@ function Wordle(): React.ReactElement {
         axios.post('/api/wordle/game/start', data).then(res => {
             console.log(res);
             if(res.data.status === true) {
-                console.log('start');
+                console.log('start posted');
             }
             else {
                 swal("送信失敗", "送信失敗", "error");
@@ -544,10 +577,9 @@ function Wordle(): React.ReactElement {
             <React.Fragment>
                 {
                     game_status?.game?.status === 'wait' ?
+                    // game_status?.game?.status === 'wait' || 'start' ?
                     <WordleLobby
-                        theme={theme}
                         classes={classes}
-                        game={game}
                         game_status={game_status}
                         firebase_game_data={firebase_game_data}
                         handleGameStart={handleGameStart}
@@ -555,9 +587,7 @@ function Wordle(): React.ReactElement {
                     :
                     game_status?.game?.status === 'start' || 'end' ?
                     <WordleGame
-                        theme={theme}
                         classes={classes}
-                        game={game}
                         game_status={game_status}
                         game_words={game_words}
                         turn_flag={turn_flag}
@@ -572,11 +602,11 @@ function Wordle(): React.ReactElement {
                         display_input_component={display_input_component}
                     />
                     :
-                    // game_status?.game?.status === 'end' ?
-                    // <Backdrop open={true}>
-                    //     <CircularProgress color="inherit" />
-                    // </Backdrop>
-                    // :
+                    game_status?.game?.status === 'end' ?
+                    <Backdrop open={true}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                    :
                     <Backdrop open={true}>
                         <CircularProgress color="inherit" />
                     </Backdrop>

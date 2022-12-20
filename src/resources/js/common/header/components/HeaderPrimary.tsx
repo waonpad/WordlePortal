@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 import { alpha, makeStyles, Theme, useTheme, createStyles } from '@material-ui/core/styles';
+import Container from '@mui/material/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -187,7 +188,6 @@ export default function HeaderPrimary({children}: Props) {
 
     return (
         <div className={classes.root}>
-        <CssBaseline />
         <AppBar 
             position="fixed"
             className={classes.appBar}
@@ -263,7 +263,13 @@ export default function HeaderPrimary({children}: Props) {
             })}
         >
             <div className={classes.drawerHeader} />
-            {children}
+            <Container
+                component="main"
+                maxWidth={false}
+                sx={{padding: 0}}
+            >
+                {children}
+            </Container>
         </main>
         {renderMobileMenu}
         {renderMenu}
