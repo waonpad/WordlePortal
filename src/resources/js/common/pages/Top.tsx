@@ -4,13 +4,12 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import WordleList from '../../wordle/components/WordleList';
 
-const theme = createTheme();
-
 function Top(): React.ReactElement {
-    const [initial_loading, setInitialLoading] = useState(true);
+    const [initial_load, setInitialLoad] = useState(true);
 
     const [wordle_get_api_method, setWordleGetApiMethod] = useState('wordle/index');
     const [request_params, setRequestParams] = useState<any>({});
@@ -24,7 +23,7 @@ function Top(): React.ReactElement {
 
     useEffect(() => {
         console.log(wordle_tag_id);
-        setInitialLoading(true);
+        setInitialLoad(true);
         if(wordle_tag_id !== undefined) {
             setWordleGetApiMethod('wordle/tag');
             setRequestParams({tag_id: wordle_tag_id});
@@ -32,24 +31,27 @@ function Top(): React.ReactElement {
             setListeningEvent('WordleTagPosted');
             setKey(`wordle_tag.${wordle_tag_id}`);
         }
-        setInitialLoading(false);
+        setInitialLoad(false);
     }, [location]);
 
-    return (
-        <React.Fragment>
-            {!initial_loading ? (
-                <WordleList
-                    wordle_get_api_method={wordle_get_api_method}
-                    request_params={request_params}
-                    listening_channel={listening_channel}
-                    listening_event={listening_event}
-                    key={key}
-                />
-            ) : (
-                <CircularProgress sx={{textAlign: 'center'}} />
-            )}
-        </React.Fragment>
-    );
+    if(initial_load) {
+        return (
+			<Backdrop open={true}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+        )
+    }
+    else {
+        return (
+            <WordleList
+                wordle_get_api_method={wordle_get_api_method}
+                request_params={request_params}
+                listening_channel={listening_channel}
+                listening_event={listening_event}
+                key={key}
+            />
+        )
+    }
 }
 
 export default Top;

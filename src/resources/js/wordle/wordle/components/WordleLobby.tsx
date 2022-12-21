@@ -37,14 +37,7 @@ function WordleLobby(props: WordleLobbyProps): React.ReactElement {
     }
     else {
         return (
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
+            <Container maxWidth={'md'}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Stack spacing={2} direction="row">
@@ -77,7 +70,7 @@ function WordleLobby(props: WordleLobbyProps): React.ReactElement {
                         </Button>
                     </Grid>
                 </Grid>
-            </Box>
+            </Container>
         )
     }
 }

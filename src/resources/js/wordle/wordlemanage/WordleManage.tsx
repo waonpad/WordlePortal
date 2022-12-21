@@ -208,14 +208,7 @@ function WordleManage(): React.ReactElement {
 	}
 	else {
         return (
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-                >
+            <Container maxWidth={'md'}>
                 <Typography component="h1" variant="h5">
                     Wordle {wordle_id ? 'Manage' : 'Create'}
                 </Typography>
@@ -333,7 +326,7 @@ function WordleManage(): React.ReactElement {
                         Wordle {wordle_id ? 'Update' : 'Create'}
                     </LoadingButton>
                 </Box>
-            </Box>
+            </Container>
         );
 	}
 }

@@ -7,8 +7,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
 
-const theme = createTheme();
-
 function Chat(): React.ReactElement {
     const [initial_loading, setInitialLoading] = useState(true);
 
@@ -36,23 +34,20 @@ function Chat(): React.ReactElement {
     }, [location]);
 
     return (
-        <ThemeProvider theme={theme}>
-          <Container component="main" maxWidth={'md'} sx={{padding: 0}}>
-            <CssBaseline />
-                <PostForm />
-                {!initial_loading ? (
-                    <PostList
-                    post_get_api_method={post_get_api_method}
-                    request_params={request_params}
-                    listening_channel={listening_channel}
-                    listening_event={listening_event}
-                    key={key}
-                    />
-                ) : (
-                    <CircularProgress sx={{textAlign: 'center'}} />
-                )}
-            </Container>
-        </ThemeProvider>
+        <Container maxWidth={'md'}>
+            <PostForm />
+            {!initial_loading ? (
+                <PostList
+                post_get_api_method={post_get_api_method}
+                request_params={request_params}
+                listening_channel={listening_channel}
+                listening_event={listening_event}
+                key={key}
+                />
+            ) : (
+                <CircularProgress sx={{textAlign: 'center'}} />
+            )}
+        </Container>
     );
 }
 

@@ -22,7 +22,8 @@ import ProvideAuth, { PrivateRoute, PublicRoute } from './contexts/AuthContext'
 import ProvideNoification from './contexts/NotificationContext';
 import YupCustom from './contexts/YupCustom';
 
-import FirebaseTest from './firebase/FirebaseTest';
+import FirebaseTest from './benkyo/firebase/FirebaseTest';
+import CropTest from './benkyo/crop/CropTest';
 
 function App(): React.ReactElement {
     return (
@@ -37,13 +38,14 @@ function App(): React.ReactElement {
 
                                         {/* テスト用 */}
                                         <Route path='/firebasetest/:room_id' exact component={FirebaseTest} />
+                                        <Route path='/croptest' exact component={CropTest} />
 
                                         <Route path='/' exact component={Top} />
                                         <Route path='/example' exact component={Example} />
                                         <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                         <PublicRoute path='/register' exact><Register/></PublicRoute>
                                         <PublicRoute path='/login' exact><LogIn/></PublicRoute>
-                                        <Route path='/user/:id' exact component={User} />
+                                        <Route path='/user/:screen_name' exact component={User} />
                                         <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
                                         <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
                                         <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
