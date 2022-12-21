@@ -138,11 +138,7 @@ function PostList(props: PostListProps): React.ReactElement {
     ////////////////////////////////////////////////////////////////////////////////
 
     return (
-        <Box
-            sx={{
-                marginTop: 2,
-            }}
-        >
+        <Container maxWidth={'md'}>
             <ModalPrimary isOpen={modalIsOpen}>
                 <PostForm post={edit_target_post} handleModalClose={setIsOpen}/>
                 <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
@@ -211,7 +207,7 @@ function PostList(props: PostListProps): React.ReactElement {
                     <CircularProgress />
                 )}
             </Grid>
-        </Box>
+        </Container>
     )
 }
 

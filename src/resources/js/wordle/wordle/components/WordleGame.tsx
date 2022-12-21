@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import { LoadingButton } from '@mui/lab';
 import BackspaceIcon from '@mui/icons-material/Backspace';
+import Container from '@mui/material/Container';
 
 import WordleInput from './wordlegame/WordleInput';
 import WordleInputSelectButtonGroup from './wordlegame/WordleInputSelectButtonGroup';
@@ -13,14 +14,7 @@ import { ErrataList, GameWords, WordleGameProps } from '../../types/WordleType';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
     return (
-        <Box
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-        >
+        <Container maxWidth={false}>
             <Grid container spacing={2}>
                 {/* words表示エリア */}
                 <Grid item xs={12}>
@@ -60,7 +54,7 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                     </Stack>
                 </Grid>
             </Grid>
-        </Box>
+        </Container>
     )
 }
 

@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController; 
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\FollowController;
 use App\Http\Controllers\API\PostController;
 use App\Http\Controllers\API\PrivatePostController;
 use App\Http\Controllers\API\GroupController;
@@ -16,6 +15,8 @@ use App\Http\Controllers\API\WordleController;
 use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\GameController;
 use Illuminate\Support\Facades\Broadcast;
+
+use App\Http\Controllers\API\CropTestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,14 +46,12 @@ Route::post('login', [AuthController::class, 'login']);
 Route::prefix('user')->group(function (){
     Route::get('index', [UserController::class, 'index']);
     Route::get('show', [UserController::class, 'show']);
-    Route::get('update', [UserController::class, 'update'])->middleware('auth');
+    Route::post('update', [UserController::class, 'update'])->middleware('auth');
+    Route::post('followtoggle', [UserController::class, 'followToggle'])->middleware('auth');
 });
 
 // ログアウト
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth');
-
-// フォロー
-Route::post('followtoggle', [FollowController::class, 'followToggle'])->middleware('auth');
 
 // 投稿
 Route::prefix('post')->group(function (){
@@ -115,3 +114,7 @@ Route::prefix('wordle')->group(function (){
         // Route::post('skip', [GameController::class, 'skip'])->middleware('auth');
     });
 });
+
+
+Route::get('cropindex', [CropTestController::class, 'index'])->middleware('auth');
+Route::post('croptest', [CropTestController::class, 'create'])->middleware('auth');

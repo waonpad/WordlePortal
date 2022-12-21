@@ -55,6 +55,7 @@
         "material-ui-chip-input": "^2.0.0-beta.2",
         "mui-chips-input": "^1.3.1",
         "pusher-js": "^7.4.0",
+        "react-easy-crop": "^4.6.3",
         "react-modal": "^3.16.1",
         "yup": "^0.32.9"
     }

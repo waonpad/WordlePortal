@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $users = User::get();
@@ -24,12 +19,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function show(Request $request)
     {   
         $auth_user = Auth::user() ?? '';
@@ -48,27 +37,41 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request)
     {
         $user = $request->user();
 
         $user->update([
-            'name' => $request['name'],
-            'description' => $request['description'],
-            'age' => $request['age'],
-            'gender' => $request['gender']
+            'name' => $request->name,
+            'description' => $request->description,
+            'age' => $request->age,
+            'gender' => $request->gender
         ]);
 
         return response()->json([
             'status' => true,
             'user' => $user
+        ]);
+    }
+
+    public function followToggle(Request $request)
+    {
+        $user = $request->user();
+        $target_user = User::where('screen_name', $request->screen_name)->first();
+
+        $toggle_result = $user->follows()->toggle($target_user->id);
+        if(in_array($target_user->id, $toggle_result['attached'])) {
+            $follow = true;
+        }
+        else if(in_array($target_user->id, $toggle_result['detached'])) {
+            $follow = false;
+        }
+
+        // 通知を送る
+
+        return response()->json([
+            'status' => true,
+            'follow' => $follow,
         ]);
     }
 }

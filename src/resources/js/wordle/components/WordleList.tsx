@@ -122,12 +122,7 @@ function WordleList(props: any): React.ReactElement {
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     return (
-        <Box
-            sx={{
-                maxWidth: 'md',
-                marginTop: 2,
-            }}
-        >
+        <Container maxWidth={'md'}>
             <ModalPrimary isOpen={modalIsOpen}>
                 <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
                 <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
@@ -148,7 +143,7 @@ function WordleList(props: any): React.ReactElement {
                                     subheader={
                                         <React.Fragment>
                                             <Link to={`/user/${wordle.user.screen_name}`}>{wordle.user.name}</Link>
-                                            <Typography>{wordle.created_at}</Typography>
+                                            <Typography>{new Date(wordle.created_at).toLocaleString()}</Typography>
                                         </React.Fragment>
                                     }
                                     sx={{pb: 1}}
@@ -167,10 +162,14 @@ function WordleList(props: any): React.ReactElement {
                                         <Grid item xs={12}>
                                             <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
                                                 {(wordle.input as string[]).map((input: string, index: number) => (
-                                                    // あ, Ａ, １とかに変更する？
+                                                    // あ, Ａ, １とかに変更する？]
+                                                    // TODO: クリックした時にそのタグがついた投稿を表示するページに遷移する
                                                     <Chip key={index} sx={{borderRadius: '7px', border: 'solid 1px rgba(0, 0, 0, 0.54)', boxSizing: 'border-box'}} label={input} />
                                                 ))}
                                             </Stack>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography>{wordle.description}</Typography>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Stack spacing={2} direction="row">
@@ -210,7 +209,7 @@ function WordleList(props: any): React.ReactElement {
                     <CircularProgress />
                 )}
             </Grid>
-        </Box>
+        </Container>
     )
 }
 
