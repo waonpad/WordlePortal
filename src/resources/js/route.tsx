@@ -43,7 +43,7 @@ function App(): React.ReactElement {
                                         <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                         <PublicRoute path='/register' exact><Register/></PublicRoute>
                                         <PublicRoute path='/login' exact><LogIn/></PublicRoute>
-                                        <Route path='/user/:screen_name' exact component={User} />
+                                        <Route key={'user'} path='/user/:screen_name' exact component={User} />
                                         <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
                                         <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
                                         <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
