@@ -23,7 +23,6 @@ import ProvideNoification from './contexts/NotificationContext';
 import YupCustom from './contexts/YupCustom';
 
 import FirebaseTest from './benkyo/firebase/FirebaseTest';
-import CropTest from './benkyo/crop/CropTest';
 
 function App(): React.ReactElement {
     return (
@@ -38,7 +37,6 @@ function App(): React.ReactElement {
 
                                         {/* テスト用 */}
                                         <Route path='/firebasetest/:room_id' exact component={FirebaseTest} />
-                                        <Route path='/croptest' exact component={CropTest} />
 
                                         <Route path='/' exact component={Top} />
                                         <Route path='/example' exact component={Example} />

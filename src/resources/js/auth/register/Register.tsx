@@ -29,6 +29,7 @@ import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { RegisterData, RegisterErrorData } from '../types/AuthType';
 import SnackbarPrimary from '../../common/snackbar/components/SnackbarPrimary';
+import CropImage from '../../common/cropimage/components/CropImage';
 
 function Copyright(props: any) {
 return (
@@ -104,6 +105,12 @@ export default function Register(): React.ReactElement {
 
     const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
         setLoading(true)
+
+        // アイコンは取り敢えずここで代入してしまう
+        const target = document.querySelector('[data-key="user_icon"]');
+        const croppedimgsrc = target!.getAttribute('data-cropped-img-src');
+        data.icon = croppedimgsrc;
+
         console.log(data);
         axios.get('/sanctum/csrf-cookie').then(() => {
             auth?.register(data).then((res: any) => {
@@ -111,7 +118,7 @@ export default function Register(): React.ReactElement {
             if (res.data.status === true) {
                 // swal("Success", "登録成功", "success");
                 // setTimeout((() => {history.push('/')}), 4000);
-                // setLoading(false)
+                setLoading(false)
             }
             else {
                 const obj: RegisterErrorData = res.data.validation_errors;
@@ -138,26 +145,32 @@ export default function Register(): React.ReactElement {
         })
     }
 
+    const cli = () => {
+        console.log('cli');
+        const target = document.querySelector('[data-key="user_icon"]');
+        console.log(target);
+        const croppedimgsrc = target!.getAttribute('data-cropped-img-src');
+        console.log(croppedimgsrc);
+    }
+
     return (
-        <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <Box
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-            >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Register
-                </Typography>
-                <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
-                    <Grid container spacing={2}>
+        <Container maxWidth='xs' sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                <LockOutlinedIcon />
+            </Avatar> */}
+            <Typography component="h1" variant="h5">
+                Register
+            </Typography>
+            <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <CropImage
+                            crop_width={100}
+                            aspect_ratio={1}
+                            display_radius={'50%'}
+                            component_key={'user_icon'}
+                        />
+                    </Grid>
                     <Grid item xs={12}>
                         <TextField
                             required
@@ -264,33 +277,31 @@ export default function Register(): React.ReactElement {
                             <FormHelperText>{errors.gender?.message}</FormHelperText>
                         </FormControl>
                     </Grid>
+                </Grid>
+                <LoadingButton
+                    type="submit"
+                    loading={loading}
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                >
+                    Register
+                </LoadingButton>
+                <Grid container justifyContent="flex-end">
+                    <Grid item>
+                        <Link to="/login">
+                        Already have an account? Log in
+                        </Link>
                     </Grid>
-                    <LoadingButton
-                        type="submit"
-                        loading={loading}
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Register
-                    </LoadingButton>
-                    <Grid container justifyContent="flex-end">
-                        <Grid item>
-                            <Link to="/login">
-                            Already have an account? Log in
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </Box>
+                </Grid>
             </Box>
             <Copyright sx={{ mt: 5 }} />
+            <SnackbarPrimary
+                open={open}
+                handleClose={handleClose}
+                message={errors.submit?.message ? errors.submit?.message : ''}
+            />
+            {/* Alert？ */}
         </Container>
-        <SnackbarPrimary
-            open={open}
-            handleClose={handleClose}
-            message={errors.submit?.message ? errors.submit?.message : ''}
-        />
-        {/* Alert？ */}
-        </ThemeProvider>
     );
 }

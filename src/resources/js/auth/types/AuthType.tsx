@@ -2,6 +2,7 @@ import { ReactNode } from "react"
 
 export type User = {
 	id: number;
+    icon: string | null;
 	screen_name: string;
 	name: string;
 	email: string;
@@ -28,6 +29,7 @@ export type LogInErrorData = {
 }
 
 export type RegisterData = {
+    icon: string | null;
     screen_name: string;
     name: string;
     email: string;
@@ -40,6 +42,7 @@ export type RegisterData = {
 }
 
 export type RegisterErrorData = {
+    icon: string;
     screen_name: string;
     name: string;
     email: string;
