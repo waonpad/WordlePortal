@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -20,6 +21,7 @@ class AuthController extends Controller
             ]);
         } else {
             $user = User::create([
+                'icon' => $request->icon,
                 'screen_name' => $request->screen_name,
                 'name' => $request->name,
                 'email' => $request->email,
@@ -28,7 +30,6 @@ class AuthController extends Controller
                 'age' => $request->age,
                 'gender' => $request->gender
             ]);
-
             
             Auth::login($user, $remember = false);
 

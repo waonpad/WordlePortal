@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactLoading from 'react-loading';
+// import ReactLoading from 'react-loading';
 import ReactDOM from 'react-dom';
 import { Button, Card } from '@material-ui/core';
 import { Link, useParams } from "react-router-dom";
@@ -67,12 +67,13 @@ function User(): React.ReactElement {
                         <Button onClick={followToggle}>{follow ? 'unFollow' : 'Follow'}</Button>
                     )
                 }<br />
-                {user_data.screen_name ? <span>{user_data.screen_name}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
-                {user_data.name ? <span>{user_data.name}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
-                {user_data.email ? <span>{user_data.email}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
-                {user_data.description ? <span>{user_data.description}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
-                {user_data.age ? <span>{user_data.age}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
-                {user_data.gender ? <span>{user_data.gender}</span> : <ReactLoading type="spin" height="20px" width="20px" />}<br />
+                {user_data.icon ? <img src={`data:image/jpeg;base64,${user_data.icon}`} alt="" width={'100px'} height={'100px'} /> : <CircularProgress color="inherit" />}<br />
+                {user_data.screen_name ? <span>{user_data.screen_name}</span> : <CircularProgress color="inherit" />}<br />
+                {user_data.name ? <span>{user_data.name}</span> : <CircularProgress color="inherit" />}<br />
+                {user_data.email ? <span>{user_data.email}</span> : <CircularProgress color="inherit" />}<br />
+                {user_data.description ? <span>{user_data.description}</span> : <CircularProgress color="inherit" />}<br />
+                {user_data.age ? <span>{user_data.age}</span> : <CircularProgress color="inherit" />}<br />
+                {user_data.gender ? <span>{user_data.gender}</span> : <CircularProgress color="inherit" />}<br />
             </Container>
         );
     }
