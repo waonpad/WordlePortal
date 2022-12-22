@@ -1,5 +1,4 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { alpha, makeStyles, Theme, useTheme, createStyles } from '@material-ui/core/styles';
 import Container from '@mui/material/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -24,6 +23,10 @@ import { HeaderStyle } from '../styles/HeaderStyle';
 import DrawerPrimary from "./DrawerPrimary";
 import HeaderSearch from "./HeaderSearch";
 import { useNotification } from '../../../contexts/NotificationContext';
+
+/////////////////////////////////////////////////////////////////////////
+// muiのバージョンが違い、スタイルの書き方も違うため個別に設定しないといけない
+/////////////////////////////////////////////////////////////////////////
 
 type Props = {
     children: ReactNode
@@ -55,7 +58,6 @@ export default function HeaderPrimary({children}: Props) {
 
     // AppBar ////////////////////////////////////////////////////////////////////////////////////
     const classes = HeaderStyle();
-    const theme = useTheme();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [settingAnchorEl, setSettingAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -256,7 +258,7 @@ export default function HeaderPrimary({children}: Props) {
             </div>
             </Toolbar>
         </AppBar>
-        <DrawerPrimary open={open} classes={classes} theme={theme} handleDrawerOpen={handleDrawerOpen} />
+        <DrawerPrimary open={open} classes={classes} handleDrawerOpen={handleDrawerOpen} />
         <main
             className={clsx(classes.content, {
                 [classes.contentShift]: open
@@ -266,7 +268,6 @@ export default function HeaderPrimary({children}: Props) {
             <Container
                 component="main"
                 maxWidth={false}
-                sx={{padding: 0}}
             >
                 {children}
             </Container>

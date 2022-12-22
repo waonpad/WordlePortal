@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 import IconButton from '@material-ui/core/IconButton';
+import { alpha, makeStyles, Theme, useTheme, createStyles } from '@material-ui/core/styles';
 import { Home, Chat, Forum, Group, Login, PersonAdd } from '@mui/icons-material';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -13,6 +14,8 @@ import { Link, useHistory } from "react-router-dom";
 
 function DrawerPrimary(props: any): React.ReactElement {
 
+    const theme = useTheme();
+
     return (
         <Drawer
             className={props.classes.drawer}
@@ -25,7 +28,7 @@ function DrawerPrimary(props: any): React.ReactElement {
         >
         <div className={props.classes.drawerHeader}>
             <IconButton onClick={props.handleDrawerOpen}>
-                {props.theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
         </div>
         <Divider />
