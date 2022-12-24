@@ -190,91 +190,91 @@ export default function HeaderPrimary({children}: Props) {
 
     return (
         <div className={classes.root}>
-        <AppBar 
-            position="fixed"
-            className={classes.appBar}
-        >
-            <Toolbar>
-            <IconButton
-                edge="start"
-                className={clsx(classes.menuButton, open)}
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
+            <AppBar
+                position="fixed"
+                className={classes.appBar}
             >
-                <MenuIcon />
-            </IconButton>
-            <Typography className={classes.title} variant="h6" noWrap component={Link} to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                Material-UI
-            </Typography>
-            <HeaderSearch classes={classes} />
-            <div className={classes.grow} />
-
-            {!auth?.user ? (
-                // ログインしていない
-                <div className={classes.sectionDesktop}>
-                    <Button component={Link} to='/login' style={{ textDecoration: 'none', color: 'inherit' }}>Login</Button>
-                    <Button component={Link} to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Button>
-                </div>
-            ) : (
-                // ログインしている
-                // https://zenn.dev/cryptobox/articles/2dc6fe0951eeca
-
-                <div className={classes.sectionDesktop}>
-                
-                <IconButton aria-label="show new notifications" component={Link} to='/' style={{ textDecoration: 'none', color: "inherit" }}>
-                    <Badge badgeContent={notification.unread_notifications ? Object.keys(notification.unread_notifications).length : 0} color="secondary">
-                    <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-
-                <IconButton aria-label='go to current user' component={Link} to={'/user/' + auth?.user!.screen_name} style={{ textDecoration: 'none', color: "inherit" }}>
-                    <AccountCircle />
-                </IconButton>
-
+                <Toolbar>
                 <IconButton
-                    edge="end"
-                    aria-label="show setting and others"
-                    aria-controls={settingMenuId}
-                    aria-haspopup="true"
-                    onClick={handleSettingMenuOpen}
+                    edge="start"
+                    className={clsx(classes.menuButton, open)}
                     color="inherit"
+                    aria-label="open drawer"
+                    onClick={handleDrawerOpen}
                 >
-                    <Settings />
+                    <MenuIcon />
                 </IconButton>
-                </div>
-            )}
+                <Typography className={classes.title} variant="h6" noWrap component={Link} to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    Material-UI
+                </Typography>
+                <HeaderSearch classes={classes} />
+                <div className={classes.grow} />
 
-            <div className={classes.sectionMobile}>
-                <IconButton
-                    aria-label="show more"
-                    aria-controls={mobileMenuId}
-                    aria-haspopup="true"
-                    onClick={handleMobileMenuOpen}
-                    color="inherit"
-                >
-                <MoreIcon />
-                </IconButton>
-            </div>
-            </Toolbar>
-        </AppBar>
-        <DrawerPrimary open={open} classes={classes} handleDrawerOpen={handleDrawerOpen} />
-        <main
-            className={clsx(classes.content, {
-                [classes.contentShift]: open
-            })}
-        >
-            <div className={classes.drawerHeader} />
-            <Container
-                component="main"
-                maxWidth={false}
+                {!auth?.user ? (
+                    // ログインしていない
+                    <div className={classes.sectionDesktop}>
+                        <Button component={Link} to='/login' style={{ textDecoration: 'none', color: 'inherit' }}>Login</Button>
+                        <Button component={Link} to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>Register</Button>
+                    </div>
+                ) : (
+                    // ログインしている
+                    // https://zenn.dev/cryptobox/articles/2dc6fe0951eeca
+
+                    <div className={classes.sectionDesktop}>
+                    
+                    <IconButton aria-label="show new notifications" component={Link} to='/' style={{ textDecoration: 'none', color: "inherit" }}>
+                        <Badge badgeContent={notification.unread_notifications ? Object.keys(notification.unread_notifications).length : 0} color="secondary">
+                        <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+
+                    <IconButton aria-label='go to current user' component={Link} to={'/user/' + auth?.user!.screen_name} style={{ textDecoration: 'none', color: "inherit" }}>
+                        <AccountCircle />
+                    </IconButton>
+
+                    <IconButton
+                        edge="end"
+                        aria-label="show setting and others"
+                        aria-controls={settingMenuId}
+                        aria-haspopup="true"
+                        onClick={handleSettingMenuOpen}
+                        color="inherit"
+                    >
+                        <Settings />
+                    </IconButton>
+                    </div>
+                )}
+
+                <div className={classes.sectionMobile}>
+                    <IconButton
+                        aria-label="show more"
+                        aria-controls={mobileMenuId}
+                        aria-haspopup="true"
+                        onClick={handleMobileMenuOpen}
+                        color="inherit"
+                    >
+                    <MoreIcon />
+                    </IconButton>
+                </div>
+                </Toolbar>
+            </AppBar>
+            <DrawerPrimary open={open} classes={classes} handleDrawerOpen={handleDrawerOpen} />
+            <main
+                className={clsx(classes.content, {
+                    [classes.contentShift]: open
+                })}
             >
-                {children}
-            </Container>
-        </main>
-        {renderMobileMenu}
-        {renderMenu}
-        {renderSettingMenu}
+                <div className={classes.drawerHeader} />
+                <Container
+                    component="main"
+                    maxWidth={false}
+                >
+                    {children}
+                </Container>
+            </main>
+            {renderMobileMenu}
+            {renderMenu}
+            {renderSettingMenu}
         </div>
     );
 }

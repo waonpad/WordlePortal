@@ -4,26 +4,16 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import { green, grey, yellow } from '@mui/material/colors';
 
+import { globalTheme } from './Theme';
+
 type Props = {
     children: ReactNode;
 }
 
-const theme = createTheme({
-    palette: {
-        // mode: 'dark',
-        primary: {
-            main: green[400]
-        },
-        background: {
-            default: '#f5f5f5',
-        },
-    }
-});
-
 function View({children}: Props): React.ReactElement {
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={globalTheme}>
             <CssBaseline />
             {children}
         </ThemeProvider>
