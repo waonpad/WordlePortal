@@ -39,6 +39,11 @@ class Game extends Model
         'input' => 'array'
     ];
 
+    // これはゲームの作成者の方がいいのでは
+    public function user() {
+      return $this->belongsTo(User::class);
+    }
+
     public function gameUsers()
     {
         return $this->hasMany(GameUser::class);

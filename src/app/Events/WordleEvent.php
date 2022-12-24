@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class WordlePosted implements ShouldBroadcast
+class WordleEvent implements ShouldBroadcast
 {
     use SerializesModels;
 
@@ -19,7 +19,7 @@ class WordlePosted implements ShouldBroadcast
 
     public function __construct($wordle, $event_type)
     {
-        $this->post = $wordle;
+        $this->wordle = $wordle;
         $this->event_type = $event_type;
     }
 

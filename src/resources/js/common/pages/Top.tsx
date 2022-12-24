@@ -14,7 +14,7 @@ function Top(): React.ReactElement {
     const [wordle_get_api_method, setWordleGetApiMethod] = useState('wordle/index');
     const [request_params, setRequestParams] = useState<any>({});
     const [listening_channel, setListeningChannel] = useState('wordle');
-    const [listening_event, setListeningEvent] = useState('WordlePosted');
+    const [listening_event, setListeningEvent] = useState('WordleEvent');
 
     const location = useLocation();
     const {wordle_tag_id} = useParams<{wordle_tag_id: string}>();
@@ -27,8 +27,8 @@ function Top(): React.ReactElement {
         if(wordle_tag_id !== undefined) {
             setWordleGetApiMethod('wordle/tag');
             setRequestParams({tag_id: wordle_tag_id});
-            setListeningChannel(`wordle_tag_post.${wordle_tag_id}`);
-            setListeningEvent('WordleTagPosted');
+            setListeningChannel(`wordle_tag.${wordle_tag_id}`);
+            setListeningEvent('WordleTagEvent');
             setKey(`wordle_tag.${wordle_tag_id}`);
         }
         setInitialLoad(false);
@@ -46,6 +46,7 @@ function Top(): React.ReactElement {
             <WordleList
                 wordle_get_api_method={wordle_get_api_method}
                 request_params={request_params}
+                listen={true}
                 listening_channel={listening_channel}
                 listening_event={listening_event}
                 key={key}

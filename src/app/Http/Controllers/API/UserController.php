@@ -22,7 +22,12 @@ class UserController extends Controller
     public function show(Request $request)
     {   
         $auth_user = Auth::user() ?? '';
-        $target_user = User::with(['followers', 'follows', 'posts', 'likes'])->where('screen_name', $request->screen_name)->first();
+        $target_user = User::with([
+            'followers', 'follows', 'posts', 'likes',
+            'wordles.user', 'wordles.tags', 'wordles.likes',
+            'wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes',
+            'games.user', 'games.gameUsers', 'games.gameLogs'
+        ])->where('screen_name', $request->screen_name)->first();
 
         $myself = ($auth_user->id === $target_user->id) ? true : false;
         $follow = in_array($auth_user->id, $target_user->followers->pluck('id')->toArray()) ? true : false;

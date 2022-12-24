@@ -8,12 +8,25 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Wordle;
 use App\Models\Tag;
 use App\Models\WordleTag;
-use App\Events\WordlePosted;
-use App\Events\WordleTagPosted;
+use App\Events\WordleEvent;
+use App\Events\WordleTagEvent;
 use App\Http\Requests\UpsertWordleRequest;
 
 class WordleController extends Controller
 {
+    private function eventHandler($wordle, $event_type, $sync_tags, $dettached_tags = [])
+    {
+        event(new WordleEvent($wordle, $event_type));
+
+        foreach($sync_tags as $tag) {
+            event(new WordleTagEvent($wordle, $event_type, $tag->id));
+        }
+
+        foreach($dettached_tags as $tag) {
+            event(new WordleTagEvent($wordle, 'destroy', $tag->id));
+        }
+    }
+
     public function index()
     {
         $wordles = Wordle::with('user', 'tags', 'likes')->get();
@@ -78,14 +91,16 @@ class WordleController extends Controller
             array_push($sync_tags, $target_tag);
         }
         
+        // 解除されたタグを取得する
+        $dettached_tags = json_decode(json_encode(array_filter($wordle->tags->toArray(), function($tag) use($sync_tags) {
+            return !in_array($tag['id'], array_column($sync_tags, 'id'));
+        })));
+        
+        // ここで更新された後のタグだけに変わる
         $wordle->tags()->sync(array_column($sync_tags, 'id'));
         $response_wordle = Wordle::with('user', 'tags', 'likes')->find($wordle->id);
 
-        event(new WordlePosted($response_wordle, $event_type));
-
-        foreach($sync_tags as $tag) {
-            event(new WordleTagPosted($response_wordle, $event_type, $tag->id));
-        }
+        $this->eventHandler($response_wordle, $event_type, $sync_tags, $dettached_tags);
 
         return response()->json([
             'status' => true
@@ -108,6 +123,8 @@ class WordleController extends Controller
         
         if ($wordle->user_id === Auth::user()->id) {
             Wordle::destroy($wordle->id);
+
+            $this->eventHandler($wordle, 'destroy', $wordle->tags->toArray);
 
             return response()->json([
                 'status' => true
