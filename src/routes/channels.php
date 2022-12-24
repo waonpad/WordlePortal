@@ -54,7 +54,7 @@ Broadcast::channel('wordle', function (){
     return true;
 });
 
-Broadcast::channel('wordle_tag_post.{tag_id}', function (){
+Broadcast::channel('wordle_tag.{tag_id}', function (){
     return true;
 });
 

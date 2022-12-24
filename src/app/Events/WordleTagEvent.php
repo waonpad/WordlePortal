@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class WordleTagPosted implements ShouldBroadcast
+class WordleTagEvent implements ShouldBroadcast
 {
     use SerializesModels;
 
@@ -21,13 +21,13 @@ class WordleTagPosted implements ShouldBroadcast
 
     public function __construct($wordle, $event_type, $tag_id)
     {
-        $this->post = $wordle;
+        $this->wordle = $wordle;
         $this->event_type = $event_type;
         $this->tag_id = $tag_id;
     }
 
     public function broadcastOn()
     {
-        return new Channel('wordle_tag_post' . $this->tag_id);
+        return new Channel('wordle_tag.' . $this->tag_id);
     }
 }

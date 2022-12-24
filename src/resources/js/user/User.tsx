@@ -259,8 +259,7 @@ function User(): React.ReactElement {
                                 <WordleList
                                     wordle_get_api_method={''}
                                     request_params={''}
-                                    listening_channel={''}
-                                    listening_event={''}
+                                    listen={false}
                                     key={''}
                                 />
                                 :
@@ -268,8 +267,7 @@ function User(): React.ReactElement {
                                 <WordleList
                                     wordle_get_api_method={}
                                     request_params={}
-                                    listening_channel={}
-                                    listening_event={}
+                                    listen={false}
                                     key={}
                                 />
                                 :
@@ -277,8 +275,7 @@ function User(): React.ReactElement {
                                 <WordleList
                                     wordle_get_api_method={}
                                     request_params={}
-                                    listening_channel={}
-                                    listening_event={}
+                                    listen={false}
                                     key={}
                                 />
                                 : <></>

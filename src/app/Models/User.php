@@ -84,6 +84,12 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Models\Wordle', 'wordle_likes', 'user_id', 'wordle_id');
     }
 
+    // 作成したgame一覧
+    public function games() {
+        return $this->hasMany(Game::class);
+    }
+
+    // 参加しているgame一覧
     public function gameUser() {
         return $this->hasMany(GameUser::class);
     }

@@ -29,7 +29,21 @@ import Modal from "react-modal";
 import ModalPrimary from '../../common/modal/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
 
-function WordleList(props: any): React.ReactElement {
+// 親コンポーネントで既にデータを持っているかどうか(apiにアクセスする必要があるか)
+// TODO: 既に持っている場合の分岐を作る
+// チャンネルに入る必要があるかどうか
+
+type WordleListProps = {
+    wordle_get_api_method: string;
+    request_params: string;
+    listen: boolean;
+    listening_channel?: string;
+    listening_event?: string;
+}
+
+function WordleList(props: WordleListProps): React.ReactElement {
+    const {wordle_get_api_method, request_params, listen, listening_channel, listening_event} = props;
+
     const auth = useAuth();
     const [wordle_loading, setwordleLoading] = useState(true);
     
@@ -37,11 +51,11 @@ function WordleList(props: any): React.ReactElement {
     const [wordles, setwordles] = useState<any[]>([]);
 
 	useEffect(() => {
-        console.log(props.wordle_get_api_method);
-        console.log(props.request_params);
-        console.log(props.listening_channel);
-        console.log(props.listening_event);
-        axios.get(`/api/${props.wordle_get_api_method}`, {params: props.request_params}).then(res => {
+        console.log(wordle_get_api_method);
+        console.log(request_params);
+        console.log(listening_channel);
+        console.log(listening_event);
+        axios.get(`/api/${wordle_get_api_method}`, {params: request_params}).then(res => {
             if (res.status === 200) {
                 console.log(res);
                 console.log(res.data);
@@ -52,17 +66,21 @@ function WordleList(props: any): React.ReactElement {
             }
         });
 
-        window.Echo.channel(props.listening_channel).listen(props.listening_event, (channel_event: any) => {
-            console.log(channel_event);
-            if(channel_event.event_type === 'create') {
-                setwordles(wordles => [channel_event.wordle, ...wordles]);
-                console.log('新しい投稿を受信');
-            }
-            if(channel_event.event_type === 'update') {
-                setwordles((wordles) => wordles.map((wordle) => (wordle.id === channel_event.wordle.id ? channel_event.wordle : wordle)));
-                console.log('投稿の更新を受信');
-            }
-        });
+        if(listen) {
+            window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
+                console.log(channel_event);
+                if(channel_event.event_type === 'create' || 'update') {
+                    // 一度削除した後追加しなおし、ソートすることで
+                    // 既に配列に存在しているかどうかに関わらず処理をする
+                    setwordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {
+                        return (a.id < b.id) ? 1 : -1;  //オブジェクトの降順ソート
+                    }))
+                }
+                if(channel_event.event_type === 'destroy') {
+                    setwordles((wordles) => wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id)));
+                }
+            });
+        }
 	}, [])
     /////////////////////////////////////////////////////////////////////////////////////
 
