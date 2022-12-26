@@ -64,11 +64,11 @@ function Wordle(): React.ReactElement {
                 const firebase_game = ref.once('value', (snapshot) => {
                     if (snapshot.val()) {
                         const firbase_game_users = snapshot.val().users;
-                        const connected_firebase_game_users = Object.keys(firbase_game_users).filter((key) => (
+                        const connected_firebase_game_users = firbase_game_users ? Object.keys(firbase_game_users).filter((key) => (
                             snapshot.val().users[key].status === 'connect'
                         )).map((key) => (
                             snapshot.val().users[key]
-                        ))
+                        )) : [];
                         
                         console.log(connected_firebase_game_users);
                         if(
@@ -568,7 +568,7 @@ function Wordle(): React.ReactElement {
 	if (initial_load) {
 		return (
 			<Backdrop open={true}>
-			    <CircularProgress color="inherit" />
+			    <CircularProgress/>
 			</Backdrop>
 		)
 	}

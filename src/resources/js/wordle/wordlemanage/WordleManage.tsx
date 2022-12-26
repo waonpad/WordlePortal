@@ -202,7 +202,7 @@ function WordleManage(): React.ReactElement {
 	if (initial_load) {
 		return (
 			<Backdrop open={true}>
-			  <CircularProgress color="inherit" />
+			  <CircularProgress/>
 			</Backdrop>
 		)
 	}

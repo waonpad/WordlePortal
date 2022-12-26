@@ -64,7 +64,7 @@ export default function Register(): React.ReactElement {
         .required('必須入力'),
         description: Yup.string().max(191),
         age: Yup.number().min(0).max(130).required(),
-        gender: Yup.string().oneOf(['male', 'female']).required()
+        // gender: Yup.string().oneOf(['male', 'female']).required()
     });
 
     const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterData>({
@@ -98,8 +98,8 @@ export default function Register(): React.ReactElement {
     const [gender, setGender] = React.useState('');
 
     const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target);
-        console.log(event.target.value);
+        // console.log(event.target);
+        // console.log(event.target.value);
         setGender(event.target.value);
     };
 
@@ -111,7 +111,7 @@ export default function Register(): React.ReactElement {
         const croppedimgsrc = target!.getAttribute('data-cropped-img-src');
         data.icon = croppedimgsrc;
 
-        console.log(data);
+        // console.log(data);
         axios.get('/sanctum/csrf-cookie').then(() => {
             auth?.register(data).then((res: any) => {
             console.log(res);
@@ -143,14 +143,6 @@ export default function Register(): React.ReactElement {
             setLoading(false)
             })
         })
-    }
-
-    const cli = () => {
-        console.log('cli');
-        const target = document.querySelector('[data-key="user_icon"]');
-        console.log(target);
-        const croppedimgsrc = target!.getAttribute('data-cropped-img-src');
-        console.log(croppedimgsrc);
     }
 
     return (

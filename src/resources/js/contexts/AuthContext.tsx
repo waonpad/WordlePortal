@@ -1,18 +1,18 @@
 import axios, { AxiosResponse } from "axios";
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react"
 import {Route, Redirect, useHistory} from "react-router-dom"
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { Backdrop, CircularProgress } from "@mui/material";
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { User, LogInData, RegisterData, authProps, Props, RouteProps, From } from "../auth/types/AuthType";
+
+import { globalTheme } from "../Theme";
 
 const authContext = createContext<authProps | null>(null)
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: '#fff',
+      	zIndex: theme.zIndex.drawer + 1
     },
   }),
 );
@@ -22,15 +22,15 @@ const ProvideAuth = ({children}: Props) => {
 	const classes = useStyles();
 	if (auth.load) {
 		return (
-			<Backdrop className={classes.backdrop} open={true}>
-			  <CircularProgress color="inherit" />
+			<Backdrop className={classes.backdrop} open={true} sx={{backgroundColor: globalTheme.palette.background.default}}>
+			  	<CircularProgress sx={{color: globalTheme.palette.primary.main}} />
 			</Backdrop>
 		)
 	}
 	else {
 		return (
 			<authContext.Provider value={auth}>
-			{children}
+				{children}
 			</authContext.Provider>
 		)
 	}
@@ -75,8 +75,8 @@ const useProvideAuth = () => {
 	}
 
 	const signout = () => {
-		return axios.post('/api/logout', {}).then(() => {
-		setUser(null)
+			return axios.post('/api/logout', {}).then(() => {
+			setUser(null)
 		})
 	}
 
@@ -109,15 +109,15 @@ export const PrivateRoute = ({children, path, exact = false}: RouteProps) => {
 	const auth = useAuth()
 	return (
 		<Route
-		path={path}
-		exact={exact}
-		render={({ location }) => {
-			if(auth?.user == null) {
-			return <Redirect to={{ pathname: "/login", state: { from: location }}}/>
-			} else {
-			return children
-			}
-		}}
+			path={path}
+			exact={exact}
+			render={({ location }) => {
+				if(auth?.user == null) {
+				return <Redirect to={{ pathname: "/login", state: { from: location }}}/>
+				} else {
+				return children
+				}
+			}}
 		/>
 	)
 }
@@ -131,15 +131,15 @@ export const PublicRoute = ({children, path, exact = false}: RouteProps) => {
 	const history = useHistory()
 	return (
 		<Route
-		path={path}
-		exact={exact}
-		render={({ location }) => {
-			if(auth?.user == null) {
-			return children
-			} else {
-			return <Redirect to={{pathname: (history.location.state as From) ? (history.location.state as From).from.pathname : '/' , state: { from: location }}}/>
-			}
-		}}
+			path={path}
+			exact={exact}
+			render={({ location }) => {
+				if(auth?.user == null) {
+				return children
+				} else {
+				return <Redirect to={{pathname: (history.location.state as From) ? (history.location.state as From).from.pathname : '/' , state: { from: location }}}/>
+				}
+			}}
 		/>
 	)
 }

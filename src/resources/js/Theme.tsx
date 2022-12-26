@@ -5,7 +5,8 @@ export const globalTheme = createTheme({
     palette: {
         // mode: 'dark',
         primary: {
-            main: green[400]
+            main: green[400],
+            contrastText: '#fff'
         },
         background: {
             default: '#f5f5f5',

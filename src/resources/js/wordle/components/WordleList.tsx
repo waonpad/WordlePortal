@@ -15,6 +15,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
@@ -28,40 +29,38 @@ import { useAuth } from '../../contexts/AuthContext';
 import Modal from "react-modal";
 import ModalPrimary from '../../common/modal/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
-
-// 親コンポーネントで既にデータを持っているかどうか(apiにアクセスする必要があるか)
-// TODO: 既に持っている場合の分岐を作る
-// チャンネルに入る必要があるかどうか
+import PrimaryButton from '../../common/button/primarybutton/components/PrimaryButton';
 
 type WordleListProps = {
     wordle_get_api_method: string;
-    request_params: string;
+    request_params: object;
+    response_keys: string[];
     listen: boolean;
     listening_channel?: string;
     listening_event?: string;
 }
 
 function WordleList(props: WordleListProps): React.ReactElement {
-    const {wordle_get_api_method, request_params, listen, listening_channel, listening_event} = props;
+    const {wordle_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
 
     const auth = useAuth();
-    const [wordle_loading, setwordleLoading] = useState(true);
+    const [wordle_loading, setWordleLoading] = useState(true);
     
     // Channel ////////////////////////////////////////////////////////////////////
-    const [wordles, setwordles] = useState<any[]>([]);
+    const [wordles, setWordles] = useState<any[]>([]);
 
 	useEffect(() => {
-        console.log(wordle_get_api_method);
-        console.log(request_params);
-        console.log(listening_channel);
-        console.log(listening_event);
         axios.get(`/api/${wordle_get_api_method}`, {params: request_params}).then(res => {
             if (res.status === 200) {
                 console.log(res);
-                console.log(res.data);
-                console.log(res.data.wordles);
-                setwordles(res.data.wordles.reverse());
-                setwordleLoading(false);
+                var res_data = res.data;
+
+                response_keys.forEach(key => {
+                    res_data = res_data[key];
+                });
+
+                setWordles(res_data.reverse());
+                setWordleLoading(false);
                 console.log('投稿取得完了');
             }
         });
@@ -72,12 +71,12 @@ function WordleList(props: WordleListProps): React.ReactElement {
                 if(channel_event.event_type === 'create' || 'update') {
                     // 一度削除した後追加しなおし、ソートすることで
                     // 既に配列に存在しているかどうかに関わらず処理をする
-                    setwordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {
+                    setWordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {
                         return (a.id < b.id) ? 1 : -1;  //オブジェクトの降順ソート
                     }))
                 }
                 if(channel_event.event_type === 'destroy') {
-                    setwordles((wordles) => wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id)));
+                    setWordles((wordles) => wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id)));
                 }
             });
         }
@@ -94,7 +93,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
                 const like_status = res.data.like_status;
                 const target_wordle = wordles.find((wordle) => (wordle.id == wordle_id));
                 target_wordle.like_status = like_status;
-                setwordles((wordles) => wordles.map((wordle) => (wordle.id === wordle_id ? target_wordle : wordle)));
+                setWordles((wordles) => wordles.map((wordle) => (wordle.id === wordle_id ? target_wordle : wordle)));
                 console.log(`いいね状態: ${like_status}`);
             }
             else {
@@ -115,7 +114,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
             console.log(res);
             if(res.data.status === true) {
                 const target_wordle = wordles.find((wordle) => (wordle.id == wordle_id));
-                setwordles(wordles.filter((wordle, index) => (wordle.id !== target_wordle.id)));
+                setWordles(wordles.filter((wordle, index) => (wordle.id !== target_wordle.id)));
                 console.log('投稿削除成功');
             }
             else {
@@ -133,24 +132,29 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const [modalIsOpen, setIsOpen] = useState(false);
 
     const handleVSPlayOptionOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const target = wordles.find((wordle) => wordle.id === Number(event.currentTarget.id));
+        const target = wordles.find((wordle) => wordle.id === Number(event.currentTarget.getAttribute('data-wordle-id')));
         console.log(target);
         setVSTargetWordle(target);
         setIsOpen(true);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    return (
-        <Container maxWidth={'md'}>
-            <ModalPrimary isOpen={modalIsOpen}>
-                <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
-                <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
-            </ModalPrimary>
-            <Grid container spacing={2} direction="column" alignItems="center" justifyContent="center">
-                {!wordle_loading ? (
-                    wordles.map((wordle, index) => (
+    if(wordle_loading) {
+		return (
+			<CircularProgress/>
+		)
+    }
+    else {
+        return (
+            <Container maxWidth={'md'} disableGutters>
+                <ModalPrimary isOpen={modalIsOpen}>
+                    <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
+                    <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
+                </ModalPrimary>
+                <Grid container spacing={2}>
+                    {wordles.map((wordle, index) => (
                         <Grid item xs={12} sx={{minWidth: '100%'}} key={index}>
-                            <Card elevation={3}>
+                            <Card elevation={1}>
                                 <CardHeader
                                     action={
                                     <IconButton aria-label="settings">
@@ -192,8 +196,8 @@ function WordleList(props: WordleListProps): React.ReactElement {
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Stack spacing={2} direction="row">
-                                                <Button variant="contained">Single Play</Button>
-                                                <Button variant="contained" id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
+                                                <Button variant="contained" style={{fontWeight: 'bold', color: '#fff'}}>Single Play</Button>
+                                                <Button variant="contained" style={{fontWeight: 'bold', color: '#fff'}} data-wordle-id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
                                             </Stack>
                                         </Grid>
                                     </Grid>
@@ -223,13 +227,11 @@ function WordleList(props: WordleListProps): React.ReactElement {
                                 </CardActions>
                             </Card>
                         </Grid>
-                    ))
-                ) : (
-                    <CircularProgress />
-                )}
-            </Grid>
-        </Container>
-    )
+                    ))}
+                </Grid>
+            </Container>
+        )
+    }
 }
 
 export default WordleList;

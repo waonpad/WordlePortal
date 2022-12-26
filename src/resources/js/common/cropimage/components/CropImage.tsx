@@ -147,8 +147,8 @@ function CropImage(props: CropImageProps): React.ReactElement {
         if (!croppedAreaPixels) return;
         try {
         const croppedImage = await getCroppedImg(imgSrc, croppedAreaPixels);
-        console.log('切り取り後画像URL');
-        console.log(croppedImage);
+        // console.log('切り取り後画像URL');
+        // console.log(croppedImage);
         setCroppedImgSrc(croppedImage);
         } catch (e) {
         console.error(e);
@@ -156,7 +156,7 @@ function CropImage(props: CropImageProps): React.ReactElement {
     }, [croppedAreaPixels, imgSrc]);
 
     return (
-        <div className={classes.root} data-key={component_key} data-cropped-img-src={croppedImgSrc ? croppedImgSrc.replace(/^.*,/, '') : null}>
+        <div className={classes.root} data-key={component_key} data-cropped-img-src={croppedImgSrc ? croppedImgSrc : null}>
         {/* <div className="file-upload-container">
             <Button variant="contained" component="label" className="button">
             Upload File

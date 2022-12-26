@@ -20,8 +20,23 @@ class AuthController extends Controller
                 'validation_errors' => $validator->errors(),
             ]);
         } else {
+            $icon = $request->icon;
+
+            preg_match('/data:image\/(\w+);base64,/', $icon, $matches);
+            $extension = $matches[1];
+
+            $img = preg_replace('/^data:image.*base64,/', '', $icon);
+            $img = str_replace(' ', '+', $img);
+            $fileData = base64_decode($img);
+
+            $dir = rtrim('user/icon', '/').'/';
+            $fileName = md5($img);
+            $path = $dir.$fileName.'.'.$extension;
+
+            Storage::disk('public')->put($path, $fileData);
+
             $user = User::create([
-                'icon' => $request->icon,
+                'icon' => $path,
                 'screen_name' => $request->screen_name,
                 'name' => $request->name,
                 'email' => $request->email,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, IconButton, Card } from '@material-ui/core';
+import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
 import AbcIcon from '@mui/icons-material/Abc';
@@ -22,7 +22,7 @@ function WordleInputSelectButtonGroup(props: WordleInputSelectButtonGroupProps):
                         key={index}
                         value={input}
                         onClick={props.handleDisplayInputComponentSelect}
-                        style={{fontWeight: 'bold'}}
+                        sx={{fontWeight: 'bold'}}
                     >
                         {
                             input === 'japanese' ? 'あ'

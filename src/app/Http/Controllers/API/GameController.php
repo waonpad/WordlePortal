@@ -87,6 +87,7 @@ class GameController extends Controller
         ];
     }
 
+    // TODO: 条件変更用に処理を書き換える
     public function create(GameCreateRequest $request)
     {
         $validator = $request->getValidator();
@@ -118,6 +119,7 @@ class GameController extends Controller
             'max' => $max,
             'input' => $wordle->input,
             'description' => $wordle->description,
+            'tags' => $wordle->tags,
             'game_create_user_id' => Auth::user()->id,
             'answer' => $answer,
             'max_participants' => $request->max_participants,

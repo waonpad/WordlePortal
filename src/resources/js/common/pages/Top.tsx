@@ -46,6 +46,7 @@ function Top(): React.ReactElement {
             <WordleList
                 wordle_get_api_method={wordle_get_api_method}
                 request_params={request_params}
+                response_keys={['wordles']}
                 listen={true}
                 listening_channel={listening_channel}
                 listening_event={listening_event}

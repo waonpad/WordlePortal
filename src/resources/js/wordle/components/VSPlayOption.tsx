@@ -21,12 +21,14 @@ import { getDatabase, push, ref, set, update, onValue, onDisconnect, child, orde
 import { serverTimestamp } from 'firebase/database';
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
+    const {game, wordle, handleModalClose} = props;
+
     const basicSchema = Yup.object().shape({
         max_participants: Yup.number().required(),
         laps: Yup.number().required(),
-        visibility: Yup.boolean().oneOf([true, false]).required(),
+        // visibility: Yup.boolean().oneOf([true, false]).required(),
         answer_time_limit: Yup.number().required(),
-        coloring: Yup.boolean().oneOf([true, false]).required(),
+        // coloring: Yup.boolean().oneOf([true, false]).required(),
     });
 
     const { register, handleSubmit, setError, clearErrors, formState: { errors }, reset } = useForm<VSPlayOptionData>({
@@ -43,8 +45,12 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
         console.log(errors);
     }, [errors]);
 
+    useEffect(() => {
+        console.log(game);
+    }, [])
+
     // Visibility ///////////////////////////////////////////////////////////////////////
-    const [visibility, setVisibility] = React.useState(true);
+    const [visibility, setVisibility] = useState<boolean>(game ? game.visibility === 1 ? true : false : true);
 
     const handleChangeVisibility = (event: React.ChangeEvent<HTMLInputElement>) => {
         console.log(event.target);
@@ -54,7 +60,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     //////////////////////////////////////////////////////////////////////////
 
     // Coloring ///////////////////////////////////////////////////////////////////////
-    const [coloring, setColoring] = React.useState(true);
+    const [coloring, setColoring] = useState<boolean>(game ? game.coloring === 1 ? true : false : true);
 
     const handleChangeColoring = (event: React.ChangeEvent<HTMLInputElement>) => {
         console.log(event.target);
@@ -66,7 +72,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     // Submit //////////////////////////////////////////////////////////
     const onSubmit: SubmitHandler<VSPlayOptionData> = (data: VSPlayOptionData) => {
         setLoading(true);
-        data.wordle_id = props.wordle.id;
+        data.wordle_id = game ? game.wordle_id : wordle.id;
         console.log(data);
         
         axios.post('/api/wordle/game/create', data).then(res => {
@@ -74,9 +80,6 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
             if(res.data.status === true) {
                 swal("送信成功", "送信成功", "success");
                 setLoading(false);
-                // if(props?.game) {
-                //     props?.handleModalClose(false);
-                // }
                 
                 const game = res.data.game;
 
@@ -84,7 +87,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                     created_at: serverTimestamp(),
                     host: game.game_create_user_id,
                     status: 'wait',
-                    joined: false
+                    joined: false,
                 });
 
                 history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
@@ -120,6 +123,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         id="max_participants"
                         label="Max Participants"
                         autoComplete="max-participants"
+                        defaultValue={game ? game.max_participants : null}
                         {...register('max_participants')}
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         error={errors.max_participants ? true : false}
@@ -133,6 +137,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         id="laps"
                         label="Laps"
                         autoComplete="laps"
+                        defaultValue={game ? game.laps : null}
                         {...register('laps')}
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         error={errors.laps ? true : false}
@@ -163,6 +168,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         id="answer_time_limit"
                         label="Answer Time Limit"
                         autoComplete="answer_time_limit"
+                        defaultValue={game ? game.answer_time_limit : null}
                         {...register('answer_time_limit')}
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                         error={errors.answer_time_limit ? true : false}

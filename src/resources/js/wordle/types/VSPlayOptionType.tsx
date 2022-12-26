@@ -1,6 +1,7 @@
 export type VSPlayOptionProps = {
-    wordle: any
-    handleModalClose: Function
+    game?: any;
+    wordle?: any;
+    handleModalClose: Function;
 }
 
 // Options ///////////////////
@@ -12,21 +13,21 @@ export type VSPlayOptionProps = {
 //////////////////////////////
 
 export type VSPlayOptionData = {
-    wordle_id: number
-    max_participants: number
-    laps: number
-    visibility: boolean
-    answer_time_limit: number
-    coloring: boolean
-    submit: string
+    wordle_id: number;
+    max_participants: number;
+    laps: number;
+    visibility: boolean;
+    answer_time_limit: number;
+    coloring: boolean;
+    submit: string;
 }
 
 export type VSPlayOptionErrorData = {
-    wordle_id: string
-    max_participants: string
-    laps: string
-    visibility: string
-    answer_time_limit: string
-    coloring: string
-    submit: string
+    wordle_id: string;
+    max_participants: string;
+    laps: string;
+    visibility: string;
+    answer_time_limit: string;
+    coloring: string;
+    submit: string;
 }
