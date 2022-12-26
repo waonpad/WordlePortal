@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('age');
             $table->string('gender');
-            $table->text('icon')->nullable();
+            $table->string('icon')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

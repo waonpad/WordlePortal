@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('max');
             $table->json('input');
             $table->string('description')->nullable();
+            $table->json('tags');
             $table->unsignedBigInteger('game_create_user_id')->nullable();
             $table->foreign('game_create_user_id')->references('id')->on('users')->nullOnDelete();
             $table->string('answer');
@@ -33,7 +34,7 @@ return new class extends Migration
             $table->integer('laps');
             $table->boolean('visibility');
             $table->integer('answer_time_limit');
-            $table->integer('coloring');
+            $table->boolean('coloring');
             $table->string('status');
             $table->timestamps();
         });

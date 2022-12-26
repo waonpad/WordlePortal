@@ -20,6 +20,7 @@ class Game extends Model
         'max',
         'input',
         'description',
+        'tags',
         'game_create_user_id',
         'answer',
         'max_participants',
@@ -36,7 +37,8 @@ class Game extends Model
     
     protected $casts = [
         'words' => 'array',
-        'input' => 'array'
+        'input' => 'array',
+        'tags' => 'array'
     ];
 
     // これはゲームの作成者の方がいいのでは

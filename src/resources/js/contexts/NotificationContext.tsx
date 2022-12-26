@@ -31,7 +31,7 @@ const useProvideNoification = () => {
     if(auth?.user !== null) {
         axios.get('/api/notification/unread').then(res => {
             if (res.status === 200) {
-                console.log(res);
+                // console.log(res);
                 setUnreadNotifications(res.data.unread_notifications);
 
                 // setInitialLoad(false);

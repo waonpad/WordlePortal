@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
 import swal from "sweetalert";
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -16,11 +16,10 @@ import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import { styled } from "@mui/material/styles";
-import { alpha, createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 
 import { globalTheme } from '../Theme';
 import WordleList from '../wordle/components/WordleList';
+import GameList from '../wordle/components/GameList';
 
 function User(): React.ReactElement {
     const location = useLocation();
@@ -120,8 +119,8 @@ function User(): React.ReactElement {
 
     if(loading) {
 		return (
-			<Backdrop open={true}>
-			  <CircularProgress color="inherit" />
+			<Backdrop open={true} sx={{backgroundColor: 'transparent'}}>
+			    <CircularProgress/>
 			</Backdrop>
 		)
     }
@@ -145,12 +144,11 @@ function User(): React.ReactElement {
                                             aria-controls={more_horiz_id}
                                             aria-haspopup="true"
                                             onClick={handleUserMenuOpen}
-                                            color="inherit"
                                         >
                                             <MoreHorizIcon />
                                         </IconButton>
                                         <Grid item xs={12} sx={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-                                            {user_data.icon !== null ? <Avatar src={`data:image/jpeg;base64,${user_data.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
+                                            {user_data.icon !== null ? <Avatar src={`/storage/${user_data.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Typography fontSize={28}>
@@ -238,8 +236,7 @@ function User(): React.ReactElement {
                                     <Button
                                         key={index}
                                         value={input}
-                                        style={{fontWeight: 'bold'}}
-                                        sx={display_wordle_list === input ? {color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {}}
+                                        sx={display_wordle_list === input ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
                                         onClick={handleDisplayWordleListSelect}
                                     >
                                         {
@@ -254,32 +251,35 @@ function User(): React.ReactElement {
                         </Grid>
                         {/* Wordle */}
                         <Grid item xs={12}>
-                            {/* {
+                            {
                                 display_wordle_list === 'wordles' ?
                                 <WordleList
-                                    wordle_get_api_method={''}
-                                    request_params={''}
+                                    wordle_get_api_method={'user/show'}
+                                    request_params={{screen_name: screen_name}}
+                                    response_keys={['user', 'wordles']}
                                     listen={false}
-                                    key={''}
+                                    key={key + 'wordles'}
                                 />
                                 :
                                 display_wordle_list === 'game_results' ?
-                                <WordleList
-                                    wordle_get_api_method={}
-                                    request_params={}
+                                <GameList
+                                    game_get_api_method={'user/show'}
+                                    request_params={{screen_name: screen_name}}
+                                    response_keys={['user', 'games']}
                                     listen={false}
-                                    key={}
+                                    key={key + 'games'}
                                 />
                                 :
                                 display_wordle_list === 'likes' ?
                                 <WordleList
-                                    wordle_get_api_method={}
-                                    request_params={}
+                                    wordle_get_api_method={'user/show'}
+                                    request_params={{screen_name: screen_name}}
+                                    response_keys={['user', 'wordle_likes']}
                                     listen={false}
-                                    key={}
+                                    key={key + 'wordle_likes'}
                                 />
                                 : <></>
-                            } */}
+                            }
                         </Grid>
                     </Grid>
                 </Grid>

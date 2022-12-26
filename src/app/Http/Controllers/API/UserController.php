@@ -38,7 +38,7 @@ class UserController extends Controller
             'user' => $target_user,
             'myself' => $myself,
             'follow' => $follow,
-            'followed' => $followed
+            'followed' => $followed,
         ]);
     }
 
