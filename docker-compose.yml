@@ -13,7 +13,7 @@ services:
     container_name: fullstack-app
     build: ./docker/php
     volumes:
-      - ./docker/php/php.ini:/usr/local/php/php.ini
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ./src:/var/www/html
       - vendor-store:/var/www/html/vendor
       - node_modules-store:/var/www/html/node_modules
