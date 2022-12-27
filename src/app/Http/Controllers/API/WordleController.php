@@ -10,7 +10,7 @@ use App\Models\Tag;
 use App\Models\WordleTag;
 use App\Events\WordleEvent;
 use App\Events\WordleTagEvent;
-use App\Http\Requests\UpsertWordleRequest;
+use App\Http\Requests\WordleUpsertRequest;
 
 class WordleController extends Controller
 {
@@ -41,7 +41,7 @@ class WordleController extends Controller
         ]);
     }
 
-    public function upsert(UpsertWordleRequest $request)
+    public function upsert(WordleUpsertRequest $request)
     {
         $validator = $request->getValidator();
         if($validator->fails()){
@@ -61,7 +61,7 @@ class WordleController extends Controller
         $recognized_words = array_values($recognized_words);
         if(count($recognized_words) < 10) {
             return response()->json([
-                'validation_errors'=>[
+                'validation_errors' => [
                     'words' => 'words field must have at least 10 items & must be unique',
                 ]
             ]);
@@ -70,22 +70,22 @@ class WordleController extends Controller
         $event_type = $request->id !== null ? 'update' : 'create';
 
         $wordle = Wordle::updateOrCreate(
-            ['id'=>$request->id],
+            ['id' => $request->id],
             [
-                'name'=>$request->name,
-                'user_id'=>Auth::user()->id,
-                'words'=>$recognized_words,
-                'input'=>$request->input,
-                'description'=>$request->description,
+                'name' => $request->name,
+                'user_id' => Auth::user()->id,
+                'words' => $recognized_words,
+                'input' => $request->input,
+                'description' => $request->description,
             ]
         );
 
         $sync_tags = [];
         foreach ($request->tags as $tag) {
             $target_tag = Tag::firstOrCreate(
-                ['name'=>$tag],
+                ['name' => $tag],
                 [
-                    'name'=>$tag
+                    'name' => $tag
                 ]
             );
             array_push($sync_tags, $target_tag);
@@ -124,7 +124,7 @@ class WordleController extends Controller
         if ($wordle->user_id === Auth::user()->id) {
             Wordle::destroy($wordle->id);
 
-            $this->eventHandler($wordle, 'destroy', $wordle->tags->toArray);
+            $this->eventHandler($wordle, 'destroy', $wordle->tags);
 
             return response()->json([
                 'status' => true

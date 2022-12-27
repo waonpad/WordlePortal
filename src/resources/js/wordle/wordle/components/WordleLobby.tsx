@@ -25,54 +25,46 @@ import BackspaceIcon from '@mui/icons-material/Backspace';
 import { WordleLobbyProps } from '../../types/WordleType';
 
 function WordleLobby(props: WordleLobbyProps): React.ReactElement {
+    const {classes, game_status, firebase_game_data, handleGameStart} = props;
 
     const auth = useAuth();
 
-    if(!props.firebase_game_data) {
-		return (
-			<Backdrop open={true}>
-			    <CircularProgress color="inherit" />
-			</Backdrop>
-		)
-    }
-    else {
-        return (
-            <Container maxWidth={'md'}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Stack spacing={2} direction="row">
-                            {Object.keys(props.firebase_game_data.users).filter((key) => (
-                                props.firebase_game_data.users[key].status === 'connect'
-                            )).map((key, index) => (
-                                <Chip key={index} label={props.firebase_game_data.users[key].user.name} />
-                            ))}
-                        </Stack>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            variant='contained'
-                            disabled={
-                                auth!.user!.id === props.firebase_game_data.host ? false //自分がゲーム作成者ならstartできる
-                                :
-                                (`u${props.firebase_game_data.host}` in Object.keys(props.firebase_game_data.users).filter((key) => (
-                                    props.firebase_game_data.users[key].status === 'connect'
-                                ))) === false
-                                &&
-                                `u${auth!.user!.id.toString()}` === Object.keys(props.firebase_game_data.users).filter((key) => (
-                                    props.firebase_game_data.users[key].status === 'connect'
-                                ))[0] ? false // ゲーム作成者が居ない場合、idが若いユーザーがstartできる
-                                :
-                                true
-                            }
-                            onClick={props.handleGameStart}
-                        >
-                            Game Start
-                        </Button>
-                    </Grid>
+    return (
+        <Container maxWidth={'md'}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Stack spacing={2} direction="row">
+                        {Object.keys(firebase_game_data.users).filter((key) => (
+                            firebase_game_data.users[key].status === 'connect'
+                        )).map((key, index) => (
+                            <Chip key={index} label={firebase_game_data.users[key].user.name} />
+                        ))}
+                    </Stack>
                 </Grid>
-            </Container>
-        )
-    }
+                <Grid item xs={12}>
+                    <Button
+                        variant='contained'
+                        disabled={
+                            auth!.user!.id === firebase_game_data.host ? false //自分がゲーム作成者ならstartできる
+                            :
+                            (`u${firebase_game_data.host}` in Object.keys(firebase_game_data.users).filter((key) => (
+                                firebase_game_data.users[key].status === 'connect'
+                            ))) === false
+                            &&
+                            `u${auth!.user!.id.toString()}` === Object.keys(firebase_game_data.users).filter((key) => (
+                                firebase_game_data.users[key].status === 'connect'
+                            ))[0] ? false // ゲーム作成者が居ない場合、idが若いユーザーがstartできる
+                            :
+                            true
+                        }
+                        onClick={handleGameStart}
+                    >
+                        Game Start
+                    </Button>
+                </Grid>
+            </Grid>
+        </Container>
+    )
 }
 
 export default WordleLobby;

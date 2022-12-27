@@ -11,5 +11,14 @@ export const globalTheme = createTheme({
         background: {
             default: '#f5f5f5',
         },
+    },
+    components: {
+        MuiBackdrop: {
+            defaultProps: {
+                sx: {
+                    backgroundColor: '#f5f5f5',
+                }
+            }
+        }
     }
 });

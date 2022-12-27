@@ -9,7 +9,7 @@ use App\Models\Game;
 use App\Models\GameUser;
 use App\Models\GameLog;
 use App\Events\GameEvent;
-use App\Http\Requests\GameCreateRequest;
+use App\Http\Requests\GameUpsertRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
@@ -88,7 +88,7 @@ class GameController extends Controller
     }
 
     // TODO: 条件変更用に処理を書き換える
-    public function create(GameCreateRequest $request)
+    public function upsert(GameUpsertRequest $request)
     {
         $validator = $request->getValidator();
         if($validator->fails()){
@@ -109,26 +109,58 @@ class GameController extends Controller
         $min = min($lengths);
         $max = max($lengths);
 
-        $game = Game::create([
-            'uuid' => (string) Str::uuid(),
-            'wordle_id' => $request->wordle_id,
-            'name' => $wordle->name,
-            'user_id' => $wordle->user_id,
-            'words' => $wordle->words,
-            'min' => $min,
-            'max' => $max,
-            'input' => $wordle->input,
-            'description' => $wordle->description,
-            'tags' => $wordle->tags,
-            'game_create_user_id' => Auth::user()->id,
-            'answer' => $answer,
-            'max_participants' => $request->max_participants,
-            'laps' => $request->laps,
-            'visibility' => $request->visibility,
-            'answer_time_limit' => $request->answer_time_limit,
-            'coloring' => $request->coloring,
-            'status' => 'wait',
-        ]);
+        $request_type = $request->game_id !== null ? 'update' : 'create';
+
+        if($request_type === 'create') {
+            $game = Game::create([
+                'uuid' => (string) Str::uuid(),
+                'wordle_id' => $request->wordle_id,
+                'name' => $wordle->name,
+                'user_id' => $wordle->user_id,
+                'words' => $wordle->words,
+                'min' => $min,
+                'max' => $max,
+                'input' => $wordle->input,
+                'description' => $wordle->description,
+                'tags' => $wordle->tags,
+                'game_create_user_id' => Auth::user()->id,
+                'answer' => $answer,
+                'max_participants' => $request->max_participants,
+                'laps' => $request->laps,
+                'visibility' => $request->visibility,
+                'answer_time_limit' => $request->answer_time_limit,
+                'coloring' => $request->coloring,
+                'status' => 'wait',
+            ]);
+        }
+        else if($request_type === 'update') {
+            $target_game = Game::find($request->game_id);
+
+            if($target_game->status !== 'wait') {
+                return response()->json([
+                    'message' => '今は設定を変更できません',
+                    'status' => false
+                ]);
+            }
+
+            if($request->max_participants < $target_game->max_participants) {
+                // 既に参加者が入っている場合処理がめんどうになるので弾く
+                return response()->json([
+                    'message' => '制限人数を減らすことはできません',
+                    'status' => false
+                ]);
+            }
+
+            $target_game->update([
+                'max_participants' => $request->max_participants,
+                'laps' => $request->laps,
+                'visibility' => $request->visibility,
+                'answer_time_limit' => $request->answer_time_limit,
+                'coloring' => $request->coloring,
+            ]);
+
+            $game = Game::find($request->game_id);
+        }
 
         return response()->json([
             'game' => $game,
@@ -215,11 +247,13 @@ class GameController extends Controller
         }
 
         $input_user_id = $request->has('skip') ? $request->skip_user_id : Auth::user()->id;
+        $input_user_order = GameUser::where('game_id', $game->id)->where('user_id', $input_user_id)->first()->order;
         $latest_input_user = GameUser::where('game_id', $game->id)->where('user_id', GameLog::where('game_id', $game->id)->where('type', 'input')->latest('id')->first()->user_id ?? null)->first();
         
         // ターンプレイヤーかどうか判定
         if($latest_input_user === null) {
-            if($input_user_id !== 1) {
+            // まだinputが無い場合、orderが1でないならターンプレイヤーではない
+            if($input_user_order !== 1) {
                 return response()->json([
                     'status' => false,
                     'message' => 'ターンプレイヤーではない'
@@ -227,9 +261,11 @@ class GameController extends Controller
             }
         }
         else {
-            $turn_user = GameUser::where('order', $latest_input_user->order + 1)->first();
+            $turn_user = GameUser::where('game_id', $game->id)->where('order', $latest_input_user->order + 1)->first();
+
+            // 一周した場合、orderが1でないならターンプレイヤーではない
             if($turn_user === null) {
-                if($input_user_id !== 1) {
+                if($input_user_order !== 1) {
                     return response()->json([
                         'status' => false,
                         'message' => 'ターンプレイヤーではない'
@@ -237,6 +273,7 @@ class GameController extends Controller
                 }
             }
             else {
+                // 本来のターンプレイヤーと自分のidが一致しなければターンプレイヤーではない
                 if($input_user_id !== $turn_user->user_id) {
                     return response()->json([
                         'status' => false,

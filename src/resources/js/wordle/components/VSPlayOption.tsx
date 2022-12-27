@@ -24,7 +24,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const {game, wordle, handleModalClose} = props;
 
     const basicSchema = Yup.object().shape({
-        max_participants: Yup.number().required(),
+        max_participants: Yup.number().min(game ? game.max_participants : 0).required(),
         laps: Yup.number().required(),
         // visibility: Yup.boolean().oneOf([true, false]).required(),
         answer_time_limit: Yup.number().required(),
@@ -50,7 +50,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     }, [])
 
     // Visibility ///////////////////////////////////////////////////////////////////////
-    const [visibility, setVisibility] = useState<boolean>(game ? game.visibility === 1 ? true : false : true);
+    const [visibility, setVisibility] = useState<'true' | 'false'>(game ? game.visibility === 1 ? 'true' : 'false' : 'true');
 
     const handleChangeVisibility = (event: React.ChangeEvent<HTMLInputElement>) => {
         console.log(event.target);
@@ -60,7 +60,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     //////////////////////////////////////////////////////////////////////////
 
     // Coloring ///////////////////////////////////////////////////////////////////////
-    const [coloring, setColoring] = useState<boolean>(game ? game.coloring === 1 ? true : false : true);
+    const [coloring, setColoring] = useState<'true' | 'false'>(game ? game.coloring === 1 ? 'true' : 'false' : 'true');
 
     const handleChangeColoring = (event: React.ChangeEvent<HTMLInputElement>) => {
         console.log(event.target);
@@ -72,10 +72,13 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     // Submit //////////////////////////////////////////////////////////
     const onSubmit: SubmitHandler<VSPlayOptionData> = (data: VSPlayOptionData) => {
         setLoading(true);
+        data.game_id = game ? game.id : null;
         data.wordle_id = game ? game.wordle_id : wordle.id;
+        data.visibility = visibility === 'true' ? true : false;
+        data.coloring = coloring === 'true' ? true : false;
         console.log(data);
         
-        axios.post('/api/wordle/game/create', data).then(res => {
+        axios.post('/api/wordle/game/upsert', data).then(res => {
             console.log(res);
             if(res.data.status === true) {
                 swal("送信成功", "送信成功", "success");
@@ -83,14 +86,20 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                 
                 const game = res.data.game;
 
-                firebaseApp.database().ref(`wordle/games/${game.uuid}`).set({
-                    created_at: serverTimestamp(),
-                    host: game.game_create_user_id,
-                    status: 'wait',
-                    joined: false,
-                });
+                if(data.game_id === null) {
+                    firebaseApp.database().ref(`wordle/games/${game.uuid}`).set({
+                        created_at: serverTimestamp(),
+                        host: game.game_create_user_id,
+                        status: 'wait',
+                        joined: false,
+                    });
+                }
 
                 history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
+            }
+            else if(res.data.status === false) {
+                swal("処理失敗", res.data.message, "error");
+                setLoading(false)
             }
             else {
                 const obj: VSPlayOptionErrorData = res.data.validation_errors;
@@ -105,9 +114,9 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
         .catch(error => {
             console.log(error)
             setError('submit', {
-            type: 'manual',
-            message: '送信に失敗しました'
-        })
+                type: 'manual',
+                message: '送信に失敗しました'
+            })
             setLoading(false);
         })
     }
@@ -155,8 +164,8 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                             {...register('visibility')}
                             onChange={handleChangeVisibility}
                         >
-                            <FormControlLabel value={true} control={<Radio />} label="Visible" />
-                            <FormControlLabel value={false} control={<Radio />} label="Invisible" />
+                            <FormControlLabel value={'true'} control={<Radio />} label="Visible" />
+                            <FormControlLabel value={'false'} control={<Radio />} label="Invisible" />
                         </RadioGroup>
                         <FormHelperText>{errors.visibility?.message}</FormHelperText>
                     </FormControl>
@@ -186,8 +195,8 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                             {...register('coloring')}
                             onChange={handleChangeColoring}
                         >
-                            <FormControlLabel value={true} control={<Radio />} label="Colored" />
-                            <FormControlLabel value={false} control={<Radio />} label="Plain" />
+                            <FormControlLabel value={'true'} control={<Radio />} label="Colored" />
+                            <FormControlLabel value={'false'} control={<Radio />} label="Plain" />
                         </RadioGroup>
                         <FormHelperText>{errors.coloring?.message}</FormHelperText>
                     </FormControl>

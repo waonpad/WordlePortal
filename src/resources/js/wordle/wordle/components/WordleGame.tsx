@@ -13,41 +13,57 @@ import WordleBoard from './wordlegame/WordleBoard';
 import { ErrataList, GameWords, WordleGameProps } from '../../types/WordleType';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
+    const {
+        classes,
+        game_status,
+        game_words,
+        turn_flag,
+        handleInputStack,
+        input_stack,
+        handleTypingStack,
+        handleDisplayInputComponentSelect,
+        handleInputBackSpace,
+        handleInputEnter,
+        loading,
+        errata_list,
+        display_input_component,
+    } = props;
+
     return (
         <Container maxWidth={false}>
             <Grid container spacing={2}>
                 {/* words表示エリア */}
                 <Grid item xs={12}>
-                    <WordleBoard game_words={props.game_words} classes={props.classes} />
+                    <WordleBoard game_words={game_words} classes={classes} />
                 </Grid>
                 {/* input表示エリア */}
                 <Grid item xs={12}>
                     <WordleInput
-                        classes={props.classes}
-                        turn_flag={props.turn_flag}
-                        handleInputStack={props.handleInputStack}
-                        errata={props.errata_list}
-                        input_stack={props.input_stack}
-                        handleTypingStack={props.handleTypingStack}
-                        display_input_component={props.display_input_component}
+                        classes={classes}
+                        turn_flag={turn_flag}
+                        handleInputStack={handleInputStack}
+                        errata={errata_list}
+                        input_stack={input_stack}
+                        handleTypingStack={handleTypingStack}
+                        display_input_component={display_input_component}
                     />
                 </Grid>
                 {/* input切り替えボタングループ */}
                 <Grid item xs={12}>
                     <WordleInputSelectButtonGroup
-                        input={props.game_status.game.input}
-                        handleDisplayInputComponentSelect={props.handleDisplayInputComponentSelect}
+                        input={game_status?.game?.input}
+                        handleDisplayInputComponentSelect={handleDisplayInputComponentSelect}
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <Stack spacing={2} direction="row">
-                        <IconButton color='inherit' onClick={props.handleInputBackSpace}>
+                        <IconButton color='inherit' onClick={handleInputBackSpace}>
                             <BackspaceIcon />
                         </IconButton>
                         <LoadingButton
-                            loading={props.loading}
+                            loading={loading}
                             variant="contained"
-                            onClick={props.handleInputEnter}
+                            onClick={handleInputEnter}
                         >
                             Enter
                         </LoadingButton>
