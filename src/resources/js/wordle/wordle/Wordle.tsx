@@ -65,7 +65,7 @@ function Wordle(): React.ReactElement {
                     if (snapshot.val()) {
                         const firbase_game_users = snapshot.val().users;
                         const connected_firebase_game_users = firbase_game_users ? Object.keys(firbase_game_users).filter((key) => (
-                            snapshot.val().users[key].status === 'connect'
+                            snapshot.val().users[key].status === 'connect' && key !== `u${user_id}`
                         )).map((key) => (
                             snapshot.val().users[key]
                         )) : [];
@@ -565,7 +565,7 @@ function Wordle(): React.ReactElement {
         })
     }
     
-	if (initial_load) {
+	if (initial_load || firebase_game_data?.users == undefined || game_status == undefined) {
 		return (
 			<Backdrop open={true}>
 			    <CircularProgress/>
@@ -604,11 +604,11 @@ function Wordle(): React.ReactElement {
                     :
                     game_status?.game?.status === 'end' ?
                     <Backdrop open={true}>
-                        <CircularProgress color="inherit" />
+                        <CircularProgress/>
                     </Backdrop>
                     :
                     <Backdrop open={true}>
-                        <CircularProgress color="inherit" />
+                        <CircularProgress/>
                     </Backdrop>
                 }
             </React.Fragment>

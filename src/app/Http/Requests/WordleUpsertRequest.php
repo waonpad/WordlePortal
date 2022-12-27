@@ -5,7 +5,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpsertWordleRequest extends FormRequest
+class WordleUpsertRequest extends FormRequest
 {
 
     /**

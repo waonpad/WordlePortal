@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpsertPostRequest extends FormRequest
+class GameUpsertRequest extends FormRequest
 {
 
     /**
@@ -15,11 +15,13 @@ class UpsertPostRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'integer|nullable',
-            'title' => 'required|max:50',
-            'comment' => 'required',
-            'categories' => 'array',
-            'categories.*' => 'string',
+            'game_id' => 'nullable|numeric',
+            'wordle_id' => 'required|numeric',
+            'max_participants' => 'required|numeric',
+            'laps' => 'required|numeric',
+            'visibility' => 'required|boolean',
+            'answer_time_limit' => 'required|numeric',
+            'coloring' => 'required|boolean',
         ];
     }
 

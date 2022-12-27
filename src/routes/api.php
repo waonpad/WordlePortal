@@ -103,7 +103,7 @@ Route::prefix('wordle')->group(function (){
 
     // games
     Route::prefix('game')->group(function (){
-        Route::post('create', [GameController::class, 'create'])->middleware('auth');
+        Route::post('upsert', [GameController::class, 'upsert'])->middleware('auth');
         Route::get('show', [GameController::class, 'show'])->middleware('auth');
         Route::get('search', [GameController::class, 'search']);
         // Route::post('entry', [GameController::class, 'entry'])->middleware('auth');

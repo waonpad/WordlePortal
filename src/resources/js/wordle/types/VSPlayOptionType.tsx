@@ -13,6 +13,7 @@ export type VSPlayOptionProps = {
 //////////////////////////////
 
 export type VSPlayOptionData = {
+    game_id: number | null;
     wordle_id: number;
     max_participants: number;
     laps: number;
@@ -23,6 +24,7 @@ export type VSPlayOptionData = {
 }
 
 export type VSPlayOptionErrorData = {
+    game_id: string;
     wordle_id: string;
     max_participants: string;
     laps: string;

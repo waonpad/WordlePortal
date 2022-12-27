@@ -5,11 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Comment;
-use App\Http\Requests\UpsertCommentRequest;
+use App\Http\Requests\CommentUpsertRequest;
 
 class CommentController extends Controller
 {
-    public function upsert(UpsertCommentRequest $request)
+    public function upsert(CommentUpsertRequest $request)
     {
         $validator = $request->getValidator();
         if($validator->fails()){

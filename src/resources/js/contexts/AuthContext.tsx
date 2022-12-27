@@ -2,28 +2,16 @@ import axios, { AxiosResponse } from "axios";
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react"
 import {Route, Redirect, useHistory} from "react-router-dom"
 import { Backdrop, CircularProgress } from "@mui/material";
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { User, LogInData, RegisterData, authProps, Props, RouteProps, From } from "../auth/types/AuthType";
-
-import { globalTheme } from "../Theme";
 
 const authContext = createContext<authProps | null>(null)
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    backdrop: {
-      	zIndex: theme.zIndex.drawer + 1
-    },
-  }),
-);
-
 const ProvideAuth = ({children}: Props) => {
 	const auth = useProvideAuth();
-	const classes = useStyles();
 	if (auth.load) {
 		return (
-			<Backdrop className={classes.backdrop} open={true} sx={{backgroundColor: globalTheme.palette.background.default}}>
-			  	<CircularProgress sx={{color: globalTheme.palette.primary.main}} />
+			<Backdrop open={true}>
+			  	<CircularProgress/>
 			</Backdrop>
 		)
 	}

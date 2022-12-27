@@ -9,7 +9,7 @@ use App\Events\CategoryPosted;
 use App\Models\Post;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Http\Requests\UpsertPostRequest;
+use App\Http\Requests\PostUpsertRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -30,7 +30,7 @@ class PostController extends Controller
         ]);
     }
 
-    public function upsert(UpsertPostRequest $request) {
+    public function upsert(PostUpsertRequest $request) {
         $validator = $request->getValidator();
         if($validator->fails()){
             return response()->json([
