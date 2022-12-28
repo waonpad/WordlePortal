@@ -86,7 +86,7 @@ class User extends Authenticatable
 
     // 作成したgame一覧
     public function games() {
-        return $this->hasMany(Game::class);
+        return $this->hasMany(Game::class, 'game_create_user_id');
     }
 
     // 参加しているgame一覧

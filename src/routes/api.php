@@ -103,6 +103,7 @@ Route::prefix('wordle')->group(function (){
 
     // games
     Route::prefix('game')->group(function (){
+        Route::get('index', [GameController::class, 'index']);
         Route::post('upsert', [GameController::class, 'upsert'])->middleware('auth');
         Route::get('show', [GameController::class, 'show'])->middleware('auth');
         Route::get('search', [GameController::class, 'search']);
@@ -111,6 +112,7 @@ Route::prefix('wordle')->group(function (){
         // Route::post('ready', [GameController::class, 'ready'])->middleware('auth');
         Route::post('start', [GameController::class, 'start'])->middleware('auth');
         Route::post('input', [GameController::class, 'input'])->middleware('auth');
+        Route::post('destroy', [GameController::class, 'destroy'])->middleware('auth');
         // Route::post('skip', [GameController::class, 'skip'])->middleware('auth');
     });
 });

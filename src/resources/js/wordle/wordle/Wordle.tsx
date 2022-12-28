@@ -5,7 +5,7 @@ import axios from 'axios';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Button, IconButton, Card } from '@material-ui/core';
 import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@material-ui/core/Backdrop';
+import Backdrop from '@mui/material/Backdrop';
 import {useAuth} from "../../contexts/AuthContext";
 import { WordleStyle } from './styles/WordleStyle';
 import { GameWords, ErrataList, DisplayInputComponent, GameStatus } from '../types/WordleType';

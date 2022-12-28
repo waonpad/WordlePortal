@@ -34,12 +34,12 @@ import CropImage from '../../common/cropimage/components/CropImage';
 function Copyright(props: any) {
 return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-    {'Copyright © '}
-    <Link color="inherit" to="https://mui.com/">
-        Your Website
-    </Link>{' '}
-    {new Date().getFullYear()}
-    {'.'}
+        {'Copyright © '}
+        <Link color="inherit" to="https://mui.com/">
+            Your Website
+        </Link>{' '}
+        {new Date().getFullYear()}
+        {'.'}
     </Typography>
 );
 }
@@ -82,7 +82,7 @@ export default function Register(): React.ReactElement {
     // SnackBarの操作
     const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
         if (reason === 'clickaway') {
-        return;
+            return;
         }
 
         setOpen(false);
@@ -91,7 +91,7 @@ export default function Register(): React.ReactElement {
     // 認証が終わってUserにデータが入ったら移動する
     useEffect(() => {
         if (auth?.user !== null) {
-        history.push('/')
+            history.push('/')
         }
     }, [auth?.user])
 
@@ -132,21 +132,21 @@ export default function Register(): React.ReactElement {
             }
             })
             .catch((error) => {
-            console.log(error)
-            
-            setError('submit', {
-                type: 'manual',
-                message: '予期せぬエラーが発生しました'
-            })
-            setOpen(true);
-            
-            setLoading(false)
+                console.log(error)
+                
+                setError('submit', {
+                    type: 'manual',
+                    message: '予期せぬエラーが発生しました'
+                })
+                setOpen(true);
+                
+                setLoading(false)
             })
         })
     }
 
     return (
-        <Container maxWidth='xs' sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                 <LockOutlinedIcon />
             </Avatar> */}

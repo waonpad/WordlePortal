@@ -41,9 +41,8 @@ class Game extends Model
         'tags' => 'array'
     ];
 
-    // これはゲームの作成者の方がいいのでは
     public function user() {
-      return $this->belongsTo(User::class);
+      return $this->belongsTo(User::class, 'game_create_user_id');
     }
 
     public function gameUsers()
