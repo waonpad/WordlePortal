@@ -98,3 +98,19 @@ export type WordleLobbyProps = {
     firebase_game_data: any;
     handleGameStart: any;
 }
+
+export type WordleListProps = {
+    wordle_get_api_method: string;
+    request_params: object;
+    response_keys: string[];
+    listen: boolean;
+    listening_channel?: string;
+    listening_event?: string;
+}
+
+export type WordleListItemProps = {
+    wordle: any;
+    handleLikeToggle: any;
+    handleDeleteWordle: any;
+    handleVSPlayOptionOpen: any;
+}

@@ -209,7 +209,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
             >
-                Create Game
+                {game ? 'Update' : 'Create'} Game
             </LoadingButton>
         </Box>
     )

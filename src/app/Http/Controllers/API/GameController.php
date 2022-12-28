@@ -13,6 +13,8 @@ use App\Http\Requests\GameUpsertRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
+// TODO: visibilityに関する設定をする
+
 class GameController extends Controller
 {
     private function currentGameStatus($game, $initial_load = false)
@@ -85,6 +87,16 @@ class GameController extends Controller
                 'not_exists' => $not_exists
             ],
         ];
+    }
+
+    public function index()
+    {
+        $games = Game::with('user', 'gameUsers', 'gameLogs')->get();
+
+        return response()->json([
+            'games' => $games,
+            'status' => true
+        ]);
     }
 
     // TODO: 条件変更用に処理を書き換える
@@ -179,6 +191,27 @@ class GameController extends Controller
             'status' => true,
             'current_game_status' => $current_game_status
         ]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $game = Game::find($request->game_id);
+        
+        if ($game->game_create_user_id === Auth::user()->id) {
+            Game::destroy($game->id);
+
+            // 削除通知
+
+            return response()->json([
+                'status' => true
+            ]);
+        }
+        else {
+            return response()->json([
+               'message' => 'Gameが存在しないか削除権限が無い',
+               'status' => false
+            ]);
+        }
     }
     
     public function search(Request $request)
