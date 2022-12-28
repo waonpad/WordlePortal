@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import React from 'react';
+import { Box, Typography, Grid } from '@mui/material';
 import Chip from "@material-ui/core/Chip"; // v4
-import Grid from '@mui/material/Grid';
 import { WordleBoardProps } from '../../../types/WordleType';
 
 function WordleBoard(props: WordleBoardProps): React.ReactElement {

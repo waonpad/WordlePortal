@@ -44,7 +44,13 @@ class Game extends Model
     public function user() {
       return $this->belongsTo(User::class, 'game_create_user_id');
     }
+    
+    // 参加しているユーザー一覧(直リレーション)
+    public function joiningUsers() {
+        return $this->belongsToMany('App\Models\User', 'game_user', 'game_id', 'user_id');
+    }
 
+    // 参加しているユーザー一覧(gameでの情報)
     public function gameUsers()
     {
         return $this->hasMany(GameUser::class);

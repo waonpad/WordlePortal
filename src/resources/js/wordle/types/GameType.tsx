@@ -1,4 +1,5 @@
 export type GameListProps = {
+    game_status: ('wait' | 'start' | 'end')[];
     game_get_api_method: string;
     request_params: object;
     response_keys: string[];

@@ -1,24 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import swal from 'sweetalert';
 import { useHistory, Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from "react-hook-form";
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-// import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
+import { Snackbar, IconButton, Button, TextField, Grid, Box, Typography, Container } from '@mui/material';
 import CloseIcon from '@material-ui/icons/Close';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -62,7 +47,7 @@ export default function LogIn(): React.ReactElement {
     const [open, setOpen] = useState(false);
 
     // SnackBarの操作
-    const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }

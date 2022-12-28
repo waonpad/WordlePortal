@@ -26,7 +26,8 @@ class UserController extends Controller
             'followers', 'follows', 'posts', 'likes',
             'wordles.user', 'wordles.tags', 'wordles.likes',
             'wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes',
-            'games.user', 'games.gameUsers', 'games.gameLogs'
+            'games.user', 'games.gameUsers.user', 'games.gameLogs',
+            'joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs',
         ])->where('screen_name', $request->screen_name)->first();
 
         $myself = false;

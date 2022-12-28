@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
 import axios from 'axios';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import ModalPrimary from '../../common/modal/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
 import { WordleListProps } from '../types/WordleType';

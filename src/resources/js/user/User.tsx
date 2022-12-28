@@ -16,6 +16,7 @@ import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import UserPrimaryDetail from './components/UserPrimaryDetail';
 
 import { globalTheme } from '../Theme';
 import WordleList from '../wordle/components/WordleList';
@@ -30,67 +31,12 @@ function User(): React.ReactElement {
     const [follow, setFollow] = useState(false);
     const [myself, setMyself] = useState(false);
     const [key, setKey] = useState('');
-
     const [expanded, setExpanded] = useState(false);
-    const [user_menu_anchor_el, setUserMenuAnchorEl] = useState<null | HTMLElement>(null);
-    const is_menu_open = Boolean(user_menu_anchor_el);
-
     const [display_wordle_list, setDisplayWordleList] = useState<string | null>('wordles');
-
-    // descriptionの展開 ///////////////////////////////////////////////////////////////////////
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
-    /////////////////////////////////////////////////////////////////////////
-
-    // 設定メニュー関連 /////////////////////////////////////////////////////////////////////////
-    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setUserMenuAnchorEl(event.currentTarget);
-    };
-    
-    const handleUserMenuClose = () => {
-        setUserMenuAnchorEl(null);
-    };
-
-    const more_horiz_id = 'user-menu';
-    const render_user_menu = (
-        <Menu
-            anchorEl={user_menu_anchor_el}
-            getContentAnchorEl={null}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            id={more_horiz_id}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={is_menu_open}
-            onClose={handleUserMenuClose}
-        >
-            {/* 後で設定する */}
-            <MenuItem onClick={handleUserMenuClose}>項目</MenuItem>
-            <MenuItem onClick={handleUserMenuClose}>項目</MenuItem>
-        </Menu>
-    )
-    /////////////////////////////////////////////////////////////////////////
 
     // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
     const handleDisplayWordleListSelect = (event: any) => {
         setDisplayWordleList(event.currentTarget.value);
-    }
-    /////////////////////////////////////////////////////////////////////////
-
-    // フォロー /////////////////////////////////////////////////////////////////////////
-    const followToggle = () => {
-        axios.post('/api/user/followtoggle', {screen_name: screen_name}).then(res => {
-            console.log(res);
-            if(res.data.status === true) {
-                setFollow(res.data.follow);
-            }
-            else {
-                swal("処理失敗", "処理失敗", "error");
-            }
-        }).catch(error => {
-            console.log(error)
-            swal("処理失敗", "処理失敗", "error");
-        });
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -119,7 +65,7 @@ function User(): React.ReactElement {
 
     if(loading) {
 		return (
-			<Backdrop open={true} sx={{backgroundColor: 'transparent'}}>
+			<Backdrop open={true}>
 			    <CircularProgress/>
 			</Backdrop>
 		)
@@ -127,82 +73,19 @@ function User(): React.ReactElement {
     else {
         return (
             <Container maxWidth={'lg'} key={key}>
-                {render_user_menu}
                 <Grid container spacing={2}>
                     {/* 左のエリア */}
                     <Grid item container xs={4} spacing={2} height={'fit-content'}>
                         {/* ユーザー情報 */}
                         <Grid item xs={12}>
-                            <Card elevation={1} sx={{minWidth: '100%'}}>
-                                <CardContent sx={{paddingBottom: 0}}>
-                                    <Grid container spacing={1} sx={{textAlign: 'center', position: 'relative'}}>
-                                        {/* 設定メニュー */}
-                                        <IconButton
-                                            sx={{position: 'absolute', top: 0, right: '12px'}}
-                                            edge="end"
-                                            aria-label="show setting and others"
-                                            aria-controls={more_horiz_id}
-                                            aria-haspopup="true"
-                                            onClick={handleUserMenuOpen}
-                                        >
-                                            <MoreHorizIcon />
-                                        </IconButton>
-                                        <Grid item xs={12} sx={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-                                            {user_data.icon !== null ? <Avatar src={`/storage/${user_data.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography fontSize={28}>
-                                                {user_data.name}
-                                            </Typography>
-                                            <Typography color={grey[500]}>
-                                                @{user_data.screen_name}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12} sx={{marginTop: 1}}>
-                                            {
-                                                myself ? (
-                                                    <Button variant='outlined' fullWidth>Edit Profile</Button>
-                                                ) : (
-                                                    <Button variant='outlined' fullWidth onClick={followToggle}>{follow ? 'unFollow' : 'Follow'}</Button>
-                                                )
-                                            }
-                                        </Grid>
-                                        {/* <Grid item xs={12} sx={{marginTop: 2}}>
-                                            <Divider sx={{backgroundColor: '#000'}}/>
-                                        </Grid> */}
-                                        <Grid item container xs={12} spacing={1} sx={{marginTop: 0.5}}>
-                                            <Grid item xs={4}>
-                                                {/* 投稿数をカウント */}
-                                                <Typography color={grey[700]}>0</Typography>
-                                                <Typography color={grey[500]}>Post</Typography>
-                                            </Grid>
-                                            <Grid item xs={4}>
-                                                <Typography color={grey[700]}>{user_data.follows.length}</Typography>
-                                                <Typography color={grey[500]}>Follow</Typography>
-                                            </Grid>
-                                            <Grid item xs={4}>
-                                                <Typography color={grey[700]}>{user_data.followers.length}</Typography>
-                                                <Typography color={grey[500]}>Follower</Typography>
-                                            </Grid>
-                                        </Grid>
-                                        {/* description */}
-                                        <Grid item xs={12} sx={{marginTop: 2, textAlign: 'left', whiteSpace: 'pre-line'}}>
-                                            <Collapse in={expanded} collapsedSize={'9em'}>
-                                                <Typography sx={{color: grey[700]}}>{user_data.description}</Typography>
-                                            </Collapse>
-                                        </Grid>
-                                    </Grid>
-                                </CardContent>
-                                {/* descriptionを展開するボタン */}
-                                {/* 高さが設定値未満でもMOREが出てしまうが、手間なので妥協している */}
-                                <Button
-                                    fullWidth
-                                    onClick={handleExpandClick}
-                                    startIcon={expanded ? <ExpandLess /> : <ExpandMore />}
-                                >
-                                    {expanded ? "LESS" : "MORE"}
-                                </Button>
-                            </Card>
+                            <UserPrimaryDetail
+                                user_data={user_data}
+                                myself={myself}
+                                follow={follow}
+                                setFollow={setFollow}
+                                expanded={expanded}
+                                setExpanded={setExpanded}
+                            />
                         </Grid>
                         {/* フォロー中のタグ？ */}
                         <Grid item xs={12}>
@@ -221,9 +104,23 @@ function User(): React.ReactElement {
                         </Grid>
                         {/* 待機中のゲーム */}
                         <Grid item xs={12}>
-                            <Paper elevation={1} sx={{minWidth: '100%'}}>
-                                <Typography>Paper</Typography>
-                            </Paper>
+                            <Button
+                                fullWidth
+                                variant='outlined'
+                                sx={{fontWeight: 'bold', pointerEvents: 'none', backgroundColor: '#fff'}}
+                            >
+                                Join Game!
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <GameList
+                                game_status={['wait', 'start']}
+                                game_get_api_method={'user/show'}
+                                request_params={{screen_name: screen_name}}
+                                response_keys={['user', 'games']}
+                                listen={false}
+                                key={key + 'games'}
+                            />
                         </Grid>
                         {/* 表示するWordleの種類選択エリア */}
                         <Grid item xs={12}>
@@ -263,9 +160,10 @@ function User(): React.ReactElement {
                                 :
                                 display_wordle_list === 'game_results' ?
                                 <GameList
+                                    game_status={['end']}
                                     game_get_api_method={'user/show'}
                                     request_params={{screen_name: screen_name}}
-                                    response_keys={['user', 'games']}
+                                    response_keys={['user', 'joining_games']}
                                     listen={false}
                                     key={key + 'games'}
                                 />

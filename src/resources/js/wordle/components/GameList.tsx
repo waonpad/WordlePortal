@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
+import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import axios from 'axios';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
-import CircularProgress from '@mui/material/CircularProgress';
 import { useAuth } from '../../contexts/AuthContext';
 import ModalPrimary from '../../common/modal/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
@@ -11,7 +8,7 @@ import { GameListProps } from '../types/GameType';
 import GameListItem from './GameListItem';
 
 function GameList(props: GameListProps): React.ReactElement {
-    const {game_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
+    const {game_status, game_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
 
     const auth = useAuth();
     const [game_loading, setGameLoading] = useState(true);
@@ -29,7 +26,11 @@ function GameList(props: GameListProps): React.ReactElement {
                     res_data = res_data[key];
                 });
 
-                setGames(res_data.reverse());
+                const filtered_games = res_data.filter((game: any) => (
+                    game_status.includes(game.status)
+                ));
+
+                setGames(filtered_games.reverse());
                 setGameLoading(false);
                 console.log('投稿取得完了');
             }
