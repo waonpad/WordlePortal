@@ -1,7 +1,5 @@
-import React, { useState, useEffect, MouseEventHandler } from 'react';
-import { Button, IconButton, Card } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import React from 'react';
+import { Button, Box, Grid } from '@mui/material';
 import { WordleCharactersProps } from '../../../../types/WordleType';
 
 function WordleEnglishCharacters(props: WordleCharactersProps): React.ReactElement {

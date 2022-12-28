@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import swal from "sweetalert";
-import { Link, useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import axios from 'axios';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Button, IconButton, Card } from '@material-ui/core';
-import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@mui/material/Backdrop';
+import { CircularProgress, Backdrop } from '@mui/material';
 import {useAuth} from "../../contexts/AuthContext";
 import { WordleStyle } from './styles/WordleStyle';
-import { GameWords, ErrataList, DisplayInputComponent, GameStatus } from '../types/WordleType';
+import { GameWords, ErrataList, DisplayInputComponent } from '../types/WordleType';
 import WordleLobby from './components/WordleLobby';
 import WordleGame from './components/WordleGame';
-
 import firebaseApp from '../../contexts/FirebaseConfig';
-import { getDatabase, push, ref, set, update, onValue, onDisconnect, child, orderByChild, equalTo, startAt, endAt } from '@firebase/database'
+import { push } from '@firebase/database'
 import { serverTimestamp } from 'firebase/database';
 
 function Wordle(): React.ReactElement {

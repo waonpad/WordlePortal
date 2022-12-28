@@ -90,7 +90,12 @@ class User extends Authenticatable
     }
 
     // 参加しているgame一覧
-    public function gameUser() {
+    public function joiningGames() {
+        return $this->belongsToMany('App\Models\Game', 'game_user', 'user_id', 'game_id');
+    }
+
+    // 参加しているgameのorderやresultが欲しい時
+    public function gameUsers() {
         return $this->hasMany(GameUser::class);
     }
 }

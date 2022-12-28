@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import swal from "sweetalert";
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
-import TextField from '@mui/material/TextField';
+import { Grid, TextField, FormHelperText, Box, Radio, RadioGroup, FormControl, FormLabel, FormControlLabel } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import FormHelperText from '@mui/material/FormHelperText';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '../types/VSPlayOptionType';
 import firebaseApp from '../../contexts/FirebaseConfig';
-import { getDatabase, push, ref, set, update, onValue, onDisconnect, child, orderByChild, equalTo, startAt, endAt } from '@firebase/database'
 import { serverTimestamp } from 'firebase/database';
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {

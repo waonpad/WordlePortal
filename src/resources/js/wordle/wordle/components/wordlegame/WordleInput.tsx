@@ -1,8 +1,5 @@
-import React, { useState, useEffect, MouseEventHandler } from 'react';
-import { Button, IconButton, Card } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import CircularProgress from '@mui/material/CircularProgress';
+import React from 'react';
+import { CircularProgress } from '@mui/material';
 import { WordleInputProps } from '../../../types/WordleType';
 import WordleJapaneseCharacters from './wordleinput/WordleJapaneseCharacters';
 import WordleEnglishCharacters from './wordleinput/WordleEnglishCharacters';

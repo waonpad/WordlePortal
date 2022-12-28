@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import React from 'react';
 import Container from '@mui/material/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,7 +15,6 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { Button, Card, Box } from '@material-ui/core';
 import clsx from 'clsx';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import { Link, useHistory } from "react-router-dom";
 import swal from 'sweetalert';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -29,7 +28,7 @@ import { useNotification } from '../../../contexts/NotificationContext';
 /////////////////////////////////////////////////////////////////////////
 
 type Props = {
-    children: ReactNode
+    children: React.ReactNode
 }
 
 export default function HeaderPrimary({children}: Props) {

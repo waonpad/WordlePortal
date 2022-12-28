@@ -74,8 +74,6 @@ export type ErrataList = {
 
 export type DisplayInputComponent = 'japanese' | 'english' | 'number' | 'typing' | null;
 
-export type GameStatus = 'wait' | 'start' | 'end' | null;
-
 export type WordleGameProps = {
     classes: any;
     game_status: any;

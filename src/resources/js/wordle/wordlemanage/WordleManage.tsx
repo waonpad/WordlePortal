@@ -1,37 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import swal from "sweetalert";
-import { Button, Card } from '@material-ui/core';
-import { Link, useParams, useHistory, useLocation } from "react-router-dom";
+import { useParams, useHistory, useLocation } from "react-router-dom";
 import axios from 'axios';
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import TextField from '@mui/material/TextField';
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Backdrop, CircularProgress, IconButton, TextField, Button, FormLabel, FormControl, FormGroup, FormControlLabel, FormHelperText, Checkbox, Grid, Box, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-// import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import {useAuth} from "../../contexts/AuthContext";
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import IconButton from '@material-ui/core/IconButton';
 import { WordleData, WordleErrorData, WordleDefaultData } from '../types/WordleType';
-
-// TODO textfieldの削除処理
-
-const theme = createTheme();
 
 function WordleManage(): React.ReactElement {
     const basicSchema = Yup.object().shape({

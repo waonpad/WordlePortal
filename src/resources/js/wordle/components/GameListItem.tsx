@@ -1,33 +1,10 @@
 import React, { useState, useEffect } from 'react';
-// import { Button } from '@material-ui/core';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import { Link } from "react-router-dom";
-import axios from 'axios';
-import Card from '@mui/material/Card';
-// import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import { Avatar } from '@mui/material';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Button, Grid, Card, CardHeader, CardContent, Chip, Stack, Avatar, IconButton, Typography, Tooltip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { borders } from '@mui/system';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import { styled } from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
 import PinIcon from '@mui/icons-material/Pin';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
@@ -37,7 +14,6 @@ import AlarmIcon from '@mui/icons-material/Alarm'; // 制限時間
 import AlarmOffIcon from '@mui/icons-material/AlarmOff'; // 制限時間無し
 import InvertColorsIcon from '@mui/icons-material/InvertColors'; // 着色
 import InvertColorsOffIcon from '@mui/icons-material/InvertColorsOff'; // 着色無し
-import Tooltip from '@mui/material/Tooltip';
 import { useAuth } from '../../contexts/AuthContext';
 import { GameListItemProps } from '../types/GameType';
 
@@ -67,7 +43,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                     }
                     sx={{pb: 1}}
                 />
-                <CardContent sx={{pt: 0, pb: 0}}>
+                <CardContent sx={{pt: 0, "&:last-child": {pb: 1}}}>
                     <Grid container spacing={1}>
                         <Grid item xs={12}>
                             <Typography variant="h5">
@@ -129,27 +105,48 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                                 </Stack>
                             </Grid>
                         </Grid>
+                        {
+                            game.status === 'wait' ? (
+                                // waitの時はEdit,Delete,Joinができる
+                                <Grid item xs={12} sx={{display: 'flex'}}>
+                                    {auth?.user?.id == game.user.id ? (
+                                            <React.Fragment>
+                                                <IconButton data-game-id={game.id} onClick={handleVSPlayOptionOpen}>
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton data-delete-id={game.id} onClick={handleDeleteGame}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </React.Fragment>
+                                    ) : (
+                                        <></>
+                                    )}
+                                    <Link to={`/wordle/game/${game.wordle_id}/${game.uuid}`} style={{marginLeft: 'auto'}}>
+                                        <Button variant='contained' style={{fontWeight: 'bold', color: '#fff'}}>Join</Button>
+                                    </Link>
+                                </Grid>
+                            )
+                            :
+                            game.status === 'start' ? (
+                                // startの時はJoinができる
+                                <Grid item xs={12} sx={{display: 'flex'}}>
+                                    <Link to={`/wordle/game/${game.wordle_id}/${game.uuid}`} style={{marginLeft: 'auto'}}>
+                                        <Button variant='contained' style={{fontWeight: 'bold', color: '#fff'}}>Join</Button>
+                                    </Link>
+                                </Grid>
+                            )
+                            :
+                            game.status === 'end' ? (
+                                // endの時はリザルトが表示される
+                                <></>
+                            )
+                            :
+                            <></>
+                        }
                     </Grid>
                 </CardContent>
-                <CardActions disableSpacing>
-                    {auth?.user?.id == game.user.id ? (
-                            <React.Fragment>
-                                <IconButton data-game-id={game.id} onClick={handleVSPlayOptionOpen}>
-                                    <EditIcon />
-                                </IconButton>
-                                <IconButton data-delete-id={game.id} onClick={handleDeleteGame}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </React.Fragment>
-                    ) : (
-                        <></>
-                    )}
-                    <ButtonGroup variant='contained' sx={{marginLeft: 'auto'}}>
-                        <Link to={`/wordle/game/${game.wordle_id}/${game.uuid}`}>
-                            <Button style={{fontWeight: 'bold', color: '#fff'}}>Join</Button>
-                        </Link>
-                    </ButtonGroup>
-                </CardActions>
+                {/* <CardActions disableSpacing>
+                </CardActions> */}
             </Card>
         </Grid>
     )

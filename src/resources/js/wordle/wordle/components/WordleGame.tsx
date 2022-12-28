@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Button, IconButton, Card } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
+import React from 'react';
+import { Stack, IconButton, Grid, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import BackspaceIcon from '@mui/icons-material/Backspace';
-import Container from '@mui/material/Container';
-
 import WordleInput from './wordlegame/WordleInput';
 import WordleInputSelectButtonGroup from './wordlegame/WordleInputSelectButtonGroup';
 import WordleBoard from './wordlegame/WordleBoard';
-import { ErrataList, GameWords, WordleGameProps } from '../../types/WordleType';
+import { WordleGameProps } from '../../types/WordleType';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
     const {

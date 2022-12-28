@@ -1,28 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import swal from 'sweetalert';
 import { useHistory, Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from "react-hook-form";
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-// import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import IconButton from '@material-ui/core/IconButton';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import CloseIcon from '@material-ui/icons/Close';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel, FormHelperText, Grid, Box, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -43,8 +23,6 @@ return (
     </Typography>
 );
 }
-
-const theme = createTheme();
 
 export default function Register(): React.ReactElement {
 

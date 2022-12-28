@@ -1,7 +1,5 @@
-import React, { useState, useEffect, MouseEventHandler } from 'react';
-import { Button, IconButton, Card } from '@material-ui/core';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import React from 'react';
+import { Button, Box, Grid } from '@mui/material';
 import { WordleCharactersProps } from '../../../../types/WordleType';
 
 function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElement {
@@ -19,7 +17,7 @@ function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElem
         'ォ', 'ゴ', 'ゾ', 'ド', null, 'ボ', 'ポ', 'ョ', null, null,
     ];
 
-    const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: MouseEventHandler, turn_flag: boolean, errata: any) => (
+    const JapaneseCharactersAsset = (characters: any, place: 'left' | 'right', classes: any, handleInputStack: React.MouseEventHandler, turn_flag: boolean, errata: any) => (
         <Grid container spacing={0}>
             <Grid item xs={12}>
                 <Grid container spacing={0.5}>

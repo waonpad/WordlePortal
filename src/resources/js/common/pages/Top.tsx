@@ -1,11 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Link, useParams, useLocation } from "react-router-dom";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
+import React, { useState, useEffect } from 'react';
+import { useParams, useLocation } from "react-router-dom";
+import { Backdrop, CircularProgress } from '@mui/material';
 import WordleList from '../../wordle/components/WordleList';
 
 function Top(): React.ReactElement {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React from 'react';
 import Modal from "react-modal";
 
 const customStyles = {
@@ -18,7 +18,7 @@ const customStyles = {
 
 type ModalPrimaryProps = {
     isOpen: boolean
-    children: ReactNode
+    children: React.ReactNode
 }
 
 Modal.setAppElement('#app');
