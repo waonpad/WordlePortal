@@ -8,7 +8,9 @@ use App\Models\Wordle;
 use App\Models\Game;
 use App\Models\GameUser;
 use App\Models\GameLog;
+use App\Events\GamePlayEvent;
 use App\Events\GameEvent;
+use App\Events\GameTagEvent;
 use App\Http\Requests\GameUpsertRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +19,19 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
+    public function eventHandler($game, $event_type, $sync_tags, $dettached_tags = [])
+    {
+        event(new GameEvent($game, $event_type));
+
+        foreach($sync_tags as $tag) {
+            event(new GameTagEvent($game, $event_type, $tag['id']));
+        }
+
+        // foreach($dettached_tags as $tag) {
+        //     event(new GameTagEvent($wordle, 'destroy', $tag->id));
+        // }
+    }
+
     private function currentGameStatus($game, $initial_load = false)
     {
         $game_users = array_values($game->gameUsers->toArray());
@@ -91,7 +106,7 @@ class GameController extends Controller
 
     public function index()
     {
-        $games = Game::with('user', 'gameUsers', 'gameLogs')->get();
+        $games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
 
         return response()->json([
             'games' => $games,
@@ -144,6 +159,8 @@ class GameController extends Controller
                 'coloring' => $request->coloring,
                 'status' => 'wait',
             ]);
+
+            $game_id = $game->id;
         }
         else if($request_type === 'update') {
             $target_game = Game::find($request->game_id);
@@ -174,22 +191,12 @@ class GameController extends Controller
             $game = Game::find($request->game_id);
         }
 
-        return response()->json([
-            'game' => $game,
-            'status' => true
-        ]);
-    }
-    
-    public function show(Request $request)
-    {
-        $game = Game::where('uuid', $request->game_uuid)->first() ?? null;
-        
-        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
+        $response_game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($request->game_id !== null ? $request->game_id : $game_id);
+        $this->eventHandler($response_game, $request_type, $response_game->tags);
 
         return response()->json([
             'game' => $game,
-            'status' => true,
-            'current_game_status' => $current_game_status
+            'status' => true
         ]);
     }
 
@@ -198,9 +205,9 @@ class GameController extends Controller
         $game = Game::find($request->game_id);
         
         if ($game->game_create_user_id === Auth::user()->id) {
-            Game::destroy($game->id);
+            $this->eventHandler($game, 'destroy', $game->tags);
 
-            // 削除通知
+            Game::destroy($game->id);
 
             return response()->json([
                 'status' => true
@@ -213,6 +220,19 @@ class GameController extends Controller
             ]);
         }
     }
+
+    public function show(Request $request)
+    {
+        $game = Game::where('uuid', $request->game_uuid)->first() ?? null;
+        
+        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
+
+        return response()->json([
+            'game' => $game,
+            'status' => true,
+            'current_game_status' => $current_game_status
+        ]);
+    }
     
     public function search(Request $request)
     {
@@ -221,6 +241,21 @@ class GameController extends Controller
         return response()->json([
             'games' => $games,
             'status' => true
+        ]);
+    }
+
+    public function tag(Request $request)
+    {
+        $game_tag_id = $request->game_tag_id;
+
+        $all_games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
+        $games = array_filter($all_games->toArray(), function($game) use($game_tag_id) {
+            return in_array($game_tag_id, array_column($game['tags'], 'id'));
+        });
+
+        return response()->json([
+            'status' => true,
+            'games' => $games,
         ]);
     }
     
@@ -260,7 +295,7 @@ class GameController extends Controller
         ]);
         
         $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
-        event(new GameEvent($current_game_status));
+        event(new GamePlayEvent($current_game_status));
 
         return response()->json([
             'status' => true,
@@ -403,7 +438,7 @@ class GameController extends Controller
         }
 
         $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
-        event(new GameEvent($current_game_status));
+        event(new GamePlayEvent($current_game_status));
 
         return response()->json([
             'status' => true,

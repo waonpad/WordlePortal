@@ -107,6 +107,7 @@ Route::prefix('wordle')->group(function (){
         Route::post('upsert', [GameController::class, 'upsert'])->middleware('auth');
         Route::get('show', [GameController::class, 'show'])->middleware('auth');
         Route::get('search', [GameController::class, 'search']);
+        Route::get('tag', [GameController::class, 'tag']);
         // Route::post('entry', [GameController::class, 'entry'])->middleware('auth');
         // Route::post('leave', [GameController::class, 'leave'])->middleware('auth');
         // Route::post('ready', [GameController::class, 'ready'])->middleware('auth');

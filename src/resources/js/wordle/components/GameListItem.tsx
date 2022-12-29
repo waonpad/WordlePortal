@@ -54,7 +54,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                             <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                                 <LocalOfferIcon sx={{color: '#757575'}} />
                                 {(game.tags as any[]).map((tag: any, index: number) => (
-                                    <Link to={`/wordle/tag/${tag.id}`} key={index}><Chip clickable label={tag.name} /></Link>
+                                    <Link to={`/wordle/game/tag/${tag.id}`} key={index}><Chip clickable label={tag.name} /></Link>
                                 ))}
                             </Stack>
                         </Grid>
@@ -121,7 +121,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                                     ) : (
                                         <></>
                                     )}
-                                    <Link to={`/wordle/game/${game.wordle_id}/${game.uuid}`} style={{marginLeft: 'auto'}}>
+                                    <Link to={`/wordle/game/play/${game.uuid}`} style={{marginLeft: 'auto'}}>
                                         <Button variant='contained' style={{fontWeight: 'bold', color: '#fff'}}>Join</Button>
                                     </Link>
                                 </Grid>
@@ -130,7 +130,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                             game.status === 'start' ? (
                                 // startの時はJoinができる
                                 <Grid item xs={12} sx={{display: 'flex'}}>
-                                    <Link to={`/wordle/game/${game.wordle_id}/${game.uuid}`} style={{marginLeft: 'auto'}}>
+                                    <Link to={`/wordle/game/play/${game.uuid}`} style={{marginLeft: 'auto'}}>
                                         <Button variant='contained' style={{fontWeight: 'bold', color: '#fff'}}>Join</Button>
                                     </Link>
                                 </Grid>

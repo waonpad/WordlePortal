@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import swal from 'sweetalert';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
@@ -16,10 +17,16 @@ function GameList(props: GameListProps): React.ReactElement {
     // Channel ////////////////////////////////////////////////////////////////////
     const [games, setGames] = useState<any[]>([]);
 
+    useEffect(() => {
+        console.log(games);
+    }, [games])
+
 	useEffect(() => {
+        console.log(game_get_api_method);
+        console.log(request_params);
         axios.get(`/api/${game_get_api_method}`, {params: request_params}).then(res => {
-            if (res.status === 200) {
-                console.log(res);
+            console.log(res);
+            if (res.data.status === true) {
                 var res_data = res.data;
 
                 response_keys.forEach(key => {
@@ -34,12 +41,22 @@ function GameList(props: GameListProps): React.ReactElement {
                 setGameLoading(false);
                 console.log('投稿取得完了');
             }
-        });
+            else if(res.data.status === false) {
+                console.log('取得失敗');
+            }
+            else {
+                console.log('予期せぬエラー');
+            }
+        }).catch(error => {
+            console.log(error)
+            swal("取得失敗", "取得失敗", "error");
+        })
 
         if(listen) {
             window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
                 console.log(channel_event);
-                if(channel_event.event_type === 'create' || 'update') {
+                if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
+                    console.log('create / update');
                     // 一度削除した後追加しなおし、ソートすることで
                     // 既に配列に存在しているかどうかに関わらず処理をする
                     setGames((games) => [channel_event.game, ...games.filter((game) => (game.id !== channel_event.game.id))].sort(function(a, b) {
@@ -47,6 +64,7 @@ function GameList(props: GameListProps): React.ReactElement {
                     }))
                 }
                 if(channel_event.event_type === 'destroy') {
+                    console.log('destroy');
                     setGames((games) => games.filter((game) => (game.id !== channel_event.game.id)));
                 }
             });

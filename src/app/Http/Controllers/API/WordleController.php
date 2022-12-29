@@ -122,9 +122,9 @@ class WordleController extends Controller
         $wordle = Wordle::find($request->wordle_id);
         
         if ($wordle->user_id === Auth::user()->id) {
-            Wordle::destroy($wordle->id);
-
             $this->eventHandler($wordle, 'destroy', $wordle->tags);
+            
+            Wordle::destroy($wordle->id);
 
             return response()->json([
                 'status' => true
@@ -169,7 +169,7 @@ class WordleController extends Controller
 
     public function tag(Request $request)
     {
-        $wordles = Tag::with('wordles.tags', 'wordles.user', 'wordles.likes')->find($request->tag_id)->wordles;
+        $wordles = Tag::with('wordles.tags', 'wordles.user', 'wordles.likes')->find($request->wordle_tag_id)->wordles;
 
         foreach($wordles as $wordle) {
             $post['like_status'] = in_array(Auth::id(), $wordle->likes->pluck('id')->toArray());
