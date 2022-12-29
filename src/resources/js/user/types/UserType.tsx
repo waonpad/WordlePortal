@@ -1,5 +1,5 @@
 export type UserPrimaryDetailProps = {
-    user_data: any;
+    user: any;
     myself: boolean;
     follow: boolean;
     setFollow: React.Dispatch<React.SetStateAction<boolean>>;

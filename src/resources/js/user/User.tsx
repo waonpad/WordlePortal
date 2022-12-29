@@ -27,7 +27,7 @@ function User(): React.ReactElement {
 
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
-    const [user_data, setUserData] = useState<any>({});
+    const [user, setUser] = useState<any>({});
     const [follow, setFollow] = useState(false);
     const [myself, setMyself] = useState(false);
     const [key, setKey] = useState('');
@@ -42,12 +42,13 @@ function User(): React.ReactElement {
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
-        setExpanded(false)
+        setExpanded(false);
+        setDisplayWordleList('wordles');
         setLoading(true);
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
             console.log(res);
             if(res.data.status === true) {
-                setUserData(res.data.user);
+                setUser(res.data.user);
                 setMyself(res.data.myself);
                 setFollow(res.data.follow);
                 setKey(screen_name);
@@ -79,7 +80,7 @@ function User(): React.ReactElement {
                         {/* ユーザー情報 */}
                         <Grid item xs={12}>
                             <UserPrimaryDetail
-                                user_data={user_data}
+                                user={user}
                                 myself={myself}
                                 follow={follow}
                                 setFollow={setFollow}
@@ -109,7 +110,7 @@ function User(): React.ReactElement {
                                 variant='outlined'
                                 sx={{fontWeight: 'bold', pointerEvents: 'none', backgroundColor: '#fff'}}
                             >
-                                Join Game!
+                                Join {user.name}'s Game!
                             </Button>
                         </Grid>
                         <Grid item xs={12}>
@@ -129,17 +130,17 @@ function User(): React.ReactElement {
                                 variant='outlined'
                                 aria-label="outlined primary button group"
                             >
-                                {(['wordles', 'game_results', 'likes']).map((input, index) => (
+                                {(['wordles', 'game_results', 'likes']).map((select, index) => (
                                     <Button
                                         key={index}
-                                        value={input}
-                                        sx={display_wordle_list === input ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
+                                        value={select}
+                                        sx={display_wordle_list === select ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
                                         onClick={handleDisplayWordleListSelect}
                                     >
                                         {
-                                            input === 'wordles' ? 'WORDLES'
-                                            : input === 'game_results' ? 'GAME RESULTS'
-                                            : input === 'likes' ? 'LIKES'
+                                            select === 'wordles' ? 'WORDLES'
+                                            : select === 'game_results' ? 'GAME RESULTS'
+                                            : select === 'likes' ? 'LIKES'
                                             : ''
                                         }
                                     </Button>

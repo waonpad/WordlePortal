@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from "react-router-dom";
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Link, useParams, useLocation } from "react-router-dom";
+import { Backdrop, CircularProgress, Grid, Button, ButtonGroup, Container } from '@mui/material';
 import WordleList from '../../wordle/components/WordleList';
 import GameList from '../../wordle/components/GameList';
+import { globalTheme } from '../../Theme';
 
 function Top(): React.ReactElement {
 
@@ -19,11 +20,19 @@ function Top(): React.ReactElement {
     const [display_list_component, setDisplayListComponent] = useState<'wordle' | 'game'>('wordle');
     const [key, setKey] = useState(''); //再読み込みのためにkeyが必要
 
+    const [display_wordle_list, setDisplayWordleList] = useState<string | null>('wordles');
+
+    // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
+    const handleDisplayWordleListSelect = (event: any) => {
+        setDisplayWordleList(event.currentTarget.value);
+    }
+    /////////////////////////////////////////////////////////////////////////
+
     useEffect(() => {
         console.log(location);
         console.log(wordle_tag_id);
         setInitialLoad(true);
-        if(location.pathname === '/' || '/wordle/index') {
+        if(location.pathname === '/' || location.pathname === '/wordle/index') {
             setWordleGetApiMethod('wordle/index');
             setRequestParams({});
             setResponseKeys(['wordles']);
@@ -71,36 +80,67 @@ function Top(): React.ReactElement {
     }
     else {
         return (
-            <React.Fragment>
-                {
-                    display_list_component === 'wordle' ? (
-                        <WordleList
-                            wordle_get_api_method={wordle_get_api_method}
-                            request_params={request_params}
-                            response_keys={response_keys}
-                            listen={true}
-                            listening_channel={listening_channel}
-                            listening_event={listening_event}
-                            key={key}
-                        />
-                    )
-                    :
-                    display_list_component === 'game' ? (
-                        <GameList
-                            game_status={['wait', 'start']}
-                            game_get_api_method={wordle_get_api_method}
-                            request_params={request_params}
-                            response_keys={response_keys}
-                            listen={true}
-                            listening_channel={listening_channel}
-                            listening_event={listening_event}
-                            key={key}
-                        />
-                    )
-                    :
-                    <></>
-                }
-            </React.Fragment>
+            <Container maxWidth={'md'}>
+                <Grid container spacing={2}>
+                    {/* 表示するWordleの種類選択エリア */}
+                    <Grid item container xs={12}>
+                        <Grid item xs={6}>
+                            <Link to={'/wordle/index'}>
+                                <Button
+                                    fullWidth
+                                    variant='outlined'
+                                    style={{borderRadius: '4px 0px 0px 4px'}}
+                                    sx={display_list_component === 'wordle' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
+                                >
+                                    WORDLES
+                                </Button>
+                            </Link>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Link to={'/wordle/game/index'}>
+                                <Button
+                                    fullWidth
+                                    variant='outlined'
+                                    style={{borderRadius: '0px 4px 4px 0px'}}
+                                    sx={display_list_component === 'game' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}   
+                                >
+                                    GAMES
+                                </Button>
+                            </Link>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                        {
+                            display_list_component === 'wordle' ? (
+                                <WordleList
+                                    wordle_get_api_method={wordle_get_api_method}
+                                    request_params={request_params}
+                                    response_keys={response_keys}
+                                    listen={true}
+                                    listening_channel={listening_channel}
+                                    listening_event={listening_event}
+                                    key={key}
+                                />
+                            )
+                            :
+                            display_list_component === 'game' ? (
+                                <GameList
+                                    game_status={['wait', 'start']}
+                                    game_get_api_method={wordle_get_api_method}
+                                    request_params={request_params}
+                                    response_keys={response_keys}
+                                    listen={true}
+                                    listening_channel={listening_channel}
+                                    listening_event={listening_event}
+                                    key={key}
+                                />
+                            )
+                            :
+                            <></>
+                        }
+                    </Grid>
+                </Grid>
+            </Container>
         )
     }
 }

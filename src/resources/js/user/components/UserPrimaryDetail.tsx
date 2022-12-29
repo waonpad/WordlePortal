@@ -8,7 +8,7 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { UserPrimaryDetailProps } from '../types/UserType';
 
 function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
-    const {user_data, myself, follow, setFollow, expanded, setExpanded} = props;
+    const {user, myself, follow, setFollow, expanded, setExpanded} = props;
 
     const [user_menu_anchor_el, setUserMenuAnchorEl] = useState<null | HTMLElement>(null);
     const is_menu_open = Boolean(user_menu_anchor_el);
@@ -49,7 +49,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     
     // フォロー /////////////////////////////////////////////////////////////////////////
     const followToggle = () => {
-        axios.post('/api/user/followtoggle', {screen_name: user_data.screen_name}).then(res => {
+        axios.post('/api/user/followtoggle', {screen_name: user.screen_name}).then(res => {
             console.log(res);
             if(res.data.status === true) {
                 setFollow(res.data.follow);
@@ -80,14 +80,14 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                         <MoreHoriz />
                     </IconButton>
                     <Grid item xs={12} sx={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-                        {user_data.icon !== null ? <Avatar src={`/storage/${user_data.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
+                        {user.icon !== null ? <Avatar src={`/storage/${user.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
                     </Grid>
                     <Grid item xs={12}>
                         <Typography fontSize={28}>
-                            {user_data.name}
+                            {user.name}
                         </Typography>
                         <Typography color={grey[500]}>
-                            @{user_data.screen_name}
+                            @{user.screen_name}
                         </Typography>
                     </Grid>
                     <Grid item xs={12} sx={{marginTop: 1}}>
@@ -106,18 +106,18 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                             <Typography color={grey[500]}>Post</Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            <Typography color={grey[700]}>{user_data.follows.length}</Typography>
+                            <Typography color={grey[700]}>{user.follows.length}</Typography>
                             <Typography color={grey[500]}>Follow</Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            <Typography color={grey[700]}>{user_data.followers.length}</Typography>
+                            <Typography color={grey[700]}>{user.followers.length}</Typography>
                             <Typography color={grey[500]}>Follower</Typography>
                         </Grid>
                     </Grid>
                     {/* description */}
                     <Grid item xs={12} sx={{marginTop: 2, textAlign: 'left', whiteSpace: 'pre-line'}}>
                         <Collapse in={expanded} collapsedSize={'9em'}>
-                            <Typography sx={{color: grey[700]}}>{user_data.description}</Typography>
+                            <Typography sx={{color: grey[700]}}>{user.description}</Typography>
                         </Collapse>
                     </Grid>
                 </Grid>

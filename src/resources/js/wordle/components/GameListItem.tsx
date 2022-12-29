@@ -14,6 +14,7 @@ import AlarmIcon from '@mui/icons-material/Alarm'; // 制限時間
 import AlarmOffIcon from '@mui/icons-material/AlarmOff'; // 制限時間無し
 import InvertColorsIcon from '@mui/icons-material/InvertColors'; // 着色
 import InvertColorsOffIcon from '@mui/icons-material/InvertColorsOff'; // 着色無し
+import { yellow } from '@mui/material/colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { GameListItemProps } from '../types/GameType';
 
@@ -82,7 +83,8 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                                         <Chip sx={{borderRadius: '4px', fontWeight: 'bold', color: '#757575'}}
                                             icon={<PersonIcon />}
                                             // firebaseから現在の参加者を取得する？(めんどう・・・)
-                                            label={`0 / ${game.max_participants}`}
+                                            // label={`0 / ${game.max_participants}`}
+                                            label={game.status === 'end' ? game.game_users.length : game.max_participants}
                                         />
                                     </Tooltip>
                                     <Tooltip title={`Laps: ${game.laps}`}>
@@ -138,7 +140,36 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                             :
                             game.status === 'end' ? (
                                 // endの時はリザルトが表示される
-                                <></>
+                                <Grid item xs={12}>
+                                    <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
+                                        {(game.game_users.filter((game_user: any) => (
+                                            game_user.result === 1
+                                        ))).map((game_user: any, index: number) => (
+                                            <Link to={`/user/${game_user.user.screen_name}`} key={index}>
+                                                <Chip
+                                                    avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
+                                                    label={game_user.user.name}
+                                                    variant="filled"
+                                                    color={'primary'}
+                                                    // sx={{backgroundColor: yellow[200]}}
+                                                    clickable
+                                                />
+                                            </Link>
+                                        ))}
+                                        {(game.game_users.filter((game_user: any) => (
+                                            game_user.result !== 1
+                                        ))).map((game_user: any, index: number) => (
+                                            <Link to={`/user/${game_user.user.screen_name}`} key={index}>
+                                                <Chip
+                                                    avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
+                                                    label={game_user.user.name}
+                                                    variant="outlined"
+                                                    clickable
+                                                />
+                                            </Link>
+                                        ))}
+                                    </Stack>
+                                </Grid>
                             )
                             :
                             <></>
