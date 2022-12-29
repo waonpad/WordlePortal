@@ -86,7 +86,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                     });
                 }
 
-                history.push(`/wordle/game/${game.wordle_id}/${game.uuid}`);
+                history.push(`/wordle/game/play/${game.uuid}`);
             }
             else if(res.data.status === false) {
                 swal("処理失敗", res.data.message, "error");

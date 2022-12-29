@@ -34,11 +34,7 @@ function App(): React.ReactElement {
                             <BrowserRouter>
                                     <HeaderPrimary>
                                         <Switch>
-
-                                            {/* テスト用 */}
-                                            <Route path='/firebasetest/:room_id' exact component={FirebaseTest} />
-
-                                            <Route path='/' exact component={Top} />
+                                            <Route key={'wordle_index'} path='/' exact component={Top} />
                                             <Route path='/example' exact component={Example} />
                                             <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                             <PublicRoute path='/register' exact><Register/></PublicRoute>
@@ -50,10 +46,11 @@ function App(): React.ReactElement {
                                             <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute>
                                             <PrivateRoute key={'wordlecreate'} path='/wordle/create' exact><WordleManage/></PrivateRoute>
                                             <PrivateRoute key={'wordlemanage'} path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
-                                            <Route key={'wordletag'} path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
-                                            {/* リンクから直接飛んで来たらページ内で固有ゲームIDを付与してURLを書き換える？ */}
-                                            {/* <PrivateRoute path='/wordle/game/:id' exact><Wordle/></PrivateRoute> */}
-                                            <PrivateRoute path='/wordle/game/:wordle_id/:game_uuid' exact><Wordle/></PrivateRoute>
+                                            <Route key={'wordle_index'} path='/wordle/index' exact component={Top}></Route>
+                                            <Route key={'wordle_tag'} path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
+                                            <Route key={'wordle_game_index'} path='/wordle/game/index' exact component={Top}></Route>
+                                            <Route key={'wordle_game_tag'} path='/wordle/game/tag/:game_tag_id' exact component={Top}></Route>
+                                            <PrivateRoute path='/wordle/game/play/:game_uuid' exact><Wordle/></PrivateRoute>
                                             <Route path='*' exact component={Page404} />
                                         </Switch>
                                     </HeaderPrimary>

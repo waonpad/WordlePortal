@@ -58,7 +58,15 @@ Broadcast::channel('wordle_tag.{tag_id}', function (){
     return true;
 });
 
-Broadcast::channel('game.{game_uuid}', function ($user, $game_uuid){
+Broadcast::channel('game', function (){
+    return true;
+});
+
+Broadcast::channel('game_tag.{tag_id}', function (){
+    return true;
+});
+
+Broadcast::channel('game_play.{game_uuid}', function ($user, $game_uuid){
     return [
         'user' => $user
     ];

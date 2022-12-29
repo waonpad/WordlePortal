@@ -173,8 +173,8 @@ function Wordle(): React.ReactElement {
                             });
                             setInputStack(default_input_stack);
             
-                            window.Echo.join('game.' + game.uuid)
-                            .listen('GameEvent', (e: any) => {
+                            window.Echo.join('game_play.' + game.uuid)
+                            .listen('GamePlayEvent', (e: any) => {
                                 console.log('listen');
                                 console.log(e);
             

@@ -15,6 +15,8 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const [wordles, setWordles] = useState<any[]>([]);
 
 	useEffect(() => {
+        console.log(wordle_get_api_method);
+        console.log(request_params);
         axios.get(`/api/${wordle_get_api_method}`, {params: request_params}).then(res => {
             if (res.status === 200) {
                 console.log(res);
@@ -33,7 +35,8 @@ function WordleList(props: WordleListProps): React.ReactElement {
         if(listen) {
             window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
                 console.log(channel_event);
-                if(channel_event.event_type === 'create' || 'update') {
+                if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
+                    console.log('create / update');
                     // 一度削除した後追加しなおし、ソートすることで
                     // 既に配列に存在しているかどうかに関わらず処理をする
                     setWordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {
@@ -41,6 +44,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
                     }))
                 }
                 if(channel_event.event_type === 'destroy') {
+                    console.log('destroy');
                     setWordles((wordles) => wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id)));
                 }
             });
