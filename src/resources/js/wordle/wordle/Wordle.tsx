@@ -50,11 +50,10 @@ function Wordle(): React.ReactElement {
 
 	useEffect(() => {
         /////////////////////////////////////////////////////////////////////////
+        const user_id = auth!.user!.id.toString();
         axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
-                
-                const user_id = auth!.user!.id.toString();
                 const game = res.data.game;
 
                 const firebase_game = ref.once('value', (snapshot) => {
@@ -99,15 +98,12 @@ function Wordle(): React.ReactElement {
                                     if (!connection.current.ref) {
                                         connection.current.ref = push(ref);
                                     }
-                            
-                                    // 切断されたら接続情報を削除する処理を予約する
-                                    // TODO: ページ遷移でdisconnectするようにする
+
                                     await ref.child(`users/u${user_id}`).onDisconnect().update({
                                         user: auth!.user,
                                         status: 'disconnect'
                                     });
                     
-                                    // 参加中のルームを設定する
                                     await ref.child(`users/u${user_id}`).update({
                                         user: auth!.user,
                                         status: 'connect'
@@ -211,6 +207,14 @@ function Wordle(): React.ReactElement {
             console.log(error)
             swal("参加失敗", "参加失敗", "error");
         })
+
+        // ページ遷移でdisconnectする
+        return () => {
+            ref.child(`users/u${user_id}`).update({
+                user: auth!.user,
+                status: 'disconnect'
+            });
+        }
 	}, [])
     
     // update board ///////////////////////////////////////////////////////////////////////

@@ -161,11 +161,16 @@ function WordleList(props: WordleListProps): React.ReactElement {
                             </Grid>
                         ))}
                     </Grid>
-                    <Grid item xs={12}>
-                        <PaginationPrimary
-                            handlePageChange={handlePageChange}
-                        />
-                    </Grid>
+                    {
+                        wordles.length > 0 ?
+                        <Grid item xs={12}>
+                            <PaginationPrimary
+                                handlePageChange={handlePageChange}
+                            />
+                        </Grid>
+                        :
+                        <></>
+                    }
                 </Grid>
             </Container>
         )

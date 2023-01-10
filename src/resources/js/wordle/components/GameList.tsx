@@ -141,11 +141,16 @@ function GameList(props: GameListProps): React.ReactElement {
                             </Grid>
                         ))}
                     </Grid>
-                    <Grid item xs={12}>
-                        <PaginationPrimary
-                            handlePageChange={handlePageChange}
-                        />
-                    </Grid>
+                    {
+                        games.length > 0 ? 
+                        <Grid item xs={12}>
+                            <PaginationPrimary
+                                handlePageChange={handlePageChange}
+                            />
+                        </Grid>
+                        :
+                        <></>
+                    }
                 </Grid>
             </Container>
         )
