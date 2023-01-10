@@ -22,6 +22,7 @@ import { HeaderStyle } from '../styles/HeaderStyle';
 import DrawerPrimary from "./DrawerPrimary";
 import HeaderSearch from "./HeaderSearch";
 import { useNotification } from '../../../contexts/NotificationContext';
+import SimpleFooter from '../../footer/simplefooter/components/SimpleFooter';
 
 /////////////////////////////////////////////////////////////////////////
 // muiのバージョンが違い、スタイルの書き方も違うため個別に設定しないといけない
@@ -258,7 +259,7 @@ export default function HeaderPrimary({children}: Props) {
                 </Toolbar>
             </AppBar>
             <DrawerPrimary open={open} classes={classes} handleDrawerOpen={handleDrawerOpen} />
-            <main
+            <Box
                 className={clsx(classes.content, {
                     [classes.contentShift]: open
                 })}
@@ -270,7 +271,8 @@ export default function HeaderPrimary({children}: Props) {
                 >
                     {children}
                 </Container>
-            </main>
+                <SimpleFooter />
+            </Box>
             {renderMobileMenu}
             {renderMenu}
             {renderSettingMenu}

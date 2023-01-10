@@ -10,19 +10,6 @@ import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { LogInData, LogInErrorData } from '../types/AuthType';
 
-function Copyright(props: any) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" to="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 export default function LogIn(): React.ReactElement {
 
     const basicSchema = Yup.object().shape({
@@ -157,7 +144,6 @@ export default function LogIn(): React.ReactElement {
                     </Grid>
                     </Grid>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
 
             <Snackbar

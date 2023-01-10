@@ -11,19 +11,6 @@ import { RegisterData, RegisterErrorData } from '../types/AuthType';
 import SnackbarPrimary from '../../common/snackbar/components/SnackbarPrimary';
 import CropImage from '../../common/cropimage/components/CropImage';
 
-function Copyright(props: any) {
-return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-        {'Copyright © '}
-        <Link color="inherit" to="https://mui.com/">
-            Your Website
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-    </Typography>
-);
-}
-
 export default function Register(): React.ReactElement {
 
     const basicSchema = Yup.object().shape({
@@ -265,7 +252,6 @@ export default function Register(): React.ReactElement {
                     </Grid>
                 </Grid>
             </Box>
-            <Copyright sx={{ mt: 5 }} />
             <SnackbarPrimary
                 open={open}
                 handleClose={handleClose}
