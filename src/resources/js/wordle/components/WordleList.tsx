@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import swal from 'sweetalert';
 import axios from 'axios';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import ModalPrimary from '../../common/modal/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
 import { WordleListProps } from '../types/WordleType';
 import WordleListItem from './WordleListItem';
+import PaginationPrimary from './PaginationPrimary';
 
 type paginate = 'prev' | 'next'
-
-// TODO: ページネーション処理の作成
-// 最新のものが上から並んでいるので
-// per_pageで件数を指定
-// paginateがprevの場合、idがstartより大きいものを取得する
-// paginateがnextの場合、idがlastより小さいものを取得する
 
 function WordleList(props: WordleListProps): React.ReactElement {
     const {wordle_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
@@ -21,14 +17,9 @@ function WordleList(props: WordleListProps): React.ReactElement {
 
     // API ///////////////////////////////////////////////////////////////////////
     const getWordle = (paginate: paginate) => {
-        console.log('start')
-        console.log(wordles.length > 0 ? wordles[0].id : null);
-        console.log('last');
-        console.log(wordles.length > 0 ? wordles.slice(-1)[0].id : null);
-
-        axios.get(`/api/${wordle_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : 0 , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
-            if (res.status === 200) {
-                console.log(res);
+        axios.get(`/api/${wordle_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : null , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
+            console.log(res);
+            if (res.data.status === true) {
                 var res_data = res.data;
 
                 response_keys.forEach(key => {
@@ -39,7 +30,16 @@ function WordleList(props: WordleListProps): React.ReactElement {
                 setWordleLoading(false);
                 console.log('投稿取得完了');
             }
-        });
+            else if(res.data.status === false) {
+                console.log('取得失敗');
+            }
+            else {
+                console.log('予期せぬエラー');
+            }
+        }).catch(error => {
+            console.log(error)
+            swal("取得失敗", "取得失敗", "error");
+        })
     }
     /////////////////////////////////////////////////////////////////////////
     
@@ -148,18 +148,24 @@ function WordleList(props: WordleListProps): React.ReactElement {
                     <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
                     <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
                 </ModalPrimary>
-                <Button value='prev' onClick={handlePageChange}>Prev</Button>
-                <Button value='next' onClick={handlePageChange}>Next</Button>
-                <Grid container spacing={2}>
-                    {wordles.map((wordle, index) => (
-                        <WordleListItem
-                            key={index}
-                            wordle={wordle}
-                            handleLikeToggle={handleLikeToggle}
-                            handleDeleteWordle={handleDeleteWordle}
-                            handleVSPlayOptionOpen={handleVSPlayOptionOpen}
+                <Grid container spacing={1}>
+                    <Grid item container spacing={2} xs={12}>
+                        {wordles.map((wordle, index) => (
+                            <Grid item xs={12} key={index} sx={{minWidth: '100%'}}>
+                                <WordleListItem
+                                    wordle={wordle}
+                                    handleLikeToggle={handleLikeToggle}
+                                    handleDeleteWordle={handleDeleteWordle}
+                                    handleVSPlayOptionOpen={handleVSPlayOptionOpen}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+                    <Grid item xs={12}>
+                        <PaginationPrimary
+                            handlePageChange={handlePageChange}
                         />
-                    ))}
+                    </Grid>
                 </Grid>
             </Container>
         )

@@ -116,7 +116,8 @@ function Top(): React.ReactElement {
                                     wordle_get_api_method={wordle_get_api_method}
                                     request_params={request_params}
                                     response_keys={response_keys}
-                                    listen={true}
+                                    // listen={true}
+                                    listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
                                     listening_channel={listening_channel}
                                     listening_event={listening_event}
                                     key={key}
@@ -129,7 +130,8 @@ function Top(): React.ReactElement {
                                     game_get_api_method={wordle_get_api_method}
                                     request_params={request_params}
                                     response_keys={response_keys}
-                                    listen={true}
+                                    // listen={true}
+                                    listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
                                     listening_channel={listening_channel}
                                     listening_event={listening_event}
                                     key={key}

@@ -32,6 +32,43 @@ class GameController extends Controller
         // }
     }
 
+    private function paginateGame($games, $per_page, $paginate, $start, $last,)
+    {
+        if($paginate === 'prev') {
+            // prevなので、idがstartより大きいものの中からper_page個だけ取り出す
+            // startがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
+            $paginated_games = $start !== null ? array_slice(array_filter($games->toArray(), function ($game) use($start) {
+                return $game['id'] > $start;
+            }), 0, $per_page)
+            : array_slice($games->toArray(), -$per_page);
+            // これだとprevで最新まで戻った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
+            // idがstart以下のものの後ろから、per_page個になるように
+            if(count($paginated_games) < $per_page) {
+                $paginated_games = array_merge(array_slice(array_filter($games->toArray(), function($game) use($start) {
+                    return $game['id'] <= $start;
+                }), -($per_page - count($paginated_games))), $paginated_games);
+            }
+        }
+        
+        if($paginate === 'next') {
+            // nextなので、idがlastより小さいものの中からper_page個だけ取り出す
+            // lastがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
+            $paginated_games = $last !== null ? array_slice(array_filter($games->toArray(), function($game) use($last) {
+                return $game['id'] < $last;
+            }), -$per_page)
+            : array_slice($games->toArray(), -$per_page);
+            // これだとnextで最後まで行った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
+            // idがlast以上のものの前から、per_page個になるように
+            if(count($paginated_games) < $per_page) {
+                $paginated_games = array_merge($paginated_games, array_slice(array_filter($games->toArray(), function ($game) use($last) {
+                    return $game['id'] >= $last;
+                }), 0, $per_page - count($paginated_games)));
+            }
+        }
+
+        return $paginated_games;
+    }
+
     private function currentGameStatus($game, $initial_load = false)
     {
         $game_users = array_values($game->gameUsers->toArray());
@@ -104,12 +141,14 @@ class GameController extends Controller
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
 
+        $paginated_games = $this->paginateGame($games, $request->per_page, $request->paginate, $request->start, $request->last);
+
         return response()->json([
-            'games' => $games,
+            'games' => $paginated_games,
             'status' => true
         ]);
     }
