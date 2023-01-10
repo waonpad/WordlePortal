@@ -54,11 +54,30 @@ export type RegisterErrorData = {
     submit: string;
 }
 
+export type EditProfileData = {
+    icon: string | null;
+    name: string;
+    description: string;
+    age: number;
+    gender: 'male' | 'female';
+    submit: string;
+}
+
+export type EditProfileErrorData = {
+    icon: string;
+    name: string;
+    description: string;
+    age: string;
+    gender: string;
+    submit: string;
+}
+
 export type authProps = {
 	user: User | null;
 	register: (registerData: RegisterData) => Promise<void>;
 	signin: (loginData: LogInData) => Promise<void>;
 	signout: () => Promise<void>;
+    update_profile: (EditProfileData: EditProfileData) => Promise<void>;
 }
 
 export type Props = {

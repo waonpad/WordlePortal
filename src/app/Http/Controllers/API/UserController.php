@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,8 +49,15 @@ class UserController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function updateProfile(UpdateProfileRequest $request)
     {
+        $validator = $request->getValidator();
+        if($validator->fails()){
+            return response()->json([
+                'validation_errors' => $validator->errors(),
+            ]);
+        }
+
         $user = $request->user();
 
         $user->update([
@@ -63,6 +71,16 @@ class UserController extends Controller
             'status' => true,
             'user' => $user
         ]);
+    }
+
+    public function updateScreenName()
+    {
+
+    }
+
+    public function updatePassword()
+    {
+
     }
 
     public function followToggle(Request $request)

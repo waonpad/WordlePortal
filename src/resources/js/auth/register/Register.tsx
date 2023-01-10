@@ -60,12 +60,10 @@ export default function Register(): React.ReactElement {
         }
     }, [auth?.user])
 
-    const [gender, setGender] = React.useState('');
+    const [gender, setGender] = useState<'male' | 'female'>('male');
 
     const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // console.log(event.target);
-        // console.log(event.target.value);
-        setGender(event.target.value);
+        setGender(event.target.value as any);
     };
 
     const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
@@ -75,6 +73,7 @@ export default function Register(): React.ReactElement {
         const target = document.querySelector('[data-key="user_icon"]');
         const croppedimgsrc = target!.getAttribute('data-cropped-img-src');
         data.icon = croppedimgsrc;
+        data.gender = gender;
 
         // console.log(data);
         axios.get('/sanctum/csrf-cookie').then(() => {

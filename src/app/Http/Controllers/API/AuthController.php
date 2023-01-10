@@ -19,41 +19,41 @@ class AuthController extends Controller
             return response()->json([
                 'validation_errors' => $validator->errors(),
             ]);
-        } else {
-            $icon = $request->icon;
-
-            preg_match('/data:image\/(\w+);base64,/', $icon, $matches);
-            $extension = $matches[1];
-
-            $img = preg_replace('/^data:image.*base64,/', '', $icon);
-            $img = str_replace(' ', '+', $img);
-            $fileData = base64_decode($img);
-
-            $dir = rtrim('user/icon', '/').'/';
-            $fileName = md5($img);
-            $path = $dir.$fileName.'.'.$extension;
-
-            Storage::disk('public')->put($path, $fileData);
-
-            $user = User::create([
-                'icon' => $path,
-                'screen_name' => $request->screen_name,
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'description' => $request->description,
-                'age' => $request->age,
-                'gender' => $request->gender
-            ]);
-            
-            Auth::login($user, $remember = false);
-
-            return response()->json([
-                'user' => $user,
-                'status' => true,
-                'message' => 'Registerd Successfully'
-            ]);
         }
+        
+        $icon = $request->icon;
+
+        preg_match('/data:image\/(\w+);base64,/', $icon, $matches);
+        $extension = $matches[1];
+
+        $img = preg_replace('/^data:image.*base64,/', '', $icon);
+        $img = str_replace(' ', '+', $img);
+        $fileData = base64_decode($img);
+
+        $dir = rtrim('user/icon', '/').'/';
+        $fileName = md5($img);
+        $path = $dir.$fileName.'.'.$extension;
+
+        Storage::disk('public')->put($path, $fileData);
+
+        $user = User::create([
+            'icon' => $path,
+            'screen_name' => $request->screen_name,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'description' => $request->description,
+            'age' => $request->age,
+            'gender' => $request->gender
+        ]);
+        
+        Auth::login($user, $remember = false);
+
+        return response()->json([
+            'user' => $user,
+            'status' => true,
+            'message' => 'Registerd Successfully'
+        ]);
     }
 
     public function login(LoginRequest $request) {

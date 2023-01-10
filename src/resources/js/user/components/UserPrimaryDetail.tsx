@@ -6,6 +6,8 @@ import { grey } from '@mui/material/colors';
 import { ExpandMore, ExpandLess, MoreHoriz } from '@mui/icons-material';
 import { MenuItem, Menu } from '@material-ui/core';
 import { UserPrimaryDetailProps } from '../types/UserType';
+import ModalPrimary from '../../common/modal/components/ModalPrimary';
+import EditProfile from './EditProfile';
 
 function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     const {user, myself, follow, setFollow, expanded, setExpanded} = props;
@@ -64,9 +66,22 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     }
     /////////////////////////////////////////////////////////////////////////
 
+    // Edit Profile /////////////////////////////////////////////////////////////////////////////
+    const [modalIsOpen, setIsOpen] = useState(false);
+
+    const handleEditProfileOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+
+        setIsOpen(true);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
     return (
         <Card elevation={1} sx={{minWidth: '100%'}}>
             {render_user_menu}
+            <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
+                <EditProfile user={user} handleModalClose={setIsOpen} />
+                <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
+            </ModalPrimary>
             <CardContent sx={{paddingBottom: 0}}>
                 <Grid container spacing={1} sx={{textAlign: 'center', position: 'relative'}}>
                     {/* 設定メニュー */}
@@ -80,6 +95,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                         <MoreHoriz />
                     </IconButton>
                     <Grid item xs={12} sx={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
+                        {/* TODO: Avatarが無い時に表示するものを設定する */}
                         {user.icon !== null ? <Avatar src={`/storage/${user.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
                     </Grid>
                     <Grid item xs={12}>
@@ -93,7 +109,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                     <Grid item xs={12} sx={{marginTop: 1}}>
                         {
                             myself ? (
-                                <Button variant='outlined' fullWidth>Edit Profile</Button>
+                                <Button variant='outlined' fullWidth onClick={handleEditProfileOpen}>Edit Profile</Button>
                             ) : (
                                 <Button variant='outlined' fullWidth onClick={followToggle}>{follow ? 'unFollow' : 'Follow'}</Button>
                             )

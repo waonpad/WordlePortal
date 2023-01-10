@@ -6,6 +6,7 @@ import { Button, makeStyles } from "@material-ui/core";
 import getCroppedImg from "./getCroppedImg";
 
 type CropImageProps = {
+    default_img_src?: string;
     crop_width: number;
     aspect_ratio: number;
     display_radius: any;
@@ -57,7 +58,7 @@ const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
 }));
 
 function CropImage(props: CropImageProps): React.ReactElement {
-    const {crop_width, aspect_ratio, display_radius, component_key} = props;
+    const {default_img_src, crop_width, aspect_ratio, display_radius, component_key} = props;
     // const crop_width = 300;
     // const aspect_ratio = 2 / 1;
     // const display_radius = '10px';
@@ -171,13 +172,21 @@ function CropImage(props: CropImageProps): React.ReactElement {
             onChange={onFileChange}
         />
         <div className="img-container" onClick={handleFileUpload} style={{cursor: 'pointer'}}>
-            {croppedImgSrc ? (
-            <img src={croppedImgSrc} alt="Cropped" className="img" />
-            ) : (
-            <div className="no-img">
-                UPLOAD FILE
-            </div>
-            )}
+            {
+                croppedImgSrc ? (
+                <img src={croppedImgSrc} alt="Cropped" className="img" />
+                )
+                :
+                default_img_src ? (
+                    <img src={`/storage/${default_img_src}`} alt="Default" className="img" />
+                )
+                :
+                (
+                <div className="no-img">
+                    UPLOAD FILE
+                </div>
+                )
+            }
         </div>
         <CropperModal
             crop={crop}
