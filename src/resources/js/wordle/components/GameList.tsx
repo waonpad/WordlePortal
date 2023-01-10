@@ -2,29 +2,22 @@ import React, { useState, useEffect } from 'react';
 import swal from 'sweetalert';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import axios from 'axios';
-import { useAuth } from '../../contexts/AuthContext';
 import ModalPrimary from '../../common/modal/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
 import { GameListProps } from '../types/GameType';
 import GameListItem from './GameListItem';
+import PaginationPrimary from './PaginationPrimary';
+
+type paginate = 'prev' | 'next'
 
 function GameList(props: GameListProps): React.ReactElement {
     const {game_status, game_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
 
-    const auth = useAuth();
     const [game_loading, setGameLoading] = useState(true);
-    
-    // Channel ////////////////////////////////////////////////////////////////////
-    const [games, setGames] = useState<any[]>([]);
 
-    useEffect(() => {
-        console.log(games);
-    }, [games])
-
-	useEffect(() => {
-        console.log(game_get_api_method);
-        console.log(request_params);
-        axios.get(`/api/${game_get_api_method}`, {params: request_params}).then(res => {
+    // API ///////////////////////////////////////////////////////////////////////
+    const getGame = (paginate: paginate) => {
+        axios.get(`/api/${game_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
                 var res_data = res.data;
@@ -51,6 +44,17 @@ function GameList(props: GameListProps): React.ReactElement {
             console.log(error)
             swal("取得失敗", "取得失敗", "error");
         })
+    }
+    /////////////////////////////////////////////////////////////////////////
+    
+    // Channel ////////////////////////////////////////////////////////////////////
+    const [games, setGames] = useState<any[]>([]);
+
+	useEffect(() => {
+        console.log(game_get_api_method);
+        console.log(request_params);
+
+        getGame('prev');
 
         if(listen) {
             window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
@@ -71,6 +75,14 @@ function GameList(props: GameListProps): React.ReactElement {
         }
 	}, [])
     /////////////////////////////////////////////////////////////////////////////////////
+
+    // Page Change ///////////////////////////////////////////////////////////////////////
+    const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const paginate = event.currentTarget.value;
+        getGame(paginate as paginate);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
 
     // DeleteGame //////////////////////////////////////////////////////////////
     const handleDeleteGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -117,15 +129,23 @@ function GameList(props: GameListProps): React.ReactElement {
                     <VSPlayOption game={vs_target_game} handleModalClose={setIsOpen} />
                     <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
                 </ModalPrimary>
-                <Grid container spacing={2}>
-                    {games.map((game, index) => (
-                        <GameListItem
-                            key={index}
-                            game={game}
-                            handleDeleteGame={handleDeleteGame}
-                            handleVSPlayOptionOpen={handleVSPlayOptionOpen}
+                <Grid container spacing={1}>
+                    <Grid item container spacing={2}>
+                        {games.map((game, index) => (
+                            <Grid item xs={12} key={index} sx={{minWidth: '100%'}}>
+                                <GameListItem
+                                    game={game}
+                                    handleDeleteGame={handleDeleteGame}
+                                    handleVSPlayOptionOpen={handleVSPlayOptionOpen}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+                    <Grid item xs={12}>
+                        <PaginationPrimary
+                            handlePageChange={handlePageChange}
                         />
-                    ))}
+                    </Grid>
                 </Grid>
             </Container>
         )
