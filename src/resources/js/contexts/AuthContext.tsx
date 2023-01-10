@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react"
 import {Route, Redirect, useHistory} from "react-router-dom"
 import { Backdrop, CircularProgress } from "@mui/material";
-import { User, LogInData, RegisterData, authProps, Props, RouteProps, From } from "../auth/types/AuthType";
+import { User, LogInData, RegisterData, EditProfileData, authProps, Props, RouteProps, From } from "../auth/types/AuthType";
 
 const authContext = createContext<authProps | null>(null)
 
@@ -68,6 +68,20 @@ const useProvideAuth = () => {
 		})
 	}
 
+	const update_profile = (EditProfileData: EditProfileData) => {
+		return axios.post('/api/user/update/profile', EditProfileData).then((res) => {
+			console.log(res);
+			if (res.data.status === true) {
+				setUser(res.data.user);
+				return res;
+			}
+			else {
+				const callback: any = res;
+				return callback;
+			}
+		})
+	}
+
 	useEffect(() => {
 		axios.get('/api/user').then((res) => {
         console.log(res.data);
@@ -86,6 +100,7 @@ const useProvideAuth = () => {
 		register,
 		signin,
 		signout,
+		update_profile,
 		load
 	}
 }

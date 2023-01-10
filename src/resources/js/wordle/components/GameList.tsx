@@ -125,7 +125,7 @@ function GameList(props: GameListProps): React.ReactElement {
     else {
         return (
             <Container maxWidth={'md'} disableGutters>
-                <ModalPrimary isOpen={modalIsOpen}>
+                <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
                     <VSPlayOption game={vs_target_game} handleModalClose={setIsOpen} />
                     <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
                 </ModalPrimary>

@@ -46,7 +46,11 @@ Route::post('login', [AuthController::class, 'login']);
 Route::prefix('user')->group(function (){
     Route::get('index', [UserController::class, 'index']);
     Route::get('show', [UserController::class, 'show']);
-    Route::post('update', [UserController::class, 'update'])->middleware('auth');
+    Route::prefix('update')->group(function (){
+        Route::post('profile', [UserController::class, 'updateProfile'])->middleware('auth');
+        Route::post('screenname', [UserController::class, 'updateScreenName'])->middleware('auth');
+        Route::post('password', [UserController::class, 'updatePassword'])->middleware('auth');
+    });
     Route::post('followtoggle', [UserController::class, 'followToggle'])->middleware('auth');
 });
 
