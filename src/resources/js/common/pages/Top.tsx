@@ -6,7 +6,6 @@ import GameList from '../../wordle/components/GameList';
 import { globalTheme } from '../../Theme';
 
 function Top(): React.ReactElement {
-
     const location = useLocation();
     const {wordle_tag_id, game_tag_id} = useParams<{wordle_tag_id: string, game_tag_id: string}>();
 

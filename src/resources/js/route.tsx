@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter, Route, Switch, Link} from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from './common/errorboundary/components/ErrorFallBack';
 
 import View from './View';
 import Top from './common/pages/Top';
@@ -22,44 +24,44 @@ import ProvideAuth, { PrivateRoute, PublicRoute } from './contexts/AuthContext'
 import ProvideNoification from './contexts/NotificationContext';
 import YupCustom from './contexts/YupCustom';
 
-import FirebaseTest from './benkyo/firebase/FirebaseTest';
-
 function App(): React.ReactElement {
     return (
-        <AxiosInterceptors>
-            <YupCustom>
-                <View>
-                    <ProvideAuth> 
-                        <ProvideNoification>
-                            <BrowserRouter>
-                                    <HeaderPrimary>
-                                        <Switch>
-                                            <Route key={'wordle_index'} path='/' exact component={Top} />
-                                            <Route path='/example' exact component={Example} />
-                                            <PrivateRoute path='/about' exact><About/></PrivateRoute>
-                                            <PublicRoute path='/register' exact><Register/></PublicRoute>
-                                            <PublicRoute path='/login' exact><LogIn/></PublicRoute>
-                                            <Route key={'user'} path='/user/:screen_name' exact component={User} />
-                                            <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
-                                            <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
-                                            <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
-                                            <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute>
-                                            <PrivateRoute key={'wordlecreate'} path='/wordle/create' exact><WordleManage/></PrivateRoute>
-                                            <PrivateRoute key={'wordlemanage'} path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
-                                            <Route key={'wordle_index'} path='/wordle/index' exact component={Top}></Route>
-                                            <Route key={'wordle_tag'} path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
-                                            <Route key={'wordle_game_index'} path='/wordle/game/index' exact component={Top}></Route>
-                                            <Route key={'wordle_game_tag'} path='/wordle/game/tag/:game_tag_id' exact component={Top}></Route>
-                                            <PrivateRoute path='/wordle/game/play/:game_uuid' exact><Wordle/></PrivateRoute>
-                                            <Route path='*' exact component={Page404} />
-                                        </Switch>
-                                    </HeaderPrimary>
-                            </BrowserRouter>
-                        </ProvideNoification>
-                    </ProvideAuth>
-                </View>
-            </YupCustom>
-        </AxiosInterceptors>
+        <View>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <AxiosInterceptors>
+                    <YupCustom>
+                        <ProvideAuth> 
+                            <ProvideNoification>
+                                <BrowserRouter>
+                                        <HeaderPrimary>
+                                            <Switch>
+                                                <Route key={'wordle_index'} path='/' exact component={Top} />
+                                                <Route path='/example' exact component={Example} />
+                                                <PrivateRoute path='/about' exact><About/></PrivateRoute>
+                                                <PublicRoute path='/register' exact><Register/></PublicRoute>
+                                                <PublicRoute path='/login' exact><LogIn/></PublicRoute>
+                                                <Route key={'user'} path='/user/:screen_name' exact component={User} />
+                                                <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
+                                                <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
+                                                <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
+                                                <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute>
+                                                <PrivateRoute key={'wordlecreate'} path='/wordle/create' exact><WordleManage/></PrivateRoute>
+                                                <PrivateRoute key={'wordlemanage'} path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
+                                                <Route key={'wordle_index'} path='/wordle/index' exact component={Top}></Route>
+                                                <Route key={'wordle_tag'} path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
+                                                <Route key={'wordle_game_index'} path='/wordle/game/index' exact component={Top}></Route>
+                                                <Route key={'wordle_game_tag'} path='/wordle/game/tag/:game_tag_id' exact component={Top}></Route>
+                                                <PrivateRoute path='/wordle/game/play/:game_uuid' exact><Wordle/></PrivateRoute>
+                                                <Route path='*' exact component={Page404} />
+                                            </Switch>
+                                        </HeaderPrimary>
+                                </BrowserRouter>
+                            </ProvideNoification>
+                        </ProvideAuth>
+                    </YupCustom>
+                </AxiosInterceptors>
+            </ErrorBoundary>
+        </View>
     );
 }
 
