@@ -7,8 +7,9 @@ import VSPlayOption from './VSPlayOption';
 import { WordleListProps } from '../types/WordleType';
 import WordleListItem from './WordleListItem';
 import PaginationPrimary from './PaginationPrimary';
-
-type paginate = 'prev' | 'next'
+import NoItem from '../../common/noitem/components/NoItem';
+import AreYouSureDialog from '../../common/dialog/areyousuredialog/AreYouSureDialog';
+import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
 
 function WordleList(props: WordleListProps): React.ReactElement {
     const {wordle_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
@@ -16,7 +17,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const [wordle_loading, setWordleLoading] = useState(true);
 
     // API ///////////////////////////////////////////////////////////////////////
-    const getWordle = (paginate: paginate) => {
+    const getWordle = (paginate: 'prev' | 'next') => {
         axios.get(`/api/${wordle_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : null , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
@@ -75,7 +76,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
     // Page Change ///////////////////////////////////////////////////////////////////////
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const paginate = event.currentTarget.value;
-        getWordle(paginate as paginate);
+        getWordle(paginate as 'prev' | 'next');
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -104,23 +105,39 @@ function WordleList(props: WordleListProps): React.ReactElement {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     // Deletewordle //////////////////////////////////////////////////////////////
-    const handleDeleteWordle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const wordle_id = event.currentTarget.getAttribute('data-delete-id');
+    const [are_you_sure_dialog_config, setAreYouSureDialogConfig] = useState<AreYouSureDialogProps | undefined>();
 
-        axios.post('/api/wordle/destroy', {wordle_id: wordle_id}).then(res => {
-            console.log(res);
-            if(res.data.status === true) {
-                const target_wordle = wordles.find((wordle) => (wordle.id == wordle_id));
-                setWordles(wordles.filter((wordle, index) => (wordle.id !== target_wordle.id)));
-                console.log('投稿削除成功');
-            }
-            else {
+    const handleDeleteWordle = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const wordle_id = event.currentTarget.getAttribute('data-delete-id');
+        
+        const ret = await new Promise<string>((resolve) => {
+            setAreYouSureDialogConfig({ onClose: resolve });
+        });
+
+        setAreYouSureDialogConfig(undefined);
+        console.log(ret);
+
+        if (ret === "ok") {
+            console.log("削除する:OK時の処理を実行する");
+
+            axios.post('/api/wordle/destroy', {wordle_id: wordle_id}).then(res => {
                 console.log(res);
-            }
-        })
-        .catch(error => {
-            console.log(error)
-        })
+                if(res.data.status === true) {
+                    const target_wordle = wordles.find((wordle) => (wordle.id == wordle_id));
+                    setWordles(wordles.filter((wordle, index) => (wordle.id !== target_wordle.id)));
+                    console.log('投稿削除成功');
+                }
+                else {
+                    console.log(res);
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
+        if (ret === "cancel") {
+            console.log("削除する:Cancel時の処理を実行する");
+        }
     };
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -148,6 +165,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
                     <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
                     <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
                 </ModalPrimary>
+                {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
                 <Grid container spacing={1}>
                     <Grid item container spacing={2} xs={12}>
                         {wordles.map((wordle, index) => (
@@ -169,7 +187,11 @@ function WordleList(props: WordleListProps): React.ReactElement {
                             />
                         </Grid>
                         :
-                        <></>
+                        <Grid item container spacing={2} xs={12}>
+                            <Grid item xs={12} sx={{minWidth: '100%'}}>
+                                <NoItem />
+                            </Grid>
+                        </Grid>
                     }
                 </Grid>
             </Container>
