@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { LogInData, LogInErrorData } from '../types/AuthType';
+import SnackbarPrimary from '../../common/snackbar/snackbarprimary/components/SnackbarPrimary';
 
 export default function LogIn(): React.ReactElement {
 
@@ -31,7 +32,7 @@ export default function LogIn(): React.ReactElement {
     const history = useHistory();
     const auth = useAuth();
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [snackbar_open, setSnackbarOpen] = useState(false);
 
     // SnackBarの操作
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -39,7 +40,7 @@ export default function LogIn(): React.ReactElement {
             return;
         }
 
-        setOpen(false);
+        setSnackbarOpen(false);
     };
 
     // 認証が終わってUserにデータが入ったら移動する
@@ -55,9 +56,6 @@ export default function LogIn(): React.ReactElement {
             auth?.signin(data).then((res: any) => {
             console.log(res);
             if (res.data.status === true) {
-                // swal("Success", "登録成功", "success");
-                // setTimeout((() => {history.push('/')}), 4000);
-                // setLoading(false)
             }
             else {
                 const obj: LogInData = res.data.validation_errors;
@@ -77,7 +75,7 @@ export default function LogIn(): React.ReactElement {
                     type: 'manual',
                     message: '予期せぬエラーが発生しました'
                 })
-                setOpen(true);
+                setSnackbarOpen(true);
                 
                 setLoading(false)
             })
@@ -85,87 +83,69 @@ export default function LogIn(): React.ReactElement {
     }
 
     return (
-        <React.Fragment>
-            <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
-                </Avatar> */}
-                <Typography component="h1" variant="h5">
-                    Log in
-                </Typography>
-                <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        autoComplete="email"
-                        autoFocus
-                        {...register('email')}
-                        error={errors.email ? true : false}
-                        helperText={errors.email?.message}
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                        {...register('password')}
-                        error={errors.password ? true : false}
-                        helperText={errors.password?.message}
-                    />
-                    {/* <FormControlLabel
-                    control={<Checkbox value="remember" color="primary" />}
-                    label="Remember me"
-                    /> */}
-                    <LoadingButton
-                        type="submit"
-                        loading={loading}
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                    Log in
-                    </LoadingButton>
-                    <Grid container>
-                    {/* <Grid item xs>
-                        <Link href="#" variant="body2">
-                        Forgot password?
-                        </Link>
-                    </Grid> */}
-                    <Grid item>
-                        <Link to="/register">
-                            {"Don't have an account? Sign Up"}
-                        </Link>
-                    </Grid>
-                    </Grid>
-                </Box>
-            </Container>
-
-            <Snackbar
-                anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-                }}
-                open={open}
-                autoHideDuration={6000}
-                onClose={handleClose}
+        <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                <LockOutlinedIcon />
+            </Avatar> */}
+            <Typography component="h1" variant="h5">
+                Log in
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    autoComplete="email"
+                    autoFocus
+                    {...register('email')}
+                    error={errors.email ? true : false}
+                    helperText={errors.email?.message}
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    {...register('password')}
+                    error={errors.password ? true : false}
+                    helperText={errors.password?.message}
+                />
+                {/* <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+                /> */}
+                <LoadingButton
+                    type="submit"
+                    loading={loading}
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                >
+                Log in
+                </LoadingButton>
+                <Grid container>
+                {/* <Grid item xs>
+                    <Link href="#" variant="body2">
+                    Forgot password?
+                    </Link>
+                </Grid> */}
+                <Grid item>
+                    <Link to="/register">
+                        {"Don't have an account? Sign Up"}
+                    </Link>
+                </Grid>
+                </Grid>
+            </Box>
+            <SnackbarPrimary
+                open={snackbar_open}
+                handleClose={handleClose}
                 message={errors.submit?.message ? errors.submit?.message : ''}
-                action={
-                <React.Fragment>
-                    <Button size="small" onClick={handleClose}>
-                        OK
-                    </Button>
-                    <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-                        <CloseIcon fontSize="small" />
-                    </IconButton>
-                </React.Fragment>
-                }
             />
-        </React.Fragment>
+        </Container>
     );
 }

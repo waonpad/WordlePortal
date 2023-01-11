@@ -6,7 +6,16 @@ function DialogPrimary(props: DialogPrimaryProps): React.ReactElement {
     const { onClose, title, message } = props
 
     return (
-        <Dialog open onClose={() => onClose('close')} BackdropProps={{
+        <Dialog
+            open
+            onClose={() => onClose('close')}
+            PaperProps={{
+                elevation: 0,
+                style: {
+                    border: '1.5px solid rgb(204, 204, 204)'
+                }
+            }}
+            BackdropProps={{
                 style: {
                     backgroundColor: 'rgba(255, 255, 255, 0.75)'
                 },

@@ -115,9 +115,6 @@ function GameList(props: GameListProps): React.ReactElement {
             .catch(error => {
                 console.log(error)
             })
-            const ret = await new Promise<string>((resolve) => {
-                setAreYouSureDialogConfig({ onClose: resolve });
-            });
         }
         if (ret === "cancel") {
             console.log("削除する:Cancel時の処理を実行する");

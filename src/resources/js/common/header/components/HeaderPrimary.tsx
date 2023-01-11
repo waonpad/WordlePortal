@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Container from '@mui/material/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -23,6 +23,7 @@ import DrawerPrimary from "./DrawerPrimary";
 import HeaderSearch from "./HeaderSearch";
 import { useNotification } from '../../../contexts/NotificationContext';
 import SimpleFooter from '../../footer/simplefooter/components/SimpleFooter';
+import SnackbarPrimary from '../../snackbar/snackbarprimary/components/SnackbarPrimary';
 
 /////////////////////////////////////////////////////////////////////////
 // muiのバージョンが違い、スタイルの書き方も違うため個別に設定しないといけない
@@ -37,13 +38,32 @@ export default function HeaderPrimary({children}: Props) {
     const history = useHistory();
     const auth = useAuth();
     const notification = useNotification();
+    
+    const [snackbar_open, setSnackbarOpen] = useState(false);
+
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarOpen(false);
+    };
 
     // Logout //////////////////////////////////////////////////
     const logout = () => {
-        auth?.signout().then(() => {
-            swal("ログアウトしました", "ログアウト成功", "success");
-            history.push('/');
-            location.reload();
+        auth?.signout().then((res: any) => {
+            console.log(res);
+            if (res.data.status === true) {
+                history.push('/');
+                location.reload();
+            }
+            else {
+                setSnackbarOpen(true);
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            setSnackbarOpen(true);
         })
     }
     ////////////////////////////////////////////////////////////
@@ -272,6 +292,11 @@ export default function HeaderPrimary({children}: Props) {
                     {children}
                 </Container>
                 <SimpleFooter />
+                <SnackbarPrimary
+                    open={snackbar_open}
+                    handleClose={handleClose}
+                    message={'予期せぬエラーが発生しました'}
+                />
             </Box>
             {renderMobileMenu}
             {renderMenu}
