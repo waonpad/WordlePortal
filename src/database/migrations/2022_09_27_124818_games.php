@@ -33,7 +33,7 @@ return new class extends Migration
             $table->integer('max_participants');
             $table->integer('laps');
             $table->boolean('visibility');
-            $table->integer('answer_time_limit');
+            $table->integer('answer_time_limit')->nullable();
             $table->boolean('coloring');
             $table->string('status');
             $table->timestamps();

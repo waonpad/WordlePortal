@@ -8,7 +8,7 @@ import { GameListProps } from '../types/GameType';
 import GameListItem from './GameListItem';
 import PaginationPrimary from './PaginationPrimary';
 import NoItem from '../../common/noitem/components/NoItem';
-import AreYouSureDialog from '../../common/dialog/areyousuredialog/AreYouSureDialog';
+import AreYouSureDialog from '../../common/dialog/areyousuredialog/components/AreYouSureDialog';
 import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
 
 function GameList(props: GameListProps): React.ReactElement {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import swal from 'sweetalert';
 import axios from 'axios';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
@@ -8,13 +9,19 @@ import { WordleListProps } from '../types/WordleType';
 import WordleListItem from './WordleListItem';
 import PaginationPrimary from './PaginationPrimary';
 import NoItem from '../../common/noitem/components/NoItem';
-import AreYouSureDialog from '../../common/dialog/areyousuredialog/AreYouSureDialog';
+import AreYouSureDialog from '../../common/dialog/areyousuredialog/components/AreYouSureDialog';
 import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
+import firebaseApp from '../../contexts/FirebaseConfig';
+import { serverTimestamp } from 'firebase/database';
+import { VSPlayOptionData } from '../types/VSPlayOptionType';
+import { useAuth } from '../../contexts/AuthContext';
 
 function WordleList(props: WordleListProps): React.ReactElement {
     const {wordle_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
 
     const [wordle_loading, setWordleLoading] = useState(true);
+    const history = useHistory();
+    const auth = useAuth();
 
     // API ///////////////////////////////////////////////////////////////////////
     const getWordle = (paginate: 'prev' | 'next') => {
@@ -141,6 +148,57 @@ function WordleList(props: WordleListProps): React.ReactElement {
     };
     ////////////////////////////////////////////////////////////////////////////////////
 
+    // SinglePlay ///////////////////////////////////////////////////////////////////////
+    // const [singleplay_loading, setSinglePlayLoading] = useState<boolean>(false);
+
+    const handleSinglePlayStart = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        // setSinglePlayLoading(true);
+
+        const data: VSPlayOptionData = {
+            game_id: null,
+            wordle_id: Number(event.currentTarget.getAttribute('data-wordle-id')),
+            max_participants: 1,
+            laps: 10,
+            visibility: false,
+            answer_time_limit: null,
+            coloring: true,
+            submit: '',
+        }
+        
+        axios.post('/api/wordle/game/upsert', data).then(res => {
+            console.log(res);
+            if(res.data.status === true) {
+                swal("送信成功", "送信成功", "success");
+                // setSinglePlayLoading(false);
+                
+                const game = res.data.game;
+
+                firebaseApp.database().ref(`wordle/games/${game.uuid}`).set({
+                    created_at: serverTimestamp(),
+                    host: game.game_create_user_id,
+                    status: 'wait',
+                    joined: false,
+                });
+
+                history.push(`/wordle/game/play/${game.uuid}`);
+            }
+            else if(res.data.status === false) {
+                swal("処理失敗", res.data.message, "error");
+                // setSinglePlayLoading(false)
+            }
+            else {
+                swal("処理失敗", res.data.message, "error");
+                // setSinglePlayLoading(false)
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            swal("処理失敗", '予期せぬエラー', "error");
+            // setSinglePlayLoading(false);
+        })
+    }
+    /////////////////////////////////////////////////////////////////////////
+
     // VSPlay /////////////////////////////////////////////////////////////////////////////
     const [vs_target_wordle, setVSTargetWordle] = useState<any>();
     const [modalIsOpen, setIsOpen] = useState(false);
@@ -174,6 +232,8 @@ function WordleList(props: WordleListProps): React.ReactElement {
                                     wordle={wordle}
                                     handleLikeToggle={handleLikeToggle}
                                     handleDeleteWordle={handleDeleteWordle}
+                                    handleSinglePlayStart={handleSinglePlayStart}
+                                    // singleplay_loading={singleplay_loading}
                                     handleVSPlayOptionOpen={handleVSPlayOptionOpen}
                                 />
                             </Grid>

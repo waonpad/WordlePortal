@@ -71,7 +71,7 @@ function Wordle(): React.ReactElement {
                             // ||
                             (game.status === 'end') // 終了している
                             ||
-                            // (game.status === 'start' && ('order' in snapshot.val().users[(`u${user_id}` as any)]) === false) //startしていてゲーム参加者ではない
+                            // (game.status === 'start' && game.max_participants !== 1 && ('order' in snapshot.val().users[(`u${user_id}` as any)]) === false) //startしていて、制限人数が1でない、且つゲーム参加者ではない
                             // ||
                             (connected_firebase_game_users.length === game.max_participants) // 満員
                         ) {  
