@@ -213,7 +213,7 @@ class WordleController extends Controller
 
     public function tag(Request $request)
     {
-        $wordles = Tag::with('wordles.tags', 'wordles.user', 'wordles.likes')->find($request->wordle_tag_id)->wordles;
+        $wordles = Tag::with('wordles.tags', 'wordles.user', 'wordles.likes')->find($request->wordle_tag_id)->wordles ?? [];
 
         foreach($wordles as $wordle) {
             $post['like_status'] = in_array(Auth::id(), $wordle->likes->pluck('id')->toArray());

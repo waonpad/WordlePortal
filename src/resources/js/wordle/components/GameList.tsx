@@ -7,8 +7,9 @@ import VSPlayOption from './VSPlayOption';
 import { GameListProps } from '../types/GameType';
 import GameListItem from './GameListItem';
 import PaginationPrimary from './PaginationPrimary';
-
-type paginate = 'prev' | 'next'
+import NoItem from '../../common/noitem/components/NoItem';
+import AreYouSureDialog from '../../common/dialog/areyousuredialog/AreYouSureDialog';
+import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
 
 function GameList(props: GameListProps): React.ReactElement {
     const {game_status, game_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
@@ -16,7 +17,7 @@ function GameList(props: GameListProps): React.ReactElement {
     const [game_loading, setGameLoading] = useState(true);
 
     // API ///////////////////////////////////////////////////////////////////////
-    const getGame = (paginate: paginate) => {
+    const getGame = (paginate: 'prev' | 'next') => {
         axios.get(`/api/${game_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
             console.log(res);
             if (res.data.status === true) {
@@ -79,29 +80,48 @@ function GameList(props: GameListProps): React.ReactElement {
     // Page Change ///////////////////////////////////////////////////////////////////////
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const paginate = event.currentTarget.value;
-        getGame(paginate as paginate);
+        getGame(paginate as 'prev' | 'next');
     }
 
     /////////////////////////////////////////////////////////////////////////
 
     // DeleteGame //////////////////////////////////////////////////////////////
-    const handleDeleteGame = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const game_id = event.currentTarget.getAttribute('data-delete-id');
+    const [are_you_sure_dialog_config, setAreYouSureDialogConfig] = useState<AreYouSureDialogProps | undefined>();
 
-        axios.post('/api/wordle/game/destroy', {game_id: game_id}).then(res => {
-            console.log(res);
-            if(res.data.status === true) {
-                const target_game = games.find((game) => (game.id == game_id));
-                setGames(games.filter((game, index) => (game.id !== target_game.id)));
-                console.log('投稿削除成功');
-            }
-            else {
+    const handleDeleteGame = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const game_id = event.currentTarget.getAttribute('data-delete-id');
+        
+        const ret = await new Promise<string>((resolve) => {
+            setAreYouSureDialogConfig({ onClose: resolve });
+        });
+
+        setAreYouSureDialogConfig(undefined);
+        console.log(ret);
+
+        if (ret === "ok") {
+            console.log("削除する:OK時の処理を実行する");
+
+            axios.post('/api/wordle/game/destroy', {game_id: game_id}).then(res => {
                 console.log(res);
-            }
-        })
-        .catch(error => {
-            console.log(error)
-        })
+                if(res.data.status === true) {
+                    const target_game = games.find((game) => (game.id == game_id));
+                    setGames(games.filter((game, index) => (game.id !== target_game.id)));
+                    console.log('投稿削除成功');
+                }
+                else {
+                    console.log(res);
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+            const ret = await new Promise<string>((resolve) => {
+                setAreYouSureDialogConfig({ onClose: resolve });
+            });
+        }
+        if (ret === "cancel") {
+            console.log("削除する:Cancel時の処理を実行する");
+        }
     };
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -129,6 +149,7 @@ function GameList(props: GameListProps): React.ReactElement {
                     <VSPlayOption game={vs_target_game} handleModalClose={setIsOpen} />
                     <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
                 </ModalPrimary>
+                {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
                 <Grid container spacing={1}>
                     <Grid item container spacing={2}>
                         {games.map((game, index) => (
@@ -149,7 +170,11 @@ function GameList(props: GameListProps): React.ReactElement {
                             />
                         </Grid>
                         :
-                        <></>
+                        <Grid item container spacing={2} xs={12}>
+                            <Grid item xs={12} sx={{minWidth: '100%'}}>
+                                <NoItem />
+                            </Grid>
+                        </Grid>
                     }
                 </Grid>
             </Container>
