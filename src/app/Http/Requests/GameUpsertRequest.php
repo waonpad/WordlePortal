@@ -20,7 +20,7 @@ class GameUpsertRequest extends FormRequest
             'max_participants' => 'required|numeric',
             'laps' => 'required|numeric',
             'visibility' => 'required|boolean',
-            'answer_time_limit' => 'required|numeric',
+            'answer_time_limit' => 'nullable|numeric',
             'coloring' => 'required|boolean',
         ];
     }

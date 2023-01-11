@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button, ButtonPropsColorOverrides, Box, Stack } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { AreYouSureDialogProps } from './types/AreYouSureDialogType';
+import { AreYouSureDialogProps } from '../types/AreYouSureDialogType';
 
 /**
  * 削除確認ダイアログ
@@ -26,7 +26,7 @@ export default function AreYouSureDialog(props: AreYouSureDialogProps) {
         >
         <Stack justifyContent="center" alignItems="center" sx={styles.container}>
             <Box sx={styles.iconConstainer}>
-                <ErrorOutlineIcon />
+                <ErrorOutlineIcon sx={styles.icon} />
             </Box>
 
             <DialogTitle id="alert-dialog-title" sx={styles.title}>
@@ -66,8 +66,12 @@ const styles = {
         p: 2
     },
     iconConstainer: {
-        fontSize: 100,
+        width: '100px',
+        height: '100px',
         color: "#BF6761"
+    },
+    icon: {
+        width: '100%'
     },
     title: {
         fontWeight: "bold"

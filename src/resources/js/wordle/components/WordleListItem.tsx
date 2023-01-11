@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { Button, Grid, Card, CardHeader, CardContent, Chip, Stack, Avatar, IconButton, Typography, ButtonGroup } from '@mui/material';
+import { Button, Grid, Card, CardHeader, CardContent, Chip, Stack, Avatar, IconButton, Typography, ButtonGroup, CircularProgress, Box } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,7 +14,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { WordleListItemProps } from '../types/WordleType';
 
 function WordleListItem(props: WordleListItemProps): React.ReactElement {
-    const {wordle, handleLikeToggle, handleDeleteWordle, handleVSPlayOptionOpen} = props;
+    const {wordle, handleLikeToggle, handleDeleteWordle, handleSinglePlayStart, handleVSPlayOptionOpen} = props;
 
     const auth = useAuth();
 
@@ -87,9 +88,13 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                             </IconButton>
                         )}
                         <ButtonGroup variant='contained' sx={{marginLeft: 'auto'}}>
-                            <Button style={{fontWeight: 'bold', color: '#fff'}}>Single Play</Button>
+                            <Button style={{fontWeight: 'bold', color: '#fff'}} data-wordle-id={wordle.id} onClick={handleSinglePlayStart}>Single Play</Button>
                             <Button style={{fontWeight: 'bold', color: '#fff'}} data-wordle-id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
                         </ButtonGroup>
+                        {/* <Box sx={{marginLeft: 'auto'}}>
+                            <LoadingButton variant='contained' loading={singleplay_loading} style={{fontWeight: 'bold', color: '#fff', borderTopRightRadius: 0, borderBottomRightRadius: 0}} data-wordle-id={wordle.id} onClick={handleSinglePlayStart}>Single Play</LoadingButton>
+                            <Button variant='contained' style={{fontWeight: 'bold', color: '#fff', borderTopLeftRadius: 0, borderBottomLeftRadius: 0}} data-wordle-id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
+                        </Box> */}
                     </Grid>
                 </Grid>
             </CardContent>

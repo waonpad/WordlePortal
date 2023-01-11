@@ -176,6 +176,7 @@ class GameController extends Controller
         $max = max($lengths);
 
         $request_type = $request->game_id !== null ? 'update' : 'create';
+        $singleplay = $request->max_participants === 1 ? true : false;
 
         if($request_type === 'create') {
             $game = Game::create([
@@ -196,7 +197,7 @@ class GameController extends Controller
                 'visibility' => $request->visibility,
                 'answer_time_limit' => $request->answer_time_limit,
                 'coloring' => $request->coloring,
-                'status' => 'wait',
+                'status' => $singleplay ? 'start' : 'wait',
             ]);
 
             $game_id = $game->id;
@@ -228,6 +229,16 @@ class GameController extends Controller
             ]);
 
             $game = Game::find($request->game_id);
+        }
+
+        if($singleplay) {
+            GameUser::create(
+                [
+                    'game_id' => $game->id,
+                    'user_id' => Auth::user()->id,
+                    'order' => 1
+                ]
+            );
         }
 
         $response_game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($request->game_id !== null ? $request->game_id : $game_id);

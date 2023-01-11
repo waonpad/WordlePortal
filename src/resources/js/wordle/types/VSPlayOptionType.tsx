@@ -18,7 +18,7 @@ export type VSPlayOptionData = {
     max_participants: number;
     laps: number;
     visibility: boolean;
-    answer_time_limit: number;
+    answer_time_limit: number | null;
     coloring: boolean;
     submit: string;
 }

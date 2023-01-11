@@ -110,5 +110,7 @@ export type WordleListItemProps = {
     wordle: any;
     handleLikeToggle: any;
     handleDeleteWordle: any;
+    handleSinglePlayStart: any;
+    // singleplay_loading: boolean;
     handleVSPlayOptionOpen: any;
 }
