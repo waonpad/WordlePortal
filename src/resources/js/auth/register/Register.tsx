@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { RegisterData, RegisterErrorData } from '../types/AuthType';
-import SnackbarPrimary from '../../common/snackbar/components/SnackbarPrimary';
+import SnackbarPrimary from '../../common/snackbar/snackbarprimary/components/SnackbarPrimary';
 import CropImage from '../../common/cropimage/components/CropImage';
 
 export default function Register(): React.ReactElement {
@@ -42,15 +42,14 @@ export default function Register(): React.ReactElement {
     const history = useHistory();
     const auth = useAuth();
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [snackbar_open, setSnackbarOpen] = useState(false);
 
-    // SnackBarの操作
-    const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
 
-        setOpen(false);
+        setSnackbarOpen(false);
     };
 
     // 認証が終わってUserにデータが入ったら移動する
@@ -80,8 +79,6 @@ export default function Register(): React.ReactElement {
             auth?.register(data).then((res: any) => {
             console.log(res);
             if (res.data.status === true) {
-                // swal("Success", "登録成功", "success");
-                // setTimeout((() => {history.push('/')}), 4000);
                 setLoading(false)
             }
             else {
@@ -102,7 +99,7 @@ export default function Register(): React.ReactElement {
                     type: 'manual',
                     message: '予期せぬエラーが発生しました'
                 })
-                setOpen(true);
+                setSnackbarOpen(true);
                 
                 setLoading(false)
             })
@@ -111,9 +108,6 @@ export default function Register(): React.ReactElement {
 
     return (
         <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                <LockOutlinedIcon />
-            </Avatar> */}
             <Typography component="h1" variant="h5">
                 Register
             </Typography>
@@ -252,11 +246,10 @@ export default function Register(): React.ReactElement {
                 </Grid>
             </Box>
             <SnackbarPrimary
-                open={open}
+                open={snackbar_open}
                 handleClose={handleClose}
                 message={errors.submit?.message ? errors.submit?.message : ''}
             />
-            {/* Alert？ */}
         </Container>
     );
 }

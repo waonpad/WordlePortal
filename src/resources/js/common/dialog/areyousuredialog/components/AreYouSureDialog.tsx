@@ -18,17 +18,23 @@ export default function AreYouSureDialog(props: AreYouSureDialogProps) {
     } = props;
 
     return (
-        <Dialog open onClose={() => onClose("close")} BackdropProps={{
+        <Dialog
+            open
+            onClose={() => onClose("close")}
+            PaperProps={{
+                elevation: 0,
+                style: {
+                    border: '1.5px solid rgb(204, 204, 204)'
+                }
+            }}
+            BackdropProps={{
                 style: {
                     backgroundColor: 'rgba(255, 255, 255, 0.75)'
                 },
             }}
         >
         <Stack justifyContent="center" alignItems="center" sx={styles.container}>
-            <Box sx={styles.iconConstainer}>
-                <ErrorOutlineIcon sx={styles.icon} />
-            </Box>
-
+            <ErrorOutlineIcon sx={styles.icon} />
             <DialogTitle id="alert-dialog-title" sx={styles.title}>
             {title}
             </DialogTitle>
@@ -48,7 +54,7 @@ export default function AreYouSureDialog(props: AreYouSureDialogProps) {
                 {cancelText}
             </Button>
             <Button
-                variant="contained"
+                variant="outlined"
                 color={okColor}
                 size="small"
                 onClick={() => onClose("ok")}
@@ -65,13 +71,9 @@ const styles = {
     container: {
         p: 2
     },
-    iconConstainer: {
-        width: '100px',
-        height: '100px',
-        color: "#BF6761"
-    },
     icon: {
-        width: '100%'
+        fontSize: '100px',
+        color: "#BF6761"
     },
     title: {
         fontWeight: "bold"

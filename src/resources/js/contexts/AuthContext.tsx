@@ -63,8 +63,16 @@ const useProvideAuth = () => {
 	}
 
 	const signout = () => {
-			return axios.post('/api/logout', {}).then(() => {
-			setUser(null)
+		return axios.post('/api/logout', {}).then((res) => {
+			console.log(res);
+			if (res.data.status === true) {
+				setUser(null);
+				return res;
+			}
+			else {
+				const callback: any = res;
+				return callback;
+			}
 		})
 	}
 

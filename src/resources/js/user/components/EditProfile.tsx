@@ -5,7 +5,7 @@ import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel,
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import SnackbarPrimary from '../../common/snackbar/components/SnackbarPrimary';
+import SnackbarPrimary from '../../common/snackbar/snackbarprimary/components/SnackbarPrimary';
 import CropImage from '../../common/cropimage/components/CropImage';
 import { EditProfileData, EditProfileErrorData } from '../../auth/types/AuthType';
 import { useAuth } from '../../contexts/AuthContext';
@@ -36,15 +36,14 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
     });
 
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [snackbar_open, setSnackbarOpen] = useState(false);
 
-    // SnackBarの操作
-    const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
 
-        setOpen(false);
+        setSnackbarOpen(false);
     };
 
     const [gender, setGender] = useState<'male' | 'female'>(user.gender);
@@ -64,24 +63,24 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
         console.log(data);
 
         auth?.update_profile(data).then((res: any) => {
-        console.log(res);
-        if (res.data.status === true) {
-            setLoading(false);
-            handleModalClose(false);
+            console.log(res);
+            if (res.data.status === true) {
+                setLoading(false);
+                handleModalClose(false);
 
-            // 画面に表示されているプロフィールをどう更新するか
-            // auth.userをそれぞれのコンポーネントで監視する？
-        }
-        else {
-            const obj: EditProfileErrorData = res.data.validation_errors;
+                // TODO: 画面に表示されているプロフィールをどう更新するか
+                // auth.userをそれぞれのコンポーネントで監視する？
+            }
+            else {
+                const obj: EditProfileErrorData = res.data.validation_errors;
 
-            (Object.keys(obj) as (keyof EditProfileErrorData)[]).forEach((key) => setError(key, {
-            type: 'manual',
-            message: obj[key]
-            }))
+                (Object.keys(obj) as (keyof EditProfileErrorData)[]).forEach((key) => setError(key, {
+                type: 'manual',
+                message: obj[key]
+                }))
 
-            setLoading(false)
-        }
+                setLoading(false)
+            }
         })
         .catch((error) => {
             console.log(error)
@@ -90,7 +89,7 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
                 type: 'manual',
                 message: '予期せぬエラーが発生しました'
             })
-            setOpen(true);
+            setSnackbarOpen(true);
             
             setLoading(false)
         })
@@ -177,7 +176,7 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
                 Update Profile
             </LoadingButton>
             <SnackbarPrimary
-                open={open}
+                open={snackbar_open}
                 handleClose={handleClose}
                 message={errors.submit?.message ? errors.submit?.message : ''}
             />
