@@ -91,15 +91,17 @@ const useProvideAuth = () => {
 	}
 
 	useEffect(() => {
-		axios.get('/api/user').then((res) => {
-        console.log(res.data);
-		setUser(res.data)
-        console.log('ログイン済み');
-		setLoad(false)
-		}).catch((error) => {
-		setUser(null)
-        console.log('ログインしていない');
-		setLoad(false)
+		axios.get('/api/user/auth').then((res) => {
+			if(res.data.status === true) {
+				setUser(res.data.user)
+				console.log('ログイン済み');
+				setLoad(false)
+			}
+			else if (res.data.status === false) {
+				setUser(null);
+				console.log('ログインしていない');
+				setLoad(false);
+			}
 		})
 	}, [])
 

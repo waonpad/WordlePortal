@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel, FormHelperText, Grid, Box, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import SnackbarPrimary from '../../common/snackbar/snackbarprimary/components/SnackbarPrimary';
 import CropImage from '../../common/cropimage/components/CropImage';
 import { EditProfileData, EditProfileErrorData } from '../../auth/types/AuthType';
 import { useAuth } from '../../contexts/AuthContext';
-
-type EditProfileProps = {
-    user: any;
-    handleModalClose: React.Dispatch<React.SetStateAction<boolean>>
-}
+import { EditProfileProps } from '../types/UserType';
 
 export default function EditProfile(props: EditProfileProps): React.ReactElement {
     const {user, handleModalClose} = props;
-
-    const auth = useAuth();
 
     const basicSchema = Yup.object().shape({
         name: Yup.string()
@@ -28,6 +22,10 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
         // gender: Yup.string().oneOf(['male', 'female']).required()
     });
 
+    const auth = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [gender, setGender] = useState<'male' | 'female'>(user.gender);
+
     const { register, handleSubmit, setError, formState: { errors } } = useForm<EditProfileData>({
         mode: 'onBlur',
         defaultValues: {
@@ -35,21 +33,8 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
         resolver: yupResolver(basicSchema)
     });
 
-    const [loading, setLoading] = useState(false);
-    const [snackbar_open, setSnackbarOpen] = useState(false);
-
-    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarOpen(false);
-    };
-
-    const [gender, setGender] = useState<'male' | 'female'>(user.gender);
-
     const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setGender(event.target.value as any);
+        setGender(event.target.value as 'male' | 'female');
     };
 
     const onSubmit: SubmitHandler<EditProfileData> = (data: EditProfileData) => {
@@ -60,10 +45,7 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
         data.icon = croppedimgsrc;
         data.gender = gender;
 
-        console.log(data);
-
         auth?.update_profile(data).then((res: any) => {
-            console.log(res);
             if (res.data.status === true) {
                 setLoading(false);
                 handleModalClose(false);
@@ -71,9 +53,11 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
                 // TODO: 画面に表示されているプロフィールをどう更新するか
                 // auth.userをそれぞれのコンポーネントで監視する？
             }
+            else if (res.data.status === false) {
+                // TODO: 更新できなかった時の処理
+            }
             else {
                 const obj: EditProfileErrorData = res.data.validation_errors;
-
                 (Object.keys(obj) as (keyof EditProfileErrorData)[]).forEach((key) => setError(key, {
                 type: 'manual',
                 message: obj[key]
@@ -81,17 +65,6 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
 
                 setLoading(false)
             }
-        })
-        .catch((error) => {
-            console.log(error)
-            
-            setError('submit', {
-                type: 'manual',
-                message: '予期せぬエラーが発生しました'
-            })
-            setSnackbarOpen(true);
-            
-            setLoading(false)
         })
     }
 
@@ -175,12 +148,6 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
             >
                 Update Profile
             </LoadingButton>
-            <SnackbarPrimary
-                open={snackbar_open}
-                handleClose={handleClose}
-                message={errors.submit?.message ? errors.submit?.message : ''}
-            />
-            {/* Alert？ */}
         </Box>
     );
 }

@@ -3,23 +3,20 @@ import { Button, ButtonGroup, Box } from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
 import PinIcon from '@mui/icons-material/Pin';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
-
-type WordleInputSelectButtonGroupProps = {
-    input: any[],
-    handleDisplayInputComponentSelect: any
-}
+import { WordleInputSelectButtonGroupProps } from '../../../types/WordleType';
 
 function WordleInputSelectButtonGroup(props: WordleInputSelectButtonGroupProps): React.ReactElement {
+    const {input, handleDisplayInputComponentSelect} = props;
 
     return (
         <Box>
             <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                {/* {(game.input as any[]).map((input, index) => ( */}
+                {/* {(input as any[]).map((input, index) => ( */}
                 {(['japanese', 'english', 'number', 'typing']).map((input, index) => (
                     <Button
                         key={index}
                         value={input}
-                        onClick={props.handleDisplayInputComponentSelect}
+                        onClick={handleDisplayInputComponentSelect}
                         sx={{fontWeight: 'bold'}}
                     >
                         {

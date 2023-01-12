@@ -6,7 +6,7 @@ import { grey } from '@mui/material/colors';
 import { ExpandMore, ExpandLess, MoreHoriz } from '@mui/icons-material';
 import { MenuItem, Menu } from '@material-ui/core';
 import { UserPrimaryDetailProps } from '../types/UserType';
-import ModalPrimary from '../../common/modal/components/ModalPrimary';
+import ModalPrimary from '../../common/modal/modalprimary/components/ModalPrimary';
 import EditProfile from './EditProfile';
 
 function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
@@ -14,9 +14,10 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
 
     const [user_menu_anchor_el, setUserMenuAnchorEl] = useState<null | HTMLElement>(null);
     const is_menu_open = Boolean(user_menu_anchor_el);
+    const [modalIsOpen, setIsOpen] = useState(false);
     
     // descriptionの展開 ///////////////////////////////////////////////////////////////////////
-    const handleExpandClick = () => {
+    const handleExpandClick = (event: React.MouseEvent<HTMLElement>) => {
         setExpanded(!expanded);
     };
     /////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
         setUserMenuAnchorEl(event.currentTarget);
     };
     
-    const handleUserMenuClose = () => {
+    const handleUserMenuClose = (event: React.MouseEvent<HTMLElement>) => {
         setUserMenuAnchorEl(null);
     };
 
@@ -52,25 +53,18 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     // フォロー /////////////////////////////////////////////////////////////////////////
     const followToggle = () => {
         axios.post('/api/user/followtoggle', {screen_name: user.screen_name}).then(res => {
-            console.log(res);
             if(res.data.status === true) {
                 setFollow(res.data.follow);
             }
-            else {
-                swal("処理失敗", "処理失敗", "error");
+            else if (res.data.status === false) {
+                // TODO: 失敗時の処理
             }
-        }).catch(error => {
-            console.log(error)
-            swal("処理失敗", "処理失敗", "error");
-        });
+        })
     }
     /////////////////////////////////////////////////////////////////////////
 
     // Edit Profile /////////////////////////////////////////////////////////////////////////////
-    const [modalIsOpen, setIsOpen] = useState(false);
-
     const handleEditProfileOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-
         setIsOpen(true);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,8 +89,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                         <MoreHoriz />
                     </IconButton>
                     <Grid item xs={12} sx={{display: 'flex', alignItems: "center", justifyContent: "center"}}>
-                        {/* TODO: Avatarが無い時に表示するものを設定する */}
-                        {user.icon !== null ? <Avatar src={`/storage/${user.icon}`} sx={{height: '100px', width: '100px'}} /> : <Avatar sx={{height: '100px', width: '100px'}}>A</Avatar>}
+                        {<Avatar src={`/storage/${user.icon}`} sx={{height: '100px', width: '100px'}} />}
                     </Grid>
                     <Grid item xs={12}>
                         <Typography fontSize={28}>

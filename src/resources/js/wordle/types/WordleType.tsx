@@ -1,6 +1,5 @@
-import React, { useState, useEffect, MouseEventHandler } from 'react';
+import React from 'react';
 
-// idはhiddenで送る？
 export type WordleData = {
     id: number | null;
     name: string;
@@ -31,32 +30,32 @@ export type WordleDefaultData = {
 }
 
 export type WordleBoardProps = {
-    game_words: any;
+    game_words: GameWords;
     classes: any;
 }
 
 export type WordleInputProps = {
     classes: any;
     turn_flag: boolean;
-    handleInputStack: MouseEventHandler;
+    handleInputStack: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     errata: any;
-    input_stack: any;
-    handleTypingStack: any
-    display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null
+    input_stack: any[];
+    handleTypingStack: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null;
 }
 
 export type WordleCharactersProps = {
     classes: any;
     turn_flag: boolean;
-    handleInputStack: MouseEventHandler;
+    handleInputStack: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     errata: any;
 }
 
 export type WordleTypingProps = {
     classes: any;
     turn_flag: boolean;
-    input_stack: any;
-    handleTypingStack: any;
+    input_stack: any[];
+    handleTypingStack: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export type GameWords = {
@@ -79,12 +78,12 @@ export type WordleGameProps = {
     game_status: any;
     game_words: GameWords
     turn_flag: boolean;
-    handleInputStack: any;
-    input_stack: any;
-    handleTypingStack: any;
-    handleDisplayInputComponentSelect: any;
-    handleInputBackSpace: any;
-    handleInputEnter: any;
+    handleInputStack: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    input_stack: any[];
+    handleTypingStack: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleDisplayInputComponentSelect: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    handleInputBackSpace: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    handleInputEnter: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     loading: boolean;
     errata_list: ErrataList;
     display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null;
@@ -94,7 +93,7 @@ export type WordleLobbyProps = {
     classes: any;
     game_status: any;
     firebase_game_data: any;
-    handleGameStart: any;
+    handleGameStart: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export type WordleListProps = {
@@ -108,9 +107,13 @@ export type WordleListProps = {
 
 export type WordleListItemProps = {
     wordle: any;
-    handleLikeToggle: any;
-    handleDeleteWordle: any;
-    handleSinglePlayStart: any;
-    // singleplay_loading: boolean;
-    handleVSPlayOptionOpen: any;
+    handleLikeToggle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    handleDeleteWordle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    handleSinglePlayStart: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    handleVSPlayOptionOpen: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
+
+export type WordleInputSelectButtonGroupProps = {
+    input: string[];
+    handleDisplayInputComponentSelect: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }

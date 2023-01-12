@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { useAuth } from "./AuthContext";
-import React, {useContext, createContext, useState, ReactNode, useEffect } from "react"
+import React, {useContext, createContext, useState, ReactNode, useEffect } from "react";
+import { useErrorHandler } from 'react-error-boundary';
+
+const notificationContext = createContext<any>(null);
 
 type Props = {
     children: ReactNode
 }
-
-const notificationContext = createContext<any>(null);
 
 const ProvideNoification = ({children}: Props) => {
     const notification = useProvideNoification();
@@ -30,16 +31,13 @@ const useProvideNoification = () => {
     useEffect(() => {
     if(auth?.user !== null) {
         axios.get('/api/notification/unread').then(res => {
-            if (res.status === 200) {
+            if (res.data.status === true) {
                 // console.log(res);
                 setUnreadNotifications(res.data.unread_notifications);
 
                 // setInitialLoad(false);
             }
-        }).catch((error) => {
-            // console.log(error);
-            // setInitialLoad(false);
-        });
+        })
 
         window.Echo.private('App.Models.User.' + auth?.user?.id)
         .notification((notification: any) => {
@@ -56,21 +54,17 @@ const useProvideNoification = () => {
 
     const readNotification = (notification_id: any) => {
         axios.post('/api/notification/read', {notification_id: notification_id}).then(res => {
-            if (res.status === 200) {
+            if (res.data.status === true) {
                 console.log(res);
             }
-        }).catch((error) => {
-            console.log(error);
         })
     }
 
     const readAllNotifications = () => {
         axios.post('/api/notifications/readall').then(res => {
-            if (res.status === 200) {
+            if (res.data.status === true) {
                 console.log(res);
             }
-        }).catch((error) => {
-            console.log(error);
         })
     }
 

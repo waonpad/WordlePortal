@@ -31,9 +31,9 @@ use App\Http\Controllers\API\CropTestController;
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user(); // ログイン中のユーザー情報を取得
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user(); // ログイン中のユーザー情報を取得
+// });
 
 Route::middleware('auth:sanctum')->group(function() {
 });
@@ -44,6 +44,7 @@ Route::post('login', [AuthController::class, 'login']);
 
 // ユーザー
 Route::prefix('user')->group(function (){
+    Route::get('auth', [UserController::class, 'auth']);
     Route::get('index', [UserController::class, 'index']);
     Route::get('show', [UserController::class, 'show']);
     Route::prefix('update')->group(function (){
