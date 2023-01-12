@@ -3,11 +3,11 @@ import { useHistory } from 'react-router-dom';
 import swal from 'sweetalert';
 import axios from 'axios';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
-import ModalPrimary from '../../common/modal/components/ModalPrimary';
+import ModalPrimary from '../../common/modal/modalprimary/components/ModalPrimary';
 import VSPlayOption from './VSPlayOption';
 import { WordleListProps } from '../types/WordleType';
 import WordleListItem from './WordleListItem';
-import PaginationPrimary from './PaginationPrimary';
+import PaginationPrimary from '../../common/pagination/paginationprimary/components/PaginationPrimary';
 import NoItem from '../../common/noitem/components/NoItem';
 import AreYouSureDialog from '../../common/dialog/areyousuredialog/components/AreYouSureDialog';
 import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
@@ -15,6 +15,7 @@ import firebaseApp from '../../contexts/FirebaseConfig';
 import { serverTimestamp } from 'firebase/database';
 import { VSPlayOptionData } from '../types/VSPlayOptionType';
 import { useAuth } from '../../contexts/AuthContext';
+import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function WordleList(props: WordleListProps): React.ReactElement {
     const {wordle_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
@@ -22,57 +23,42 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const [wordle_loading, setWordleLoading] = useState(true);
     const history = useHistory();
     const auth = useAuth();
+    const [wordles, setWordles] = useState<any[]>([]);
+    const [are_you_sure_dialog_config, setAreYouSureDialogConfig] = useState<AreYouSureDialogProps | undefined>();
+    const [vs_target_wordle, setVSTargetWordle] = useState<any>();
+    const [modalIsOpen, setIsOpen] = useState(false);
 
     // API ///////////////////////////////////////////////////////////////////////
     const getWordle = (paginate: 'prev' | 'next') => {
         axios.get(`/api/${wordle_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : null , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
-            console.log(res);
             if (res.data.status === true) {
                 var res_data = res.data;
-
                 response_keys.forEach(key => {
                     res_data = res_data[key];
                 });
 
                 setWordles(res_data.reverse());
                 setWordleLoading(false);
-                console.log('投稿取得完了');
             }
             else if(res.data.status === false) {
-                console.log('取得失敗');
+                // 失敗時の処理
             }
-            else {
-                console.log('予期せぬエラー');
-            }
-        }).catch(error => {
-            console.log(error)
-            swal("取得失敗", "取得失敗", "error");
         })
     }
     /////////////////////////////////////////////////////////////////////////
     
     // Channel ////////////////////////////////////////////////////////////////////
-    const [wordles, setWordles] = useState<any[]>([]);
-
 	useEffect(() => {
-        console.log(wordle_get_api_method);
-        console.log(request_params);
-
         getWordle('prev');
-
         if(listen) {
             window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
                 console.log(channel_event);
                 if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
-                    console.log('create / update');
-                    // 一度削除した後追加しなおし、ソートすることで
-                    // 既に配列に存在しているかどうかに関わらず処理をする
                     setWordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {
-                        return (a.id < b.id) ? 1 : -1;  //オブジェクトの降順ソート
+                        return (a.id < b.id) ? 1 : -1;
                     }))
                 }
                 if(channel_event.event_type === 'destroy') {
-                    console.log('destroy');
                     setWordles((wordles) => wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id)));
                 }
             });
@@ -82,78 +68,50 @@ function WordleList(props: WordleListProps): React.ReactElement {
 
     // Page Change ///////////////////////////////////////////////////////////////////////
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const paginate = event.currentTarget.value;
-        getWordle(paginate as 'prev' | 'next');
+        getWordle(event.currentTarget.value as 'prev' | 'next');
     }
 
     /////////////////////////////////////////////////////////////////////////
 
     // LikeToggle ////////////////////////////////////////////////////////////////
     const handleLikeToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const wordle_id = event.currentTarget.getAttribute('data-like-id');
+        const wordle_id = Number(event.currentTarget.getAttribute('data-like-id'));
 
         axios.post('/api/wordle/liketoggle', {wordle_id: wordle_id}).then(res => {
-            console.log(res);
             if(res.data.status === true) {
-                const like_status = res.data.like_status;
-                const target_wordle = wordles.find((wordle) => (wordle.id == wordle_id));
-                target_wordle.like_status = like_status;
-                setWordles((wordles) => wordles.map((wordle) => (wordle.id === wordle_id ? target_wordle : wordle)));
-                console.log(`いいね状態: ${like_status}`);
+                setWordles((wordles) => wordles.map((wordle) => (wordle.id === wordle_id ? {...wordle, like_status: res.data.like_status} : wordle)));
             }
-            else {
-                console.log(res);
+            else if (res.data.status === false) {
+                // 失敗時の処理
             }
-        })
-        .catch(error => {
-            console.log(error)
         })
     };
     //////////////////////////////////////////////////////////////////////////////////////////
 
     // Deletewordle //////////////////////////////////////////////////////////////
-    const [are_you_sure_dialog_config, setAreYouSureDialogConfig] = useState<AreYouSureDialogProps | undefined>();
-
     const handleDeleteWordle = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const wordle_id = event.currentTarget.getAttribute('data-delete-id');
+        const wordle_id = Number(event.currentTarget.getAttribute('data-delete-id'));
         
         const ret = await new Promise<string>((resolve) => {
             setAreYouSureDialogConfig({ onClose: resolve });
         });
-
         setAreYouSureDialogConfig(undefined);
-        console.log(ret);
 
         if (ret === "ok") {
-            console.log("削除する:OK時の処理を実行する");
-
             axios.post('/api/wordle/destroy', {wordle_id: wordle_id}).then(res => {
-                console.log(res);
                 if(res.data.status === true) {
-                    const target_wordle = wordles.find((wordle) => (wordle.id == wordle_id));
-                    setWordles(wordles.filter((wordle, index) => (wordle.id !== target_wordle.id)));
-                    console.log('投稿削除成功');
+                    setWordles(wordles.filter((wordle, index) => (wordle.id !== wordle_id)));
                 }
-                else {
-                    console.log(res);
+                else if (res.data.status === false) {
+                    // 失敗時の処理
                 }
             })
-            .catch(error => {
-                console.log(error)
-            })
-        }
-        if (ret === "cancel") {
-            console.log("削除する:Cancel時の処理を実行する");
         }
     };
     ////////////////////////////////////////////////////////////////////////////////////
 
     // SinglePlay ///////////////////////////////////////////////////////////////////////
-    // const [singleplay_loading, setSinglePlayLoading] = useState<boolean>(false);
-
     const handleSinglePlayStart = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        // setSinglePlayLoading(true);
-
         const data: VSPlayOptionData = {
             game_id: null,
             wordle_id: Number(event.currentTarget.getAttribute('data-wordle-id')),
@@ -166,58 +124,38 @@ function WordleList(props: WordleListProps): React.ReactElement {
         }
         
         axios.post('/api/wordle/game/upsert', data).then(res => {
-            console.log(res);
             if(res.data.status === true) {
-                swal("送信成功", "送信成功", "success");
-                // setSinglePlayLoading(false);
-                
-                const game = res.data.game;
-
-                firebaseApp.database().ref(`wordle/games/${game.uuid}`).set({
+                firebaseApp.database().ref(`wordle/games/${res.data.game.uuid}`).set({
                     created_at: serverTimestamp(),
-                    host: game.game_create_user_id,
+                    host: res.data.game.game_create_user_id,
                     status: 'wait',
                     joined: false,
                 });
 
-                history.push(`/wordle/game/play/${game.uuid}`);
+                history.push(`/wordle/game/play/${res.data.game.uuid}`);
             }
             else if(res.data.status === false) {
+                // 失敗時の処理
                 swal("処理失敗", res.data.message, "error");
-                // setSinglePlayLoading(false)
             }
-            else {
-                swal("処理失敗", res.data.message, "error");
-                // setSinglePlayLoading(false)
-            }
-        })
-        .catch(error => {
-            console.log(error)
-            swal("処理失敗", '予期せぬエラー', "error");
-            // setSinglePlayLoading(false);
         })
     }
     /////////////////////////////////////////////////////////////////////////
 
     // VSPlay /////////////////////////////////////////////////////////////////////////////
-    const [vs_target_wordle, setVSTargetWordle] = useState<any>();
-    const [modalIsOpen, setIsOpen] = useState(false);
-
     const handleVSPlayOptionOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const target = wordles.find((wordle) => wordle.id === Number(event.currentTarget.getAttribute('data-wordle-id')));
-        console.log(target);
-        setVSTargetWordle(target);
+        if(auth!.user === null) {
+            history.push('/login');
+            return;
+        }
+        
+        setVSTargetWordle(wordles.find((wordle) => wordle.id === Number(event.currentTarget.getAttribute('data-wordle-id'))));
         setIsOpen(true);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(wordle_loading) {
-		return (
-			<CircularProgress/>
-		)
-    }
-    else {
-        return (
+    return (
+        <SuspensePrimary open={wordle_loading} backdrop={false}>
             <Container maxWidth={'md'} disableGutters>
                 <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
                     <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
@@ -233,7 +171,6 @@ function WordleList(props: WordleListProps): React.ReactElement {
                                     handleLikeToggle={handleLikeToggle}
                                     handleDeleteWordle={handleDeleteWordle}
                                     handleSinglePlayStart={handleSinglePlayStart}
-                                    // singleplay_loading={singleplay_loading}
                                     handleVSPlayOptionOpen={handleVSPlayOptionOpen}
                                 />
                             </Grid>
@@ -255,8 +192,8 @@ function WordleList(props: WordleListProps): React.ReactElement {
                     }
                 </Grid>
             </Container>
-        )
-    }
+        </SuspensePrimary>
+    )
 }
 
 export default WordleList;

@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function auth()
+    {
+        $auth_user = Auth::user();
+
+        return response()->json([
+            'status' => $auth_user ? true : false,
+            'user' => $auth_user,
+        ]);
+    }
+
     public function index()
     {
         $users = User::get();
@@ -23,6 +33,14 @@ class UserController extends Controller
     public function show(Request $request)
     {   
         $auth_user = Auth::user();
+
+        if(User::where('screen_name', $request->screen_name)->exists() === false) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This user does not exist'
+            ]);
+        }
+
         $target_user = User::with([
             'followers', 'follows', 'posts', 'likes',
             'wordles.user', 'wordles.tags', 'wordles.likes',

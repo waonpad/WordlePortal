@@ -6,3 +6,8 @@ export type UserPrimaryDetailProps = {
     expanded: boolean;
     setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export type EditProfileProps = {
+    user: any;
+    handleModalClose: React.Dispatch<React.SetStateAction<boolean>>
+}

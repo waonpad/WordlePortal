@@ -7,10 +7,10 @@ import { Backdrop, CircularProgress, IconButton, TextField, Button, FormLabel, F
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import {useAuth} from "../../contexts/AuthContext";
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { WordleData, WordleErrorData, WordleDefaultData } from '../types/WordleType';
+import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function WordleManage(): React.ReactElement {
     const basicSchema = Yup.object().shape({
@@ -26,58 +26,46 @@ function WordleManage(): React.ReactElement {
         description: Yup.string().max(255),
         // tagsはMuiChipsInputでバリデーションしている
     });
-
-    const auth = useAuth();
     const location = useLocation();
-    const history = useHistory();
     const {wordle_id} = useParams<{wordle_id: string}>();
-
-    const [wordle_default_data, setWordleDefaultData] = useState<WordleDefaultData>()
+    const [wordle_default_data, setWordleDefaultData] = useState<WordleDefaultData>();
+    const [initial_load, setInitialLoad] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [tags, setTags] = useState<MuiChipsInputChip[]>([]);
+    const [words, setWords] = useState<string[]>([]);
+    const [input, setInput] = useState<{[key: string]: boolean}>({japanese: false, english: false, number: false, typing: false});
+    const input_values = ['japanese', 'english', 'number', 'typing'];
 
     const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<WordleData>({
         mode: 'onBlur',
         resolver: yupResolver(basicSchema)
     });
-    const [initial_load, setInitialLoad] = useState(true);
-    const [loading, setLoading] = useState(false);
     
     // Tags /////////////////////////////////////////////////////////////
-    const [tags, setTags] = useState<MuiChipsInputChip[]>([]);
-
     const handleSelecetedTags = (selectedItem: MuiChipsInputChip[]) => {
         setTags(selectedItem);
     }
     //////////////////////////////////////////////////////////////////////
 
     // Words ///////////////////////////////////////////////////////
-    const [words, setWords] = useState<string[]>([]);
-
     const handleAddWord = () => {
         setWords([...words, '']);
     }
 
     const handleChangeWord = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const target_word_id = Number(event.currentTarget.id);
+        const target_word_id = Number(event.currentTarget.getAttribute('data-word-id'));
         const changed_word = event.currentTarget.value;
         setWords((words) => words.map((word, index) => (index === target_word_id ? changed_word : word)));
     }
 
     const handleDeleteWord = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const target_word_id = Number(event.currentTarget.id);
+        const target_word_id = Number(event.currentTarget.getAttribute('data-word-id'));
         setWords((words) => words.map((word, index) => (index === target_word_id ? '' : word)));
         setWords(words.filter((word, index) => (index !== target_word_id)));
     }
     ///////////////////////////////////////////////////////////////////////
 
     // Checkbox //////////////////////////////////////////////////////////////////
-    const [input, setInput] = useState<{[key: string]: boolean}>({
-        japanese: false,
-        english: false,
-        number: false,
-        typing: false
-    });
-    const input_values = ['japanese', 'english', 'number', 'typing'];
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput({
             ...input,
@@ -92,28 +80,20 @@ function WordleManage(): React.ReactElement {
         });
     }
 
-    useEffect(() => {
-        console.log(input);
-    }, [input]);
-
-    // const { japanese, english, number, typing } = input;
-    // const error = [japanese, english, number, typing].filter((v) => v).length !== 2;
-    //////////////////////////////////////////////////////////////////////////////
-
     // Submit ////////////////////////////////////////////////////////////////////
     const onSubmit: SubmitHandler<WordleData> = (data: WordleData) => {
         data.id = Number(wordle_id) ?? null;
-        console.log(tags);
         data.tags = tags;
-        console.log(data);
         setLoading(true);
 
         axios.post('/api/wordle/upsert', data).then(res => {
-            console.log(res);
             if (res.data.status === true) {
                 swal("Success", "登録成功", "success");
                 // setTimeout((() => {history.push('/')}), 4000);
                 setLoading(false)
+            }
+            else if (res.data.status === false) {
+                // 失敗時の処理
             }
             else {
                 const obj: WordleErrorData = res.data.validation_errors;
@@ -125,27 +105,13 @@ function WordleManage(): React.ReactElement {
                 setLoading(false)
             }
         })
-        .catch((error) => {
-            console.log(error)
-            
-            setError('submit', {
-                type: 'manual',
-                message: '予期せぬエラーが発生しました'
-            })
-            // setOpen(true);
-            
-            setLoading(false)
-        })
     }
     /////////////////////////////////////////////////////////////////////////////////////
 
 	useEffect(() => {
-        console.log(wordle_id);
         // 作成済、管理用
         if (wordle_id !== undefined) {
-            console.log(wordle_id);
             axios.get('/api/wordle/show',  {params: {wordle_id: wordle_id}}).then(res => {
-                console.log(res);
                 if (res.data.status === true) {
                     // 初期データ注入
                     const wordle: WordleDefaultData = res.data.wordle;
@@ -156,37 +122,21 @@ function WordleManage(): React.ReactElement {
                     });
                     setWords([...wordle.words, '']);
                 }
-                setInitialLoad(false)
-            })
-            .catch((error) => {
-                console.log(error)
-
-                setError('submit', {
-                    type: 'manual',
-                    message: '予期せぬエラーが発生しました'
-                })
-                // setOpen(true);
-
+                else if (res.data.status === false) {
+                    // wordleが存在しなかった時の処理
+                }
                 setInitialLoad(false)
             })
         }
         // 作成用
         else {
-            console.log('Create');
             setWords(['', '', '', '', '', '', '', '', '', ''])
             setInitialLoad(false);
         }
     }, [location])
-    
-	if (initial_load) {
-		return (
-			<Backdrop open={true}>
-			  <CircularProgress/>
-			</Backdrop>
-		)
-	}
-	else {
-        return (
+
+    return (
+        <SuspensePrimary open={initial_load} backdrop={true}>
             <Container maxWidth={'md'}>
                 <Typography component="h1" variant="h5">
                     Wordle {wordle_id ? 'Manage' : 'Create'}
@@ -263,7 +213,7 @@ function WordleManage(): React.ReactElement {
                                         autoComplete="words"
                                         value={word}
                                         label="word"
-                                        id={String(index)}
+                                        data-word-id={index}
                                         InputProps={{
                                             endAdornment: 
                                                 <IconButton aria-label='delete-word-by-index' id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
@@ -306,8 +256,8 @@ function WordleManage(): React.ReactElement {
                     </LoadingButton>
                 </Box>
             </Container>
-        );
-	}
+        </SuspensePrimary>
+    );
 }
 
 export default WordleManage;

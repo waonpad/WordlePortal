@@ -9,10 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { LogInData, LogInErrorData } from '../types/AuthType';
-import SnackbarPrimary from '../../common/snackbar/snackbarprimary/components/SnackbarPrimary';
 
 export default function LogIn(): React.ReactElement {
-
     const basicSchema = Yup.object().shape({
         email: Yup.string()
         .email('emailの型ではありません')
@@ -21,6 +19,10 @@ export default function LogIn(): React.ReactElement {
         .min(8, '8文字以上')
         .required('必須入力')
     });
+    
+    const history = useHistory();
+    const auth = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const { register, handleSubmit, setError, formState: { errors } } = useForm<LogInData>({
         mode: 'onBlur',
@@ -28,20 +30,6 @@ export default function LogIn(): React.ReactElement {
         },
         resolver: yupResolver(basicSchema)
     });
-
-    const history = useHistory();
-    const auth = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [snackbar_open, setSnackbarOpen] = useState(false);
-
-    // SnackBarの操作
-    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarOpen(false);
-    };
 
     // 認証が終わってUserにデータが入ったら移動する
     useEffect(() => {
@@ -54,39 +42,28 @@ export default function LogIn(): React.ReactElement {
         setLoading(true)
         axios.get('/sanctum/csrf-cookie').then(() => {
             auth?.signin(data).then((res: any) => {
-            console.log(res);
-            if (res.data.status === true) {
-            }
-            else {
-                const obj: LogInData = res.data.validation_errors;
-                
-                (Object.keys(obj) as (keyof LogInErrorData)[]).forEach((key) => setError(key, {
-                type: 'manual',
-                message: obj[key]
-                }))
-
-                setLoading(false)
-            }
-            })
-            .catch((error) => {
-                console.log(error)
-                
-                setError('submit', {
+                if (res.data.status === true) {
+                    setLoading(false)
+                }
+                else if (res.data.status === false) {
+                    // ログイン失敗時処理
+                    setLoading(false)
+                }
+                else {
+                    const obj: LogInErrorData = res.data.validation_errors;
+                    (Object.keys(obj) as (keyof LogInErrorData)[]).forEach((key) => setError(key, {
                     type: 'manual',
-                    message: '予期せぬエラーが発生しました'
-                })
-                setSnackbarOpen(true);
-                
-                setLoading(false)
+                    message: obj[key]
+                    }))
+
+                    setLoading(false)
+                }
             })
         })
     }
 
     return (
         <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            {/* <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                <LockOutlinedIcon />
-            </Avatar> */}
             <Typography component="h1" variant="h5">
                 Log in
             </Typography>
@@ -141,11 +118,6 @@ export default function LogIn(): React.ReactElement {
                 </Grid>
                 </Grid>
             </Box>
-            <SnackbarPrimary
-                open={snackbar_open}
-                handleClose={handleClose}
-                message={errors.submit?.message ? errors.submit?.message : ''}
-            />
         </Container>
     );
 }

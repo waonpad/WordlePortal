@@ -10,9 +10,14 @@ import * as Yup from 'yup';
 import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '../types/VSPlayOptionType';
 import firebaseApp from '../../contexts/FirebaseConfig';
 import { serverTimestamp } from 'firebase/database';
+import { useErrorHandler } from 'react-error-boundary';
+import { useAuth } from '../../contexts/AuthContext';
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const {game, wordle, handleModalClose} = props;
+
+    const handleError = useErrorHandler();
+    const auth = useAuth();
 
     const basicSchema = Yup.object().shape({
         max_participants: Yup.number().min(game ? game.max_participants : 0).required(),
@@ -31,14 +36,6 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     
     const history = useHistory();
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        console.log(errors);
-    }, [errors]);
-
-    useEffect(() => {
-        console.log(game);
-    }, [])
 
     // Visibility ///////////////////////////////////////////////////////////////////////
     const [visibility, setVisibility] = useState<'true' | 'false'>(game ? game.visibility === 1 ? 'true' : 'false' : 'true');
@@ -62,6 +59,11 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     
     // Submit //////////////////////////////////////////////////////////
     const onSubmit: SubmitHandler<VSPlayOptionData> = (data: VSPlayOptionData) => {
+        if(auth!.user === null) {
+            history.push('/login');
+            return;
+        }
+        
         setLoading(true);
         data.game_id = game ? game.id : null;
         data.wordle_id = game ? game.wordle_id : wordle.id;
@@ -72,9 +74,6 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
         axios.post('/api/wordle/game/upsert', data).then(res => {
             console.log(res);
             if(res.data.status === true) {
-                swal("送信成功", "送信成功", "success");
-                setLoading(false);
-                
                 const game = res.data.game;
 
                 if(data.game_id === null) {
@@ -86,10 +85,11 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                     });
                 }
 
+                setLoading(false);
                 history.push(`/wordle/game/play/${game.uuid}`);
             }
             else if(res.data.status === false) {
-                swal("処理失敗", res.data.message, "error");
+                // 失敗時の処理
                 setLoading(false)
             }
             else {
@@ -101,14 +101,6 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     
                 setLoading(false)
             }
-        })
-        .catch(error => {
-            console.log(error)
-            setError('submit', {
-                type: 'manual',
-                message: '送信に失敗しました'
-            })
-            setLoading(false);
         })
     }
     /////////////////////////////////////////////////////////////////////////

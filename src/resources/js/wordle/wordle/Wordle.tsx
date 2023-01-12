@@ -11,21 +11,15 @@ import WordleGame from './components/WordleGame';
 import firebaseApp from '../../contexts/FirebaseConfig';
 import { push } from '@firebase/database'
 import { serverTimestamp } from 'firebase/database';
+import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function Wordle(): React.ReactElement {
-
     const auth = useAuth();
-    const history = useHistory();
     const classes = WordleStyle();
-    
     const {game_uuid} = useParams<{game_uuid: string}>();
-
     const [game_status, setGameStatus] = useState<any>();
     const [game_words, setGameWords] = useState<GameWords>([]);
-
-    // firebaseで管理
-    const [firebase_game_data, setFirebaseGameData] = useState<any>(); // TODO: 開始したらstart状態のユーザーだけに書き換える
-
+    const [firebase_game_data, setFirebaseGameData] = useState<any>();
     const [input_stack, setInputStack] = useState<any[]>([]);
     const [errata_list, setErrataList] = useState<ErrataList>({
         matchs: [],
@@ -34,14 +28,11 @@ function Wordle(): React.ReactElement {
     });
     const [turn_flag, setTurnFlag] = useState<boolean>(false);
     const [display_input_component, setDisplayInputComponent] = useState<DisplayInputComponent>(null); 
-
-    // const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<GroupPostData>();
     const [initial_load, setInitialLoad] = useState(true);
     const [loading, setLoading] = useState(false);
-
-    const ref = firebaseApp.database().ref(`wordle/games/${game_uuid}`);
     const [counter, setCounter] = useState<number>();
     
+    const ref = firebaseApp.database().ref(`wordle/games/${game_uuid}`);
     const connection = useRef<{
         listener: number | null;
         // ref: ThenableReference | null;
@@ -52,7 +43,6 @@ function Wordle(): React.ReactElement {
         /////////////////////////////////////////////////////////////////////////
         const user_id = auth!.user!.id.toString();
         axios.get('/api/wordle/game/show', {params: {game_uuid: game_uuid}}).then(res => {
-            console.log(res);
             if (res.data.status === true) {
                 const game = res.data.game;
 
@@ -126,9 +116,7 @@ function Wordle(): React.ReactElement {
                                 }
                             })
             
-                            // const game = res.data.game;
                             const current_game_status = res.data.current_game_status;
-                            console.log(game);
                             console.log(current_game_status);
             
                             const default_game_words: any[] = [];
@@ -152,8 +140,6 @@ function Wordle(): React.ReactElement {
                                     default_game_words.push(default_game_word);
                                 }
                             });
-            
-                            console.log(default_game_words);
             
                             setGameStatus(current_game_status);
                             setErrataList(current_game_status.errata);
@@ -195,17 +181,12 @@ function Wordle(): React.ReactElement {
                             setInitialLoad(false);
                         }
                     }
-                    else {
-                        swal("ゲームが存在しない", "ゲームが存在しない", "error");
-                    }
                 });
             }
             else if(res.data.status === false) {
+                // 参加できなかった時の処理
                 swal("参加失敗", res.data.message, "error");
             }
-        }).catch(error => {
-            console.log(error)
-            swal("参加失敗", "参加失敗", "error");
         })
 
         // ページ遷移でdisconnectする
@@ -225,7 +206,7 @@ function Wordle(): React.ReactElement {
     /////////////////////////////////////////////////////////////////////////
 
     // input ///////////////////////////////////////////////////////////////////////
-    const handleInputStack = (event: any) => {
+    const handleInputStack = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const target_character = String(event.currentTarget.getAttribute('data-character-value'));
         const target_input_stack_index = input_stack.findIndex(function(character) {
             return character.character === '';
@@ -281,36 +262,27 @@ function Wordle(): React.ReactElement {
         };
 
         axios.post('/api/wordle/game/input', data).then(res => {
-            // swal("送信成功", "送信成功", "success");
-            console.log(res);
-
-            const default_input_stack: any[] = [];
-            ([...Array(game_status.game.max)]).forEach(() => {
-                default_input_stack.push({
-                    character: '',
-                    errata: 'plain',
-                })
-            });
-            setInputStack(default_input_stack);
-
-            setLoading(false);
-        }).catch(error => {
-            console.log(error)
-            swal("送信失敗", "送信失敗", "error");
-            // setError('submit', {
-            //     type: 'manual',
-            //     message: '送信に失敗しました'
-            // })
+            if(res.data.status === true) {
+                const default_input_stack: any[] = [];
+                ([...Array(game_status.game.max)]).forEach(() => {
+                    default_input_stack.push({
+                        character: '',
+                        errata: 'plain',
+                    })
+                });
+                setInputStack(default_input_stack);
+            }
+            else if (res.data.status === false) {
+                // 失敗時の処理
+            }
             setLoading(false);
         })
-
     }
     /////////////////////////////////////////////////////////////////////////
 
     // ゲームの状態が変わったときの処理まとめ ///////////////////////////////////////////////////////////////////////
     useEffect(() => {
         if(game_status !== undefined) {
-
             if(game_status.game.status === 'start') {
                 // ターン(inputエリアの入力可否)切り替え
                 if(auth?.user?.id === game_status.next_input_user) {
@@ -386,7 +358,6 @@ function Wordle(): React.ReactElement {
         }
     }, [game_status])
 
-    // 
     useEffect(() => {
         if(game_status !== undefined && firebase_game_data !== undefined) {
             console.log('firebaseのデータが更新された');
@@ -452,12 +423,10 @@ function Wordle(): React.ReactElement {
                         if(res.data.status === true) {
                             console.log('送信成功');
                         }
-                        else {
+                        else if (res.data.status === false) {
+                            // 失敗時の処理
                             console.log('送信失敗');
                         }
-                    }).catch(error => {
-                        console.log(error)
-                        swal("送信失敗", "送信失敗", "error");
                     })
                 }
             }
@@ -548,72 +517,55 @@ function Wordle(): React.ReactElement {
         }
 
         axios.post('/api/wordle/game/start', data).then(res => {
-            console.log(res);
             if(res.data.status === true) {
                 console.log('start posted');
             }
-            else {
-                swal("送信失敗", "送信失敗", "error");
+            else if (res.data.status === false) {
+                // 失敗時の処理
             }
-        }).catch(error => {
-            console.log(error)
-            swal("送信失敗", "送信失敗", "error");
-            // setError('submit', {
-            //     type: 'manual',
-            //     message: '送信に失敗しました'
-            // })
         })
     }
-    
-	if (initial_load || firebase_game_data?.users == undefined || game_status == undefined) {
-		return (
-			<Backdrop open={true}>
-			    <CircularProgress/>
-			</Backdrop>
-		)
-	}
-	else {
-        return (
-            <React.Fragment>
-                {
-                    game_status?.game?.status === 'wait' ?
-                    // game_status?.game?.status === 'wait' || 'start' ?
-                    <WordleLobby
-                        classes={classes}
-                        game_status={game_status}
-                        firebase_game_data={firebase_game_data}
-                        handleGameStart={handleGameStart}
-                    />
-                    :
-                    game_status?.game?.status === 'start' || 'end' ?
-                    <WordleGame
-                        classes={classes}
-                        game_status={game_status}
-                        game_words={game_words}
-                        turn_flag={turn_flag}
-                        handleInputStack={handleInputStack}
-                        input_stack={input_stack}
-                        handleTypingStack={handleTypingStack}
-                        handleDisplayInputComponentSelect={handleDisplayInputComponentSelect}
-                        handleInputBackSpace={handleInputBackSpace}
-                        handleInputEnter={handleInputEnter}
-                        loading={loading}
-                        errata_list={errata_list}
-                        display_input_component={display_input_component}
-                    />
-                    :
-                    game_status?.game?.status === 'end' ?
-                    <Backdrop open={true}>
-                        <CircularProgress/>
-                    </Backdrop>
-                    :
-                    <Backdrop open={true}>
-                        <CircularProgress/>
-                    </Backdrop>
-                }
-            </React.Fragment>
-        )
-	}
+
+    return (
+        <SuspensePrimary open={initial_load || firebase_game_data?.users == undefined || game_status == undefined} backdrop={true}>
+            {
+                game_status?.game?.status === 'wait' ?
+                // game_status?.game?.status === 'wait' || 'start' ?
+                <WordleLobby
+                    classes={classes}
+                    game_status={game_status}
+                    firebase_game_data={firebase_game_data}
+                    handleGameStart={handleGameStart}
+                />
+                :
+                game_status?.game?.status === 'start' || 'end' ?
+                <WordleGame
+                    classes={classes}
+                    game_status={game_status}
+                    game_words={game_words}
+                    turn_flag={turn_flag}
+                    handleInputStack={handleInputStack}
+                    input_stack={input_stack}
+                    handleTypingStack={handleTypingStack}
+                    handleDisplayInputComponentSelect={handleDisplayInputComponentSelect}
+                    handleInputBackSpace={handleInputBackSpace}
+                    handleInputEnter={handleInputEnter}
+                    loading={loading}
+                    errata_list={errata_list}
+                    display_input_component={display_input_component}
+                />
+                :
+                game_status?.game?.status === 'end' ?
+                <Backdrop open={true}>
+                    <CircularProgress/>
+                </Backdrop>
+                :
+                <Backdrop open={true}>
+                    <CircularProgress/>
+                </Backdrop>
+            }
+        </SuspensePrimary>
+    )
 }
 
 export default Wordle;

@@ -13,6 +13,7 @@ class NotificationController extends Controller
         $notifications = $request->user()->Notifications()->get();
 
         return response()->json([
+            'status' => true,
             'notifications' => $notifications,
         ]);
     }
@@ -22,6 +23,7 @@ class NotificationController extends Controller
         $unread_notifications = $request->user()->unreadNotifications()->get();
 
         return response()->json([
+            'status' => true,
             'unread_notifications' => $unread_notifications,
         ]);
     }

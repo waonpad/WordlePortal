@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-// import ReactLoading from 'react-loading';
-import ReactDOM from 'react-dom';
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
-import swal from "sweetalert";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
@@ -11,20 +8,14 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Avatar, Card, CardContent, Divider, Button, Collapse, IconButton, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { green, grey, yellow } from '@mui/material/colors';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import UserPrimaryDetail from './components/UserPrimaryDetail';
-
 import { globalTheme } from '../Theme';
 import WordleList from '../wordle/components/WordleList';
 import GameList from '../wordle/components/GameList';
+import SuspensePrimary from '../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function User(): React.ReactElement {
     const location = useLocation();
-
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>({});
@@ -32,21 +23,20 @@ function User(): React.ReactElement {
     const [myself, setMyself] = useState(false);
     const [key, setKey] = useState('');
     const [expanded, setExpanded] = useState(false);
-    const [display_wordle_list, setDisplayWordleList] = useState<string | null>('wordles');
+    const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'game_results' | 'likes'>('wordles');
 
     // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
     const handleDisplayWordleListSelect = (event: any) => {
-        setDisplayWordleList(event.currentTarget.value);
+        setDisplayListComponent(event.currentTarget.value);
     }
     /////////////////////////////////////////////////////////////////////////
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
         setExpanded(false);
-        setDisplayWordleList('wordles');
+        setDisplayListComponent('wordles');
         setLoading(true);
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
-            console.log(res);
             if(res.data.status === true) {
                 setUser(res.data.user);
                 setMyself(res.data.myself);
@@ -54,25 +44,15 @@ function User(): React.ReactElement {
                 setKey(screen_name);
                 setLoading(false);
             }
-            else {
-                swal("ユーザー情報取得失敗", "ユーザー情報取得失敗", "error");
+            else if (res.data.status === false) {
+                // TODO: ユーザーが存在しない時の処理
             }
-        }).catch(error => {
-            console.log(error)
-            swal("ユーザー情報取得失敗", "ユーザー情報取得失敗", "error");
-        });
+        })
     }, [location])
     /////////////////////////////////////////////////////////////////////////
 
-    if(loading) {
-		return (
-			<Backdrop open={true}>
-			    <CircularProgress/>
-			</Backdrop>
-		)
-    }
-    else {
-        return (
+    return (
+        <SuspensePrimary open={loading} backdrop={true}>
             <Container maxWidth={'lg'} key={key}>
                 <Grid container spacing={2}>
                     {/* 左のエリア */}
@@ -134,7 +114,7 @@ function User(): React.ReactElement {
                                     <Button
                                         key={index}
                                         value={select}
-                                        sx={display_wordle_list === select ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
+                                        sx={display_list_component === select ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
                                         onClick={handleDisplayWordleListSelect}
                                     >
                                         {
@@ -150,7 +130,7 @@ function User(): React.ReactElement {
                         {/* Wordle */}
                         <Grid item xs={12}>
                             {
-                                display_wordle_list === 'wordles' ?
+                                display_list_component === 'wordles' ?
                                 <WordleList
                                     wordle_get_api_method={'user/show'}
                                     request_params={{screen_name: screen_name}}
@@ -159,7 +139,7 @@ function User(): React.ReactElement {
                                     key={key + 'wordles'}
                                 />
                                 :
-                                display_wordle_list === 'game_results' ?
+                                display_list_component === 'game_results' ?
                                 <GameList
                                     game_status={['end']}
                                     game_get_api_method={'user/show'}
@@ -169,7 +149,7 @@ function User(): React.ReactElement {
                                     key={key + 'games'}
                                 />
                                 :
-                                display_wordle_list === 'likes' ?
+                                display_list_component === 'likes' ?
                                 <WordleList
                                     wordle_get_api_method={'user/show'}
                                     request_params={{screen_name: screen_name}}
@@ -183,8 +163,8 @@ function User(): React.ReactElement {
                     </Grid>
                 </Grid>
             </Container>
-        );
-    }
+        </SuspensePrimary>
+    );
 }
 
 export default User;

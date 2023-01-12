@@ -24,7 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {useAuth} from "../../../contexts/AuthContext";
 import PostForm from './PostForm';
 import Modal from "react-modal";
-import ModalPrimary from '../../../common/modal/components/ModalPrimary';
+import ModalPrimary from '../../../common/modal/modalprimary/components/ModalPrimary';
 import { PostListProps } from '../types/PostListType';
 
 // const customStyles = {

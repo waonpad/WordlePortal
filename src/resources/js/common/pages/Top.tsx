@@ -8,28 +8,16 @@ import { globalTheme } from '../../Theme';
 function Top(): React.ReactElement {
     const location = useLocation();
     const {wordle_tag_id, game_tag_id} = useParams<{wordle_tag_id: string, game_tag_id: string}>();
-
     const [initial_load, setInitialLoad] = useState(true);
-
     const [wordle_get_api_method, setWordleGetApiMethod] = useState<string>('wordle/index');
     const [request_params, setRequestParams] = useState<object>({});
     const [response_keys, setResponseKeys] = useState<string[]>(['wordles']);
     const [listening_channel, setListeningChannel] = useState<string>(`wordle`);
     const [listening_event, setListeningEvent] = useState<string>('WordleEvent');
-    const [display_list_component, setDisplayListComponent] = useState<'wordle' | 'game'>('wordle');
+    const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'games'>('wordles');
     const [key, setKey] = useState(''); //再読み込みのためにkeyが必要
 
-    const [display_wordle_list, setDisplayWordleList] = useState<string | null>('wordles');
-
-    // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
-    const handleDisplayWordleListSelect = (event: any) => {
-        setDisplayWordleList(event.currentTarget.value);
-    }
-    /////////////////////////////////////////////////////////////////////////
-
     useEffect(() => {
-        console.log(location);
-        console.log(wordle_tag_id);
         setInitialLoad(true);
         if(location.pathname === '/' || location.pathname === '/wordle/index') {
             setWordleGetApiMethod('wordle/index');
@@ -37,7 +25,7 @@ function Top(): React.ReactElement {
             setResponseKeys(['wordles']);
             setListeningChannel(`wordle`);
             setListeningEvent('WordleEvent');
-            setDisplayListComponent('wordle');
+            setDisplayListComponent('wordles');
             setKey(`wordle_index`);
         }
         if(location.pathname === `/wordle/tag/${wordle_tag_id}`) {
@@ -46,7 +34,7 @@ function Top(): React.ReactElement {
             setResponseKeys(['wordles']);
             setListeningChannel(`wordle_tag.${wordle_tag_id}`);
             setListeningEvent('WordleTagEvent');
-            setDisplayListComponent('wordle');
+            setDisplayListComponent('wordles');
             setKey(`wordle_tag.${wordle_tag_id}`);
         }
         if(location.pathname === '/wordle/game/index') {
@@ -55,7 +43,7 @@ function Top(): React.ReactElement {
             setResponseKeys(['games']);
             setListeningChannel(`game`);
             setListeningEvent('GameEvent');
-            setDisplayListComponent('game');
+            setDisplayListComponent('games');
             setKey(`wordle_game_index`);
         }
         if(location.pathname === `/wordle/game/tag/${game_tag_id}`) {
@@ -64,7 +52,7 @@ function Top(): React.ReactElement {
             setResponseKeys(['games']);
             setListeningChannel(`game_tag.${game_tag_id}`);
             setListeningEvent('GameTagEvent');
-            setDisplayListComponent('game');
+            setDisplayListComponent('games');
             setKey(`wordle_game_tag.${game_tag_id}`);
         }
         setInitialLoad(false);
@@ -89,7 +77,7 @@ function Top(): React.ReactElement {
                                     fullWidth
                                     variant='outlined'
                                     style={{borderRadius: '4px 0px 0px 4px'}}
-                                    sx={display_list_component === 'wordle' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
+                                    sx={display_list_component === 'wordles' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
                                 >
                                     WORDLES
                                 </Button>
@@ -101,7 +89,7 @@ function Top(): React.ReactElement {
                                     fullWidth
                                     variant='outlined'
                                     style={{borderRadius: '0px 4px 4px 0px'}}
-                                    sx={display_list_component === 'game' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}   
+                                    sx={display_list_component === 'games' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}   
                                 >
                                     GAMES
                                 </Button>
@@ -110,7 +98,7 @@ function Top(): React.ReactElement {
                     </Grid>
                     <Grid item xs={12}>
                         {
-                            display_list_component === 'wordle' ? (
+                            display_list_component === 'wordles' ? (
                                 <WordleList
                                     wordle_get_api_method={wordle_get_api_method}
                                     request_params={request_params}
@@ -123,7 +111,7 @@ function Top(): React.ReactElement {
                                 />
                             )
                             :
-                            display_list_component === 'game' ? (
+                            display_list_component === 'games' ? (
                                 <GameList
                                     game_status={['wait', 'start']}
                                     game_get_api_method={wordle_get_api_method}

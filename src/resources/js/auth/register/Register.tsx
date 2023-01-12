@@ -8,11 +8,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useAuth } from '../../contexts/AuthContext';
 import { RegisterData, RegisterErrorData } from '../types/AuthType';
-import SnackbarPrimary from '../../common/snackbar/snackbarprimary/components/SnackbarPrimary';
 import CropImage from '../../common/cropimage/components/CropImage';
 
 export default function Register(): React.ReactElement {
-
     const basicSchema = Yup.object().shape({
         screen_name: Yup.string()
         .required('必須入力'),
@@ -32,25 +30,17 @@ export default function Register(): React.ReactElement {
         // gender: Yup.string().oneOf(['male', 'female']).required()
     });
 
+    const history = useHistory();
+    const auth = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [gender, setGender] = useState<'male' | 'female'>('male');
+
     const { register, handleSubmit, setError, formState: { errors } } = useForm<RegisterData>({
         mode: 'onBlur',
         defaultValues: {
         },
         resolver: yupResolver(basicSchema)
     });
-
-    const history = useHistory();
-    const auth = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [snackbar_open, setSnackbarOpen] = useState(false);
-
-    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarOpen(false);
-    };
 
     // 認証が終わってUserにデータが入ったら移動する
     useEffect(() => {
@@ -59,49 +49,36 @@ export default function Register(): React.ReactElement {
         }
     }, [auth?.user])
 
-    const [gender, setGender] = useState<'male' | 'female'>('male');
-
     const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setGender(event.target.value as any);
+        setGender(event.target.value as 'male' | 'female');
     };
 
     const onSubmit: SubmitHandler<RegisterData> = (data: RegisterData) => {
         setLoading(true)
 
-        // アイコンは取り敢えずここで代入してしまう
         const target = document.querySelector('[data-key="user_icon"]');
         const croppedimgsrc = target!.getAttribute('data-cropped-img-src');
         data.icon = croppedimgsrc;
         data.gender = gender;
 
-        // console.log(data);
         axios.get('/sanctum/csrf-cookie').then(() => {
             auth?.register(data).then((res: any) => {
-            console.log(res);
-            if (res.data.status === true) {
-                setLoading(false)
-            }
-            else {
-                const obj: RegisterErrorData = res.data.validation_errors;
-
-                (Object.keys(obj) as (keyof RegisterErrorData)[]).forEach((key) => setError(key, {
-                type: 'manual',
-                message: obj[key]
-                }))
-
-                setLoading(false)
-            }
-            })
-            .catch((error) => {
-                console.log(error)
-                
-                setError('submit', {
+                if (res.data.status === true) {
+                    setLoading(false)
+                }
+                else if (res.data.status === false) {
+                    // 登録失敗時処理
+                    setLoading(false)
+                }
+                else {
+                    const obj: RegisterErrorData = res.data.validation_errors;
+                    (Object.keys(obj) as (keyof RegisterErrorData)[]).forEach((key) => setError(key, {
                     type: 'manual',
-                    message: '予期せぬエラーが発生しました'
-                })
-                setSnackbarOpen(true);
-                
-                setLoading(false)
+                    message: obj[key]
+                    }))
+
+                    setLoading(false)
+                }
             })
         })
     }
@@ -245,11 +222,6 @@ export default function Register(): React.ReactElement {
                     </Grid>
                 </Grid>
             </Box>
-            <SnackbarPrimary
-                open={snackbar_open}
-                handleClose={handleClose}
-                message={errors.submit?.message ? errors.submit?.message : ''}
-            />
         </Container>
     );
 }
