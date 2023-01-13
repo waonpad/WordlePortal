@@ -3,6 +3,7 @@ import { Button, Box, Grid } from '@mui/material';
 import { WordleCharactersProps } from '../../../../types/WordleType';
 
 function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElement {
+    const {classes, turn_flag, handleInputStack, errata} = props;
 
     const japanese_characters: any[] = [
         'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ',
@@ -46,10 +47,10 @@ function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElem
         <Box>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    {JapaneseCharactersAsset(japanese_characters.slice(0, 50), 'left', props.classes, props.handleInputStack, props.turn_flag, props.errata)}
+                    {JapaneseCharactersAsset(japanese_characters.slice(0, 50), 'left', classes, handleInputStack, turn_flag, errata)}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    {JapaneseCharactersAsset(japanese_characters.slice(50, 100), 'right', props.classes, props.handleInputStack, props.turn_flag, props.errata)}
+                    {JapaneseCharactersAsset(japanese_characters.slice(50, 100), 'right', classes, handleInputStack, turn_flag, errata)}
                 </Grid>
             </Grid>
         </Box>

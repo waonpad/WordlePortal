@@ -30,7 +30,7 @@ export type WordleDefaultData = {
 }
 
 export type WordleBoardProps = {
-    game_words: GameWords;
+    game_words: any;
     classes: any;
 }
 
@@ -76,7 +76,7 @@ export type DisplayInputComponent = 'japanese' | 'english' | 'number' | 'typing'
 export type WordleGameProps = {
     classes: any;
     game_status: any;
-    game_words: GameWords
+    game_words: any;
     turn_flag: boolean;
     handleInputStack: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     input_stack: any[];
@@ -97,12 +97,14 @@ export type WordleLobbyProps = {
 }
 
 export type WordleListProps = {
-    wordle_get_api_method: string;
-    request_params: object;
-    response_keys: string[];
+    request_config: {
+        api_url: string;
+        params: object;
+        response_keys: string[];
+        listening_channel?: string;
+        listening_event?: string;
+    };
     listen: boolean;
-    listening_channel?: string;
-    listening_event?: string;
 }
 
 export type WordleListItemProps = {

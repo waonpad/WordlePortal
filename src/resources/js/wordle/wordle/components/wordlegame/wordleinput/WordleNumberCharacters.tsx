@@ -3,6 +3,7 @@ import { Button, Box, Grid } from '@mui/material';
 import { WordleCharactersProps } from '../../../../types/WordleType';
 
 function WordleNumberCharacters(props: WordleCharactersProps): React.ReactElement {
+    const {classes, turn_flag, handleInputStack, errata} = props;
 
     const number_characters: any[] = [
         '7', '8', '9',
@@ -22,7 +23,7 @@ function WordleNumberCharacters(props: WordleCharactersProps): React.ReactElemen
                                     {(number_characters.slice(index*3, index*3+3) as any[]).map((character: any, index: number) => (
                                         <Grid item key={index}>
                                             {character !== null ? (
-                                                    <Button data-character-value={character} disabled={!props.turn_flag} className={props.classes.character + " " + props.classes.input_character + " " + props.classes[`input_character_${props.errata.matchs?.includes(character) ? 'match' : props.errata.exists?.includes(character) ? 'exist' : props.errata.not_exists?.includes(character) ? 'not_exist' : 'plain'}`]} onClick={props.handleInputStack}>{character}</Button>
+                                                    <Button data-character-value={character} disabled={!turn_flag} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${errata.matchs?.includes(character) ? 'match' : errata.exists?.includes(character) ? 'exist' : errata.not_exists?.includes(character) ? 'not_exist' : 'plain'}`]} onClick={handleInputStack}>{character}</Button>
                                                 ) : (
                                                     <Box></Box>
                                                 )

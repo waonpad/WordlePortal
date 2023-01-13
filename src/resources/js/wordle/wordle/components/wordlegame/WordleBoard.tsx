@@ -4,6 +4,7 @@ import Chip from "@material-ui/core/Chip"; // v4
 import { WordleBoardProps } from '../../../types/WordleType';
 
 function WordleBoard(props: WordleBoardProps): React.ReactElement {
+    const {game_words, classes} = props;
 
     const BoardAsset = (game_words: any, place: 'left' | 'right', classes: any) => (
         <Grid container spacing={1}>
@@ -27,10 +28,10 @@ function WordleBoard(props: WordleBoardProps): React.ReactElement {
         <Box>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    {BoardAsset((props.game_words.slice(0, Math.ceil(props.game_words.length / 2))), 'left', props.classes)}
+                    {BoardAsset((game_words.slice(0, Math.ceil(game_words.length / 2))), 'left', classes)}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    {BoardAsset((props.game_words.slice(Math.ceil(props.game_words.length / 2), props.game_words.length)), 'right', props.classes)}
+                    {BoardAsset((game_words.slice(Math.ceil(game_words.length / 2), game_words.length)), 'right', classes)}
                 </Grid>
             </Grid>
         </Box>

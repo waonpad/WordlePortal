@@ -7,40 +7,41 @@ import WordleNumberCharacters from './wordleinput/WordleNumberCharacters';
 import WordleTyping from './wordleinput/WordleTyping';
 
 function WordleInput(props: WordleInputProps): React.ReactElement {
+    const {classes, turn_flag, handleInputStack, errata, input_stack, handleTypingStack, display_input_component} = props;
 
     return (
         <React.Fragment>
             {
-                props.display_input_component === 'japanese' ?
+                display_input_component === 'japanese' ?
                     <WordleJapaneseCharacters
-                        classes={props.classes}
-                        turn_flag={props.turn_flag}
-                        handleInputStack={props.handleInputStack}
-                        errata={props.errata}
+                        classes={classes}
+                        turn_flag={turn_flag}
+                        handleInputStack={handleInputStack}
+                        errata={errata}
                     />
                 :
-                props.display_input_component === 'english' ?
+                display_input_component === 'english' ?
                     <WordleEnglishCharacters
-                        classes={props.classes}
-                        turn_flag={props.turn_flag}
-                        handleInputStack={props.handleInputStack}
-                        errata={props.errata}
+                        classes={classes}
+                        turn_flag={turn_flag}
+                        handleInputStack={handleInputStack}
+                        errata={errata}
                     />
                 :
-                props.display_input_component === 'number' ?
+                display_input_component === 'number' ?
                     <WordleNumberCharacters
-                        classes={props.classes}
-                        turn_flag={props.turn_flag}
-                        handleInputStack={props.handleInputStack}
-                        errata={props.errata}
+                        classes={classes}
+                        turn_flag={turn_flag}
+                        handleInputStack={handleInputStack}
+                        errata={errata}
                     />
                 :
-                props.display_input_component === 'typing' ?
+                display_input_component === 'typing' ?
                     <WordleTyping
-                        classes={props.classes}
-                        turn_flag={props.turn_flag}
-                        input_stack={props.input_stack}
-                        handleTypingStack={props.handleTypingStack}
+                        classes={classes}
+                        turn_flag={turn_flag}
+                        input_stack={input_stack}
+                        handleTypingStack={handleTypingStack}
                     />
                 :
                 <CircularProgress color="inherit" />
