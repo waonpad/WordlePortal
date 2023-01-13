@@ -1,11 +1,13 @@
 export type GameListProps = {
     game_status: ('wait' | 'start' | 'end')[];
-    game_get_api_method: string;
-    request_params: object;
-    response_keys: string[];
+    request_config: {
+        api_url: string;
+        params: object;
+        response_keys: string[];
+        listening_channel?: string;
+        listening_event?: string;
+    };
     listen: boolean;
-    listening_channel?: string;
-    listening_event?: string;
 }
 
 export type GameListItemProps = {

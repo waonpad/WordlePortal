@@ -1,8 +1,6 @@
 export type UserPrimaryDetailProps = {
     user: any;
-    myself: boolean;
-    follow: boolean;
-    setFollow: React.Dispatch<React.SetStateAction<boolean>>;
+    setUser: React.Dispatch<any>;
     expanded: boolean;
     setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }

@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from './common/errorboundary/components/ErrorFallBack';
 
 import View from './View';
-import Top from './common/pages/Top';
+import Top from './common/pages/top/Top';
 import Example from './common/pages/Example';
 import About from './common/pages/About';
 import Register from './auth/register/Register';

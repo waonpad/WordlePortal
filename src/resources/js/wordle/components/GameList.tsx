@@ -13,7 +13,7 @@ import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/type
 import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function GameList(props: GameListProps): React.ReactElement {
-    const {game_status, game_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
+    const {game_status, request_config, listen} = props;
 
     const [game_loading, setGameLoading] = useState(true);
     const [games, setGames] = useState<any[]>([]);
@@ -23,10 +23,10 @@ function GameList(props: GameListProps): React.ReactElement {
 
     // API ///////////////////////////////////////////////////////////////////////
     const getGame = (paginate: 'prev' | 'next') => {
-        axios.get(`/api/${game_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
             if (res.data.status === true) {
                 var res_data = res.data;
-                response_keys.forEach(key => {
+                request_config.response_keys.forEach(key => {
                     res_data = res_data[key];
                 });
                 const filtered_games = res_data.filter((game: any) => (
@@ -48,7 +48,7 @@ function GameList(props: GameListProps): React.ReactElement {
         getGame('prev');
 
         if(listen) {
-            window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
+            window.Echo.channel(request_config.listening_channel).listen(request_config.listening_event, (channel_event: any) => {
                 console.log(channel_event);
                 if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
                     setGames((games) => [channel_event.game, ...games.filter((game) => (game.id !== channel_event.game.id))].sort(function(a, b) {

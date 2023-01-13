@@ -10,7 +10,7 @@ import ModalPrimary from '../../common/modal/modalprimary/components/ModalPrimar
 import EditProfile from './EditProfile';
 
 function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
-    const {user, myself, follow, setFollow, expanded, setExpanded} = props;
+    const {user, setUser, expanded, setExpanded} = props;
 
     const [user_menu_anchor_el, setUserMenuAnchorEl] = useState<null | HTMLElement>(null);
     const is_menu_open = Boolean(user_menu_anchor_el);
@@ -54,7 +54,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     const followToggle = () => {
         axios.post('/api/user/followtoggle', {screen_name: user.screen_name}).then(res => {
             if(res.data.status === true) {
-                setFollow(res.data.follow);
+                setUser({...user, follow: res.data.follow});
             }
             else if (res.data.status === false) {
                 // TODO: 失敗時の処理
@@ -101,10 +101,10 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                     </Grid>
                     <Grid item xs={12} sx={{marginTop: 1}}>
                         {
-                            myself ? (
+                            user.myself ? (
                                 <Button variant='outlined' fullWidth onClick={handleEditProfileOpen}>Edit Profile</Button>
                             ) : (
-                                <Button variant='outlined' fullWidth onClick={followToggle}>{follow ? 'unFollow' : 'Follow'}</Button>
+                                <Button variant='outlined' fullWidth onClick={followToggle}>{user.follow ? 'unFollow' : 'Follow'}</Button>
                             )
                         }
                     </Grid>

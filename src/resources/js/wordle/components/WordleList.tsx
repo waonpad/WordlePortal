@@ -18,7 +18,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function WordleList(props: WordleListProps): React.ReactElement {
-    const {wordle_get_api_method, request_params, response_keys, listen, listening_channel, listening_event} = props;
+    const {request_config, listen} = props;
 
     const [wordle_loading, setWordleLoading] = useState(true);
     const history = useHistory();
@@ -30,10 +30,10 @@ function WordleList(props: WordleListProps): React.ReactElement {
 
     // API ///////////////////////////////////////////////////////////////////////
     const getWordle = (paginate: 'prev' | 'next') => {
-        axios.get(`/api/${wordle_get_api_method}`, {params: {...request_params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : null , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : null , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
             if (res.data.status === true) {
                 var res_data = res.data;
-                response_keys.forEach(key => {
+                request_config.response_keys.forEach(key => {
                     res_data = res_data[key];
                 });
 
@@ -51,7 +51,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
 	useEffect(() => {
         getWordle('prev');
         if(listen) {
-            window.Echo.channel(listening_channel).listen(listening_event, (channel_event: any) => {
+            window.Echo.channel(request_config.listening_channel).listen(request_config.listening_event, (channel_event: any) => {
                 console.log(channel_event);
                 if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
                     setWordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {

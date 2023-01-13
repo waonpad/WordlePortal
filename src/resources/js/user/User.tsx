@@ -19,8 +19,6 @@ function User(): React.ReactElement {
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>({});
-    const [follow, setFollow] = useState(false);
-    const [myself, setMyself] = useState(false);
     const [key, setKey] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'game_results' | 'likes'>('wordles');
@@ -39,8 +37,6 @@ function User(): React.ReactElement {
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
             if(res.data.status === true) {
                 setUser(res.data.user);
-                setMyself(res.data.myself);
-                setFollow(res.data.follow);
                 setKey(screen_name);
                 setLoading(false);
             }
@@ -61,9 +57,7 @@ function User(): React.ReactElement {
                         <Grid item xs={12}>
                             <UserPrimaryDetail
                                 user={user}
-                                myself={myself}
-                                follow={follow}
-                                setFollow={setFollow}
+                                setUser={setUser}
                                 expanded={expanded}
                                 setExpanded={setExpanded}
                             />
@@ -96,9 +90,11 @@ function User(): React.ReactElement {
                         <Grid item xs={12}>
                             <GameList
                                 game_status={['wait', 'start']}
-                                game_get_api_method={'user/show'}
-                                request_params={{screen_name: screen_name}}
-                                response_keys={['user', 'games']}
+                                request_config={{
+                                    api_url: 'user/show',
+                                    params: {screen_name: screen_name},
+                                    response_keys: ['user', 'games'],
+                                }}
                                 listen={false}
                                 key={key + 'games'}
                             />
@@ -132,9 +128,11 @@ function User(): React.ReactElement {
                             {
                                 display_list_component === 'wordles' ?
                                 <WordleList
-                                    wordle_get_api_method={'user/show'}
-                                    request_params={{screen_name: screen_name}}
-                                    response_keys={['user', 'wordles']}
+                                    request_config={{
+                                        api_url: 'user/show',
+                                        params: {screen_name: screen_name},
+                                        response_keys: ['user', 'wordles'],
+                                    }}
                                     listen={false}
                                     key={key + 'wordles'}
                                 />
@@ -142,18 +140,22 @@ function User(): React.ReactElement {
                                 display_list_component === 'game_results' ?
                                 <GameList
                                     game_status={['end']}
-                                    game_get_api_method={'user/show'}
-                                    request_params={{screen_name: screen_name}}
-                                    response_keys={['user', 'joining_games']}
+                                    request_config={{
+                                        api_url: 'user/show',
+                                        params: {screen_name: screen_name},
+                                        response_keys: ['user', 'joining_games'],
+                                    }}
                                     listen={false}
                                     key={key + 'games'}
                                 />
                                 :
                                 display_list_component === 'likes' ?
                                 <WordleList
-                                    wordle_get_api_method={'user/show'}
-                                    request_params={{screen_name: screen_name}}
-                                    response_keys={['user', 'wordle_likes']}
+                                    request_config={{
+                                        api_url: 'user/show',
+                                        params: {screen_name: screen_name},
+                                        response_keys: ['user', 'wordle_likes'],
+                                    }}
                                     listen={false}
                                     key={key + 'wordle_likes'}
                                 />

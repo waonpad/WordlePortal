@@ -49,21 +49,13 @@ class UserController extends Controller
             'joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs',
         ])->where('screen_name', $request->screen_name)->first();
 
-        $myself = false;
-        $follow = false;
-        $followed = false;
-        if($auth_user) {
-            $myself = ($auth_user->id === $target_user->id) ? true : false;
-            $follow = in_array($auth_user->id, $target_user->followers->pluck('id')->toArray()) ? true : false;
-            $followed = in_array($auth_user->id, $target_user->follows->pluck('id')->toArray()) ? true : false;
-        }
+        $target_user['myself'] = $auth_user ? (($auth_user->id === $target_user->id) ? true : false) : false;
+        $target_user['follow'] = $auth_user ? (in_array($auth_user->id, $target_user->followers->pluck('id')->toArray()) ? true : false) : false;
+        $target_user['followed'] = $auth_user ? (in_array($auth_user->id, $target_user->follows->pluck('id')->toArray()) ? true : false) : false;
 
         return response()->json([
             'status' => true,
-            'user' => $target_user,
-            'myself' => $myself,
-            'follow' => $follow,
-            'followed' => $followed,
+            'user' => $target_user
         ]);
     }
 
