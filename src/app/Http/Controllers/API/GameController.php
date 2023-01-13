@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Wordle;
 use App\Models\Game;
 use App\Models\GameUser;
@@ -34,17 +35,19 @@ class GameController extends Controller
 
     private function paginateGame($games, $per_page, $paginate, $start, $last,)
     {
+        gettype($games) === 'object' ? $games = $games->toArray() : null;
+
         if($paginate === 'prev') {
             // prevなので、idがstartより大きいものの中からper_page個だけ取り出す
             // startがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_games = $start !== null ? array_slice(array_filter($games->toArray(), function ($game) use($start) {
+            $paginated_games = $start !== null ? array_slice(array_filter($games, function ($game) use($start) {
                 return $game['id'] > $start;
             }), 0, $per_page)
-            : array_slice($games->toArray(), -$per_page);
+            : array_slice($games, -$per_page);
             // これだとprevで最新まで戻った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
             // idがstart以下のものの後ろから、per_page個になるように
             if(count($paginated_games) < $per_page) {
-                $paginated_games = array_merge(array_slice(array_filter($games->toArray(), function($game) use($start) {
+                $paginated_games = array_merge(array_slice(array_filter($games, function($game) use($start) {
                     return $game['id'] <= $start;
                 }), -($per_page - count($paginated_games))), $paginated_games);
             }
@@ -53,20 +56,31 @@ class GameController extends Controller
         if($paginate === 'next') {
             // nextなので、idがlastより小さいものの中からper_page個だけ取り出す
             // lastがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_games = $last !== null ? array_slice(array_filter($games->toArray(), function($game) use($last) {
+            $paginated_games = $last !== null ? array_slice(array_filter($games, function($game) use($last) {
                 return $game['id'] < $last;
             }), -$per_page)
-            : array_slice($games->toArray(), -$per_page);
+            : array_slice($games, -$per_page);
             // これだとnextで最後まで行った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
             // idがlast以上のものの前から、per_page個になるように
             if(count($paginated_games) < $per_page) {
-                $paginated_games = array_merge($paginated_games, array_slice(array_filter($games->toArray(), function ($game) use($last) {
+                $paginated_games = array_merge($paginated_games, array_slice(array_filter($games, function ($game) use($last) {
                     return $game['id'] >= $last;
                 }), 0, $per_page - count($paginated_games)));
             }
         }
 
         return $paginated_games;
+    }
+
+    private function filterGame($games, $target_status_array)
+    {
+        gettype($games) === 'object' ? $games = $games->toArray() : null;
+
+        $filtered_games = array_filter($games, function($game) use($target_status_array) {
+            return in_array($game['status'], $target_status_array);
+        });
+
+        return $filtered_games;
     }
 
     private function currentGameStatus($game, $initial_load = false)
@@ -145,11 +159,92 @@ class GameController extends Controller
     {
         $games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
 
-        $paginated_games = $this->paginateGame($games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $filtered_games = $this->filterGame($games, $request->game_status);
+        $paginated_games = $this->paginateGame($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
 
         return response()->json([
             'games' => $paginated_games,
             'status' => true
+        ]);
+    }
+
+    public function show(Request $request)
+    {
+        $game = Game::where('uuid', $request->game_uuid)->first() ?? null;
+        
+        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
+
+        return response()->json([
+            'game' => $game,
+            'status' => true,
+            'current_game_status' => $current_game_status
+        ]);
+    }
+
+    public function follows(Request $request)
+    {
+        $games = Game::with('user', 'gameUsers.user', 'gameLogs')->whereIn('game_create_user_id', User::find(Auth::user()->id)->follows()->pluck('followed_user_id'))->latest()->get();
+
+        $filtered_games = $this->filterGame($games, $request->game_status);
+        $paginated_games = $this->paginateGame($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        
+        return response()->json([
+            'games' => $paginated_games,
+            'status' => true
+        ]);
+    }
+
+    public function user(Request $request)
+    {
+        $games = User::with('games.user', 'games.gameUsers.user', 'games.gameLogs')->where('screen_name', $request->screen_name)->first()->games;
+
+        $filtered_games = $this->filterGame($games, $request->game_status);
+        $paginated_games = $this->paginateGame($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        
+        return response()->json([
+            'games' => $paginated_games,
+            'status' => true
+        ]);
+    }
+
+    public function userJoining(Request $request)
+    {
+        $games = User::with('joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs')->where('screen_name', $request->screen_name)->first()->joiningGames;
+
+        $filtered_games = $this->filterGame($games, $request->game_status);
+        $paginated_games = $this->paginateGame($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        
+        return response()->json([
+            'games' => $paginated_games,
+            'status' => true
+        ]);
+    }
+    
+    public function search(Request $request)
+    {
+        $games = Game::where('status', 'wait')->get();
+
+        return response()->json([
+            'games' => $games,
+            'status' => true
+        ]);
+    }
+
+    public function tag(Request $request)
+    {
+        $game_tag_id = $request->game_tag_id;
+        $all_games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
+
+        $games = array_filter($all_games->toArray(), function($game) use($game_tag_id) {
+            return in_array($game_tag_id, array_column($game['tags'], 'id'));
+        });
+
+        $filtered_games = $this->filterGame($games, $request->game_status);
+        $paginated_games = $this->paginateGame($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+
+        return response()->json([
+            'status' => true,
+            'games' => $paginated_games,
         ]);
     }
 
@@ -269,44 +364,6 @@ class GameController extends Controller
                'status' => false
             ]);
         }
-    }
-
-    public function show(Request $request)
-    {
-        $game = Game::where('uuid', $request->game_uuid)->first() ?? null;
-        
-        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
-
-        return response()->json([
-            'game' => $game,
-            'status' => true,
-            'current_game_status' => $current_game_status
-        ]);
-    }
-    
-    public function search(Request $request)
-    {
-        $games = Game::where('status', 'wait')->get();
-
-        return response()->json([
-            'games' => $games,
-            'status' => true
-        ]);
-    }
-
-    public function tag(Request $request)
-    {
-        $game_tag_id = $request->game_tag_id;
-
-        $all_games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
-        $games = array_filter($all_games->toArray(), function($game) use($game_tag_id) {
-            return in_array($game_tag_id, array_column($game['tags'], 'id'));
-        });
-
-        return response()->json([
-            'status' => true,
-            'games' => $games,
-        ]);
     }
     
     public function start(Request $request)

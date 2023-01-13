@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Models\Wordle;
 use App\Models\Tag;
 use App\Models\WordleTag;
@@ -29,17 +30,19 @@ class WordleController extends Controller
 
     private function paginateWordle($wordles, $per_page, $paginate, $start, $last,)
     {
+        gettype($wordles) === 'object' ? $wordles = $wordles->toArray() : null;
+
         if($paginate === 'prev') {
             // prevなので、idがstartより大きいものの中からper_page個だけ取り出す
             // startがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_wordles = $start !== null ? array_slice(array_filter($wordles->toArray(), function ($wordle) use($start) {
+            $paginated_wordles = $start !== null ? array_slice(array_filter($wordles, function ($wordle) use($start) {
                 return $wordle['id'] > $start;
             }), 0, $per_page)
-            : array_slice($wordles->toArray(), -$per_page);
+            : array_slice($wordles, -$per_page);
             // これだとprevで最新まで戻った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
             // idがstart以下のものの後ろから、per_page個になるように
             if(count($paginated_wordles) < $per_page) {
-                $paginated_wordles = array_merge(array_slice(array_filter($wordles->toArray(), function($wordle) use($start) {
+                $paginated_wordles = array_merge(array_slice(array_filter($wordles, function($wordle) use($start) {
                     return $wordle['id'] <= $start;
                 }), -($per_page - count($paginated_wordles))), $paginated_wordles);
             }
@@ -64,7 +67,7 @@ class WordleController extends Controller
         return $paginated_wordles;
     }
 
-    private function WordleLikeCheck($wordles)
+    private function wordleLikeCheck($wordles)
     {
         return array_map(function($wordle) {
             $wordle['like_status'] = in_array(Auth::id(), array_column($wordle['likes'], 'id'));
@@ -77,7 +80,7 @@ class WordleController extends Controller
         $wordles = Wordle::with('user', 'tags', 'likes')->get();
 
         $paginated_wordles = $this->paginateWordle($wordles, $request->per_page, $request->paginate, $request->start, $request->last);
-        $like_checked_wordles = $this->WordleLikeCheck($paginated_wordles);
+        $like_checked_wordles = $this->wordleLikeCheck($paginated_wordles);
 
         return response()->json([
             'wordles' => $like_checked_wordles,
@@ -160,6 +163,45 @@ class WordleController extends Controller
             'status' => true
         ]);
     }
+
+    public function follows(Request $request)
+    {
+        $wordles = Wordle::with('user', 'tags', 'likes')->whereIn('user_id', User::find(Auth::user()->id)->follows()->pluck('followed_user_id'))->latest()->get();
+
+        $paginated_wordles = $this->paginateWordle($wordles, $request->per_page, $request->paginate, $request->start, $request->last);
+        $like_checked_wordles = $this->wordleLikeCheck($paginated_wordles);
+        
+        return response()->json([
+            'wordles' => $like_checked_wordles,
+            'status' => true
+        ]);
+    }
+
+    public function user(Request $request)
+    {
+        $wordles = User::with('wordles.user', 'wordles.tags', 'wordles.likes')->where('screen_name', $request->screen_name)->first()->wordles;
+
+        $paginated_wordles = $this->paginateWordle($wordles, $request->per_page, $request->paginate, $request->start, $request->last);
+        $like_checked_wordles = $this->wordleLikeCheck($paginated_wordles);
+        
+        return response()->json([
+            'wordles' => $like_checked_wordles,
+            'status' => true
+        ]);
+    }
+
+    public function userLikes(Request $request)
+    {
+        $wordles = User::with('wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes')->where('screen_name', $request->screen_name)->first()->wordleLikes;
+
+        $paginated_wordles = $this->paginateWordle($wordles, $request->per_page, $request->paginate, $request->start, $request->last);
+        $like_checked_wordles = $this->wordleLikeCheck($paginated_wordles);
+        
+        return response()->json([
+            'wordles' => $like_checked_wordles,
+            'status' => true
+        ]);
+    }
     
     public function destroy(Request $request)
     {
@@ -214,14 +256,12 @@ class WordleController extends Controller
     public function tag(Request $request)
     {
         $wordles = Tag::with('wordles.tags', 'wordles.user', 'wordles.likes')->find($request->wordle_tag_id)->wordles ?? [];
-
-        foreach($wordles as $wordle) {
-            $post['like_status'] = in_array(Auth::id(), $wordle->likes->pluck('id')->toArray());
-        };
+        $paginated_wordles = $this->paginateWordle($wordles, $request->per_page, $request->paginate, $request->start, $request->last);
+        $like_checked_wordles = $this->wordleLikeCheck($paginated_wordles);
 
         return response()->json([
             'status' => true,
-            'wordles' => $wordles,
+            'wordles' => $like_checked_wordles,
         ]);
     }
 }

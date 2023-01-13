@@ -10,8 +10,8 @@ import Typography from '@mui/material/Typography';
 import { Avatar, Card, CardContent, Divider, Button, Collapse, IconButton, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import UserPrimaryDetail from './components/UserPrimaryDetail';
 import { globalTheme } from '../Theme';
-import WordleList from '../wordle/components/WordleList';
-import GameList from '../wordle/components/GameList';
+import WordleList from '../wordle/components/wordlelist/components/WordleList';
+import GameList from '../wordle/components/gamelist/components/GameList';
 import SuspensePrimary from '../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function User(): React.ReactElement {
@@ -89,11 +89,11 @@ function User(): React.ReactElement {
                         </Grid>
                         <Grid item xs={12}>
                             <GameList
-                                game_status={['wait', 'start']}
+                                game_status={['wait', 'start']} // start消す?
                                 request_config={{
-                                    api_url: 'user/show',
+                                    api_url: 'wordle/game/user',
                                     params: {screen_name: screen_name},
-                                    response_keys: ['user', 'games'],
+                                    response_keys: ['games'],
                                 }}
                                 listen={false}
                                 key={key + 'games'}
@@ -129,9 +129,9 @@ function User(): React.ReactElement {
                                 display_list_component === 'wordles' ?
                                 <WordleList
                                     request_config={{
-                                        api_url: 'user/show',
+                                        api_url: 'wordle/user',
                                         params: {screen_name: screen_name},
-                                        response_keys: ['user', 'wordles'],
+                                        response_keys: ['wordles'],
                                     }}
                                     listen={false}
                                     key={key + 'wordles'}
@@ -141,9 +141,9 @@ function User(): React.ReactElement {
                                 <GameList
                                     game_status={['end']}
                                     request_config={{
-                                        api_url: 'user/show',
+                                        api_url: 'wordle/game/userjoining',
                                         params: {screen_name: screen_name},
-                                        response_keys: ['user', 'joining_games'],
+                                        response_keys: ['games'],
                                     }}
                                     listen={false}
                                     key={key + 'games'}
@@ -152,9 +152,9 @@ function User(): React.ReactElement {
                                 display_list_component === 'likes' ?
                                 <WordleList
                                     request_config={{
-                                        api_url: 'user/show',
+                                        api_url: 'wordle/userlikes',
                                         params: {screen_name: screen_name},
-                                        response_keys: ['user', 'wordle_likes'],
+                                        response_keys: ['wordles'],
                                     }}
                                     listen={false}
                                     key={key + 'wordle_likes'}

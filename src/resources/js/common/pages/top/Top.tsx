@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from "react-router-dom";
 import { Backdrop, CircularProgress, Grid, Button, ButtonGroup, Container } from '@mui/material';
-import WordleList from '../../../wordle/components/WordleList';
-import GameList from '../../../wordle/components/GameList';
+import WordleList from '../../../wordle/components/wordlelist/components/WordleList';
+import GameList from '../../../wordle/components/gamelist/components/GameList';
 import { globalTheme } from '../../../Theme';
 import { RequestConfig } from './types/TopType';
+import { useAuth } from '../../../contexts/AuthContext';
 
 function Top(): React.ReactElement {
     const location = useLocation();
+    const auth = useAuth();
     const {wordle_tag_id, game_tag_id} = useParams<{wordle_tag_id: string, game_tag_id: string}>();
     const [initial_load, setInitialLoad] = useState(true);
     const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'games'>('wordles');
@@ -34,6 +36,18 @@ function Top(): React.ReactElement {
             setDisplayListComponent('wordles');
             setKey(`wordle_index`);
         }
+        if(location.pathname === '/wordle/follows') {
+            setRequestConfig({
+                api_url: 'wordle/follows',
+                params: {},
+                response_keys: ['wordles'],
+                // listening_channel: `wordle_follows.${auth?.user?.id}`,
+                // listening_event: 'WordleFollowsEvent',
+            });
+            // チャンネルとイベントは作成していない
+            setDisplayListComponent('wordles');
+            setKey(`wordle_follows`);
+        }
         if(location.pathname === `/wordle/tag/${wordle_tag_id}`) {
             setRequestConfig({
                 api_url: 'wordle/tag',
@@ -53,6 +67,18 @@ function Top(): React.ReactElement {
                 listening_channel: 'game',
                 listening_event: 'GameEvent',
             })
+            setDisplayListComponent('games');
+            setKey(`wordle_game_index`);
+        }
+        if(location.pathname === '/wordle/game/follows') {
+            setRequestConfig({
+                api_url: 'wordle/game/follows',
+                params: {},
+                response_keys: ['games'],
+                // listening_channel: `game_follows.${auth?.user?.id}`,
+                // listening_event: 'GameFollowsEvent',
+            })
+            // チャンネルとイベントは作成していない
             setDisplayListComponent('games');
             setKey(`wordle_game_index`);
         }
@@ -84,7 +110,8 @@ function Top(): React.ReactElement {
                     {/* 表示するWordleの種類選択エリア */}
                     <Grid item container xs={12}>
                         <Grid item xs={6}>
-                            <Link to={'/wordle/index'}>
+                            {/* /wordle/game が最初に含まれていたら、linkは/wordle/gameを/wordleに置き換える */}
+                            <Link to={location.pathname.substring(0, 12) === '/wordle/game' ? `/wordle${location.pathname.substring(12)}` : location.pathname}>
                                 <Button
                                     fullWidth
                                     variant='outlined'
@@ -96,7 +123,9 @@ function Top(): React.ReactElement {
                             </Link>
                         </Grid>
                         <Grid item xs={6}>
-                            <Link to={'/wordle/game/index'}>
+                            {/* /wordle/game が最初に含まれていなかったら、linkは/wordleを/wordle/gameに置き換える */}
+                            {/* / の場合 /wordle/game/index になる */}
+                            <Link to={location.pathname === '/' ? '/wordle/game/index' : location.pathname.substring(0, 12) !== '/wordle/game' ? `/wordle/game${location.pathname.substring(7)}` : location.pathname}>
                                 <Button
                                     fullWidth
                                     variant='outlined'
@@ -121,7 +150,7 @@ function Top(): React.ReactElement {
                             :
                             display_list_component === 'games' ? (
                                 <GameList
-                                    game_status={['wait', 'start']}
+                                    game_status={['wait']}
                                     request_config={request_config}
                                     // listen={true}
                                     listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
