@@ -93,6 +93,9 @@ Route::prefix('notification')->group(function (){
 // Wordles
 Route::prefix('wordle')->group(function (){
     Route::get('index', [WordleController::class, 'index']);
+    Route::get('follows', [WordleController::class, 'follows']);
+    Route::get('user', [WordleController::class, 'user']);
+    Route::get('userlikes', [WordleController::class, 'userLikes']);
     Route::post('upsert', [WordleController::class, 'upsert'])->middleware('auth');
     Route::get('show', [WordleController::class, 'show'])->middleware('auth');
     Route::post('destroy', [WordleController::class, 'destroy'])->middleware('auth');
@@ -109,6 +112,9 @@ Route::prefix('wordle')->group(function (){
     // games
     Route::prefix('game')->group(function (){
         Route::get('index', [GameController::class, 'index']);
+        Route::get('follows', [GameController::class, 'follows']);
+        Route::get('user', [GameController::class, 'user']);
+        Route::get('userjoining', [GameController::class, 'userJoining']);
         Route::post('upsert', [GameController::class, 'upsert'])->middleware('auth');
         Route::get('show', [GameController::class, 'show'])->middleware('auth');
         Route::get('search', [GameController::class, 'search']);

@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import swal from 'sweetalert';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import axios from 'axios';
-import ModalPrimary from '../../common/modal/modalprimary/components/ModalPrimary';
-import VSPlayOption from './VSPlayOption';
-import { GameListProps } from '../types/GameType';
+import ModalPrimary from '../../../../common/modal/modalprimary/components/ModalPrimary';
+import VSPlayOption from '../../VSPlayOption';
+import { GameListProps } from '../../../types/GameType';
 import GameListItem from './GameListItem';
-import PaginationPrimary from '../../common/pagination/paginationprimary/components/PaginationPrimary';
-import NoItem from '../../common/noitem/components/NoItem';
-import AreYouSureDialog from '../../common/dialog/areyousuredialog/components/AreYouSureDialog';
-import { AreYouSureDialogProps } from '../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
-import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
+import PaginationPrimary from '../../../../common/pagination/paginationprimary/components/PaginationPrimary';
+import NoItem from '../../../../common/noitem/components/NoItem';
+import AreYouSureDialog from '../../../../common/dialog/areyousuredialog/components/AreYouSureDialog';
+import { AreYouSureDialogProps } from '../../../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
+import SuspensePrimary from '../../../../common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function GameList(props: GameListProps): React.ReactElement {
     const {game_status, request_config, listen} = props;
@@ -23,17 +23,14 @@ function GameList(props: GameListProps): React.ReactElement {
 
     // API ///////////////////////////////////////////////////////////////////////
     const getGame = (paginate: 'prev' | 'next') => {
-        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, game_status: game_status, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
             if (res.data.status === true) {
                 var res_data = res.data;
                 request_config.response_keys.forEach(key => {
                     res_data = res_data[key];
                 });
-                const filtered_games = res_data.filter((game: any) => (
-                    game_status.includes(game.status)
-                ));
 
-                setGames(filtered_games.reverse());
+                setGames(res_data.reverse());
                 setGameLoading(false);
             }
             else if(res.data.status === false) {

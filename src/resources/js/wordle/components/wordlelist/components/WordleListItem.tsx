@@ -10,8 +10,8 @@ import AbcIcon from '@mui/icons-material/Abc';
 import PinIcon from '@mui/icons-material/Pin';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { useAuth } from '../../contexts/AuthContext';
-import { WordleListItemProps } from '../types/WordleType';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { WordleListItemProps } from '../../../types/WordleType';
 
 function WordleListItem(props: WordleListItemProps): React.ReactElement {
     const {wordle, handleLikeToggle, handleDeleteWordle, handleSinglePlayStart, handleVSPlayOptionOpen} = props;

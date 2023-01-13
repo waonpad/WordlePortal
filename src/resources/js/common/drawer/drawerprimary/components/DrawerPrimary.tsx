@@ -10,6 +10,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import { Link, useHistory } from "react-router-dom";
 import { DrawerPrimaryProps } from '../types/DrawerPrimaryType';
 
@@ -39,7 +40,11 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
                 <ListItemIcon><Home /></ListItemIcon>
                 <ListItemText primary='Home'></ListItemText>
             </ListItem>
-            <ListItem button component={Link} to='/chat' style={{ textDecoration: 'none', color: "inherit" }}>
+            <ListItem button component={Link} to='/wordle/follows' style={{ textDecoration: 'none', color: "inherit" }}>
+                <ListItemIcon><TimelineIcon /></ListItemIcon>
+                <ListItemText primary='TimeLine'></ListItemText>
+            </ListItem>
+            {/* <ListItem button component={Link} to='/chat' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemIcon><Chat /></ListItemIcon>
                 <ListItemText primary='Chat'></ListItemText>
             </ListItem>
@@ -50,7 +55,7 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
             <ListItem button component={Link} to='/groupchat/test' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemIcon><Group /></ListItemIcon>
                 <ListItemText primary='Group Chat'></ListItemText>
-            </ListItem>
+            </ListItem> */}
             <ListItem button component={Link} to='/wordle/create' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Wordle Create'></ListItemText>
             </ListItem>
