@@ -13,6 +13,7 @@ import { globalTheme } from '../Theme';
 import WordleList from '../wordle/components/wordlelist/components/WordleList';
 import GameList from '../wordle/components/gamelist/components/GameList';
 import SuspensePrimary from '../common/suspense/suspenseprimary/components/SuspensePrimary';
+import ButtonGroupPrimary from '../common/button/buttongroupprimary/components/ButtonGroupPrimary';
 
 function User(): React.ReactElement {
     const location = useLocation();
@@ -101,27 +102,28 @@ function User(): React.ReactElement {
                         </Grid>
                         {/* 表示するWordleの種類選択エリア */}
                         <Grid item xs={12}>
-                            <ButtonGroup
-                                fullWidth
-                                variant='outlined'
-                                aria-label="outlined primary button group"
-                            >
-                                {(['wordles', 'game_results', 'likes']).map((select, index) => (
-                                    <Button
-                                        key={index}
-                                        value={select}
-                                        sx={display_list_component === select ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
-                                        onClick={handleDisplayWordleListSelect}
-                                    >
-                                        {
-                                            select === 'wordles' ? 'WORDLES'
-                                            : select === 'game_results' ? 'GAME RESULTS'
-                                            : select === 'likes' ? 'LIKES'
-                                            : ''
-                                        }
-                                    </Button>
-                                ))}
-                            </ButtonGroup>
+                            <ButtonGroupPrimary
+                                items={[
+                                    {
+                                        text: 'Wordles',
+                                        value: 'wordles',
+                                        onClick: handleDisplayWordleListSelect,
+                                        active: display_list_component === 'wordles'
+                                    },
+                                    {
+                                        text: 'GAME RESULTS',
+                                        value: 'game_results',
+                                        onClick: handleDisplayWordleListSelect,
+                                        active: display_list_component === 'game_results'
+                                    },
+                                    {
+                                        text: 'LIKES',
+                                        value: 'likes',
+                                        onClick: handleDisplayWordleListSelect,
+                                        active: display_list_component === 'likes'
+                                    }
+                                ]}
+                            />
                         </Grid>
                         {/* Wordle */}
                         <Grid item xs={12}>

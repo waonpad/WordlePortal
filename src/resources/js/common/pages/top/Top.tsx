@@ -6,6 +6,7 @@ import GameList from '../../../wordle/components/gamelist/components/GameList';
 import { globalTheme } from '../../../Theme';
 import { RequestConfig } from './types/TopType';
 import { useAuth } from '../../../contexts/AuthContext';
+import ButtonGroupPrimary from '../../button/buttongroupprimary/components/ButtonGroupPrimary';
 
 function Top(): React.ReactElement {
     const location = useLocation();
@@ -108,34 +109,21 @@ function Top(): React.ReactElement {
             <Container maxWidth={'md'}>
                 <Grid container spacing={2}>
                     {/* 表示するWordleの種類選択エリア */}
-                    <Grid item container xs={12}>
-                        <Grid item xs={6}>
-                            {/* /wordle/game が最初に含まれていたら、linkは/wordle/gameを/wordleに置き換える */}
-                            <Link to={location.pathname.substring(0, 12) === '/wordle/game' ? `/wordle${location.pathname.substring(12)}` : location.pathname}>
-                                <Button
-                                    fullWidth
-                                    variant='outlined'
-                                    style={{borderRadius: '4px 0px 0px 4px'}}
-                                    sx={display_list_component === 'wordles' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}
-                                >
-                                    WORDLES
-                                </Button>
-                            </Link>
-                        </Grid>
-                        <Grid item xs={6}>
-                            {/* /wordle/game が最初に含まれていなかったら、linkは/wordleを/wordle/gameに置き換える */}
-                            {/* / の場合 /wordle/game/index になる */}
-                            <Link to={location.pathname === '/' ? '/wordle/game/index' : location.pathname.substring(0, 12) !== '/wordle/game' ? `/wordle/game${location.pathname.substring(7)}` : location.pathname}>
-                                <Button
-                                    fullWidth
-                                    variant='outlined'
-                                    style={{borderRadius: '0px 4px 4px 0px'}}
-                                    sx={display_list_component === 'games' ? {fontWeight: 'bold', color: '#fff', backgroundColor: globalTheme.palette.primary.main, ":hover": {backgroundColor: globalTheme.palette.primary.main}} : {fontWeight: 'bold', backgroundColor: '#fff'}}   
-                                >
-                                    GAMES
-                                </Button>
-                            </Link>
-                        </Grid>
+                    <Grid item xs={12}>
+                        <ButtonGroupPrimary
+                            items={[
+                                {
+                                    text: 'WORDLES',
+                                    link: location.pathname.substring(0, 12) === '/wordle/game' ? `/wordle${location.pathname.substring(12)}` : location.pathname,
+                                    active: display_list_component === 'wordles'
+                                },
+                                {
+                                    text: 'GAMES',
+                                    link: location.pathname === '/' ? '/wordle/game/index' : location.pathname.substring(0, 12) !== '/wordle/game' ? `/wordle/game${location.pathname.substring(7)}` : location.pathname,
+                                    active: display_list_component === 'games'
+                                },
+                            ]}
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         {
