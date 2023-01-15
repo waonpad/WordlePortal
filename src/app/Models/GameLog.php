@@ -17,7 +17,7 @@ class GameLog extends Model
     ];
 
     protected $casts = [
-        'log' => 'array',
+        'log' => 'json',
     ];
 
     public function game() {

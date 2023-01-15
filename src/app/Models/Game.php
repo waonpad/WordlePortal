@@ -36,9 +36,9 @@ class Game extends Model
     ];
     
     protected $casts = [
-        'words' => 'array',
-        'input' => 'array',
-        'tags' => 'array'
+        'words' => 'json',
+        'input' => 'json',
+        'tags' => 'json'
     ];
 
     public function user() {

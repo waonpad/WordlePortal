@@ -18,8 +18,8 @@ class Wordle extends Model
     ];
 
     protected $casts = [
-        'words' => 'array',
-        'input' => 'array'
+        'words' => 'json',
+        'input' => 'json'
     ];
 
     public function user() {

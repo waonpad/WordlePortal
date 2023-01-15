@@ -11,7 +11,7 @@ import ButtonGroupPrimary from '../../button/buttongroupprimary/components/Butto
 function Top(): React.ReactElement {
     const location = useLocation();
     const auth = useAuth();
-    const {wordle_tag_id, game_tag_id} = useParams<{wordle_tag_id: string, game_tag_id: string}>();
+    const {wordle_tag_id, game_tag_id, wordle_search_param, wordle_game_search_param} = useParams<{wordle_tag_id: string, game_tag_id: string, wordle_search_param: string, wordle_game_search_param: string}>();
     const [initial_load, setInitialLoad] = useState(true);
     const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'games'>('wordles');
     const [key, setKey] = useState(''); //再読み込みのためにkeyが必要
@@ -42,8 +42,6 @@ function Top(): React.ReactElement {
                 api_url: 'wordle/follows',
                 params: {},
                 response_keys: ['wordles'],
-                // listening_channel: `wordle_follows.${auth?.user?.id}`,
-                // listening_event: 'WordleFollowsEvent',
             });
             // チャンネルとイベントは作成していない
             setDisplayListComponent('wordles');
@@ -59,6 +57,16 @@ function Top(): React.ReactElement {
             })
             setDisplayListComponent('wordles');
             setKey(`wordle_tag.${wordle_tag_id}`);
+        }
+        if(location.pathname === `/wordle/search/${wordle_search_param}`) {
+            setRequestConfig({
+                api_url: 'wordle/search',
+                params: {wordle_search_param: wordle_search_param},
+                response_keys: ['wordles'],
+            })
+            // チャンネルとイベントは作成していない
+            setDisplayListComponent('wordles');
+            setKey(`wordle_search.${wordle_search_param}`);
         }
         if(location.pathname === '/wordle/game/index') {
             setRequestConfig({
@@ -76,8 +84,6 @@ function Top(): React.ReactElement {
                 api_url: 'wordle/game/follows',
                 params: {},
                 response_keys: ['games'],
-                // listening_channel: `game_follows.${auth?.user?.id}`,
-                // listening_event: 'GameFollowsEvent',
             })
             // チャンネルとイベントは作成していない
             setDisplayListComponent('games');
@@ -93,6 +99,16 @@ function Top(): React.ReactElement {
             })
             setDisplayListComponent('games');
             setKey(`wordle_game_tag.${game_tag_id}`);
+        }
+        if(location.pathname === `/wordle/game/search/${wordle_game_search_param}`) {
+            setRequestConfig({
+                api_url: 'wordle/game/search',
+                params: {wordle_game_search_param: wordle_game_search_param},
+                response_keys: ['games'],
+            })
+            // チャンネルとイベントは作成していない
+            setDisplayListComponent('games');
+            setKey(`wordle_game_search.${wordle_game_search_param}`);
         }
         setInitialLoad(false);
     }, [location]);
