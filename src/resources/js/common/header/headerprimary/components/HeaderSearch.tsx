@@ -8,11 +8,16 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useForm, SubmitHandler } from "react-hook-form";
 
+export type HeaderSearchProps = {
+    classes: any;
+}
+
 type SearchData = {
     search: string;
 }
 
-function HeaderSearch(props: any): React.ReactElement {
+function HeaderSearch(props: HeaderSearchProps): React.ReactElement {
+    const {classes} = props;
     
     const history = useHistory();
 
@@ -28,33 +33,24 @@ function HeaderSearch(props: any): React.ReactElement {
     });
 
     const onSubmit: SubmitHandler<SearchData> = (data: SearchData) => {
-        axios.post('/api/post/search', data).then(res => {
-            console.log(res);
-            if(res.data.status === true) {
-                if(res.data.category) {
-                    const category_id = res.data.category.id;
-                    history.push(`/category/${category_id}`);
-                }
-                else {
-                    console.log('カテゴリーが存在しない');
-                }
-            }
-        })
-        .catch(error => {
-            console.log(error)
-        })
+        if(data.search === '') {
+            history.push(`/wordle/index`);
+        }
+        else {
+            history.push(`/wordle/search/${data.search}`);
+        }
     }
 
     return (
-        <Box className={props.classes.search} component="form" onSubmit={handleSubmit(onSubmit)}>
-          <div className={props.classes.searchIcon}>
+        <Box className={classes.search} component="form" onSubmit={handleSubmit(onSubmit)}>
+          <div className={classes.searchIcon}>
             <SearchIcon />
           </div>
           <InputBase
             placeholder="Search…"
             classes={{
-              root: props.classes.inputRoot,
-              input: props.classes.inputInput,
+              root: classes.inputRoot,
+              input: classes.inputInput,
             }}
             inputProps={{ 'aria-label': 'search' }}
             {...register('search')}

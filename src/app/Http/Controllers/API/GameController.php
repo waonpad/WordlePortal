@@ -222,11 +222,20 @@ class GameController extends Controller
     
     public function search(Request $request)
     {
-        $games = Game::where('status', 'wait')->get();
+        $keyword = $request->wordle_game_search_param;
+
+        // CAUTION: TODO: 上手く検索できない
+        $games = Game::with('user', 'gameUsers.user', 'gameLogs')
+        ->where('name', 'LIKE', "%{$keyword}%") // 部分一致
+        ->orWhere('tags->name', '=', "{$keyword}") // 完全一致
+        ->get();
+
+        $filtered_games = $this->filterGame($games, $request->game_status);
+        $paginated_games = $this->paginateGame($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
 
         return response()->json([
-            'games' => $games,
-            'status' => true
+            'games' => $paginated_games,
+            'status' => true,
         ]);
     }
 

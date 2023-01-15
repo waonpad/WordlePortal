@@ -50,9 +50,11 @@ function App(): React.ReactElement {
                                             <Route key={'wordle_index'} path='/wordle/index' exact component={Top}></Route>
                                             <Route key={'wordle_follows'} path='/wordle/follows' exact component={Top}></Route>
                                             <Route key={'wordle_tag'} path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
+                                            <Route key={'wordle_search'} path='/wordle/search/:wordle_search_param' exact component={Top}></Route>
                                             <Route key={'wordle_game_index'} path='/wordle/game/index' exact component={Top}></Route>
                                             <Route key={'wordle_game_follows'} path='/wordle/game/follows' exact component={Top}></Route>
                                             <Route key={'wordle_game_tag'} path='/wordle/game/tag/:game_tag_id' exact component={Top}></Route>
+                                            <Route key={'wordle_game_search'} path='/wordle/game/search/:wordle_game_search_param' exact component={Top}></Route>
                                             <PrivateRoute path='/wordle/game/play/:game_uuid' exact><Wordle/></PrivateRoute>
                                             <Route path='*' exact component={Page404} />
                                         </Switch>

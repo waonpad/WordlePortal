@@ -226,11 +226,21 @@ class WordleController extends Controller
     
     public function search(Request $request)
     {
-        $wordles = Wordle::where('user_id', $request->user()->id)->with('user', 'tags', 'likes')->get();
+        $keyword = $request->wordle_search_param;
+
+        $wordles = Wordle::with('user', 'tags', 'likes')
+        ->where('name', 'LIKE', "%{$keyword}%") // 部分一致
+        ->orWhereHas('tags', function ($query) use ($keyword){
+            $query->where('name', '=', "{$keyword}"); // 完全一致
+        })
+        ->get();
+
+        $paginated_wordles = $this->paginateWordle($wordles, $request->per_page, $request->paginate, $request->start, $request->last);
+        $like_checked_wordles = $this->wordleLikeCheck($paginated_wordles);
 
         return response()->json([
-            'wordles' => $wordles,
-            'status' => true
+            'wordles' => $like_checked_wordles,
+            'status' => true,
         ]);
     }
 
