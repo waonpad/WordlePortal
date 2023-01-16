@@ -7,7 +7,7 @@ import VSPlayOption from '../../VSPlayOption';
 import { GameListProps } from '../../../types/GameType';
 import GameListItem from './GameListItem';
 import PaginationPrimary from '../../../../common/pagination/paginationprimary/components/PaginationPrimary';
-import NoItem from '../../../../common/noitem/components/NoItem';
+import SimpleTextCard from '../../../../common/card/simpletextcard/components/SimpleTextCard';
 import AreYouSureDialog from '../../../../common/dialog/areyousuredialog/components/AreYouSureDialog';
 import { AreYouSureDialogProps } from '../../../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
 import SuspensePrimary from '../../../../common/suspense/suspenseprimary/components/SuspensePrimary';
@@ -127,7 +127,7 @@ function GameList(props: GameListProps): React.ReactElement {
                         :
                         <Grid item container spacing={2} xs={12}>
                             <Grid item xs={12} sx={{minWidth: '100%'}}>
-                                <NoItem />
+                                <SimpleTextCard text={'No Item'} />
                             </Grid>
                         </Grid>
                     }

@@ -1,4 +1,5 @@
 export type ButtonGroupPrimaryProps = {
+    head?: boolean;
     items: {
         text: string;
         value?: any;
