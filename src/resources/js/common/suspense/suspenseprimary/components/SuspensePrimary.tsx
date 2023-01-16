@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Backdrop, CircularProgress, Box } from '@mui/material';
 import { SuspensePrimaryProps } from '../types/SuspensePrimaryType';
 
 function SuspensePrimary(props: SuspensePrimaryProps): React.ReactElement {
@@ -25,7 +24,9 @@ function SuspensePrimary(props: SuspensePrimaryProps): React.ReactElement {
             <>
                 {
                     open ? (
-                        <CircularProgress/>
+                        <Box sx={{mt: 5, mb: 5, display: 'flex', alignItems: "center", justifyContent: "center"}}>
+                            <CircularProgress/>
+                        </Box>
                     )
                     : children
                 }

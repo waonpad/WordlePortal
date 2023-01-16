@@ -1,19 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { Avatar, Card, CardContent, Divider, Button, Collapse, IconButton, ButtonGroup, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Button, Container, Grid, Paper, Typography } from '@mui/material';
 import UserPrimaryDetail from './components/UserPrimaryDetail';
-import { globalTheme } from '../Theme';
 import WordleList from '../wordle/components/wordlelist/components/WordleList';
 import GameList from '../wordle/components/gamelist/components/GameList';
 import SuspensePrimary from '../common/suspense/suspenseprimary/components/SuspensePrimary';
 import ButtonGroupPrimary from '../common/button/buttongroupprimary/components/ButtonGroupPrimary';
+import UserList from './components/UserList';
 
 function User(): React.ReactElement {
     const location = useLocation();
@@ -22,17 +16,25 @@ function User(): React.ReactElement {
     const [user, setUser] = useState<any>({});
     const [key, setKey] = useState('');
     const [expanded, setExpanded] = useState(false);
+    const [display_ff_component, setDisplayFFComponent] = useState<'follows' | 'followers'>('follows');
     const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'game_results' | 'likes'>('wordles');
 
+    // 表示するffの種類を切り替える /////////////////////////////////////////////////////////////////////////
+    const handleDisplayFFSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setDisplayFFComponent(event.currentTarget.value as 'follows' | 'followers');
+    }
+    /////////////////////////////////////////////////////////////////////////
+
     // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
-    const handleDisplayWordleListSelect = (event: any) => {
-        setDisplayListComponent(event.currentTarget.value);
+    const handleDisplayWordleListSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setDisplayListComponent(event.currentTarget.value as 'wordles' | 'game_results' | 'likes');
     }
     /////////////////////////////////////////////////////////////////////////
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
         setExpanded(false);
+        setDisplayFFComponent('follows');
         setDisplayListComponent('wordles');
         setLoading(true);
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
@@ -77,6 +79,37 @@ function User(): React.ReactElement {
                             <Paper elevation={1} sx={{minWidth: '100%'}}>
                                 <Typography>Paper</Typography>
                             </Paper>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <UserList
+                                head={
+                                    <ButtonGroupPrimary
+                                        head={true}
+                                        items={[
+                                            {
+                                                text: 'Follows',
+                                                value: 'follows',
+                                                onClick: handleDisplayFFSelect,
+                                                active: display_ff_component === 'follows'
+                                            },
+                                            {
+                                                text: 'Followers',
+                                                value: 'followers',
+                                                onClick: handleDisplayFFSelect,
+                                                active: display_ff_component === 'followers'
+                                            },
+                                        ]}
+                                    />
+                                }
+                                request_config={{
+                                    api_url: `user/${display_ff_component}`,
+                                    params: {screen_name: screen_name},
+                                    response_keys: ['users'],
+                                }}
+                                listen={false}
+                                no_item_text={display_ff_component === 'follows' ? 'No Follows' : 'No Followers'}
+                                key={key + display_ff_component}
+                            />
                         </Grid>
                         {/* 待機中のゲーム */}
                         <Grid item xs={12}>

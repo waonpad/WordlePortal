@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import swal from "sweetalert";
 import { Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton } from '@mui/material';
@@ -115,18 +116,22 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                             <Typography color={grey[500]}>Post</Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            <Typography color={grey[700]}>{user.follows.length}</Typography>
-                            <Typography color={grey[500]}>Follow</Typography>
+                            {/* <Link to={`user/${user.screen_name}/follows`}> */}
+                                <Typography color={grey[700]}>{user.follows.length}</Typography>
+                                <Typography color={grey[500]}>Follow</Typography>
+                            {/* </Link> */}
                         </Grid>
                         <Grid item xs={4}>
-                            <Typography color={grey[700]}>{user.followers.length}</Typography>
-                            <Typography color={grey[500]}>Follower</Typography>
+                            {/* <Link to={`user/${user.screen_name}/followers`}> */}
+                                <Typography color={grey[700]}>{user.followers.length}</Typography>
+                                <Typography color={grey[500]}>Follower</Typography>
+                            {/* </Link> */}
                         </Grid>
                     </Grid>
                     {/* description */}
                     <Grid item xs={12} sx={{marginTop: 2, textAlign: 'left', whiteSpace: 'pre-line'}}>
                         <Collapse in={expanded} collapsedSize={'9em'}>
-                            <Typography sx={{color: grey[700]}}>{user.description}</Typography>
+                            <Typography color={grey[700]}>{user.description}</Typography>
                         </Collapse>
                     </Grid>
                 </Grid>

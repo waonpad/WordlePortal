@@ -51,14 +51,14 @@ class WordleController extends Controller
         if($paginate === 'next') {
             // nextなので、idがlastより小さいものの中からper_page個だけ取り出す
             // lastがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_wordles = $last !== null ? array_slice(array_filter($wordles->toArray(), function($wordle) use($last) {
+            $paginated_wordles = $last !== null ? array_slice(array_filter($wordles, function($wordle) use($last) {
                 return $wordle['id'] < $last;
             }), -$per_page)
-            : array_slice($wordles->toArray(), -$per_page);
+            : array_slice($wordles, -$per_page);
             // これだとnextで最後まで行った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
             // idがlast以上のものの前から、per_page個になるように
             if(count($paginated_wordles) < $per_page) {
-                $paginated_wordles = array_merge($paginated_wordles, array_slice(array_filter($wordles->toArray(), function ($wordle) use($last) {
+                $paginated_wordles = array_merge($paginated_wordles, array_slice(array_filter($wordles, function ($wordle) use($last) {
                     return $wordle['id'] >= $last;
                 }), 0, $per_page - count($paginated_wordles)));
             }
@@ -231,7 +231,7 @@ class WordleController extends Controller
         $wordles = Wordle::with('user', 'tags', 'likes')
         ->where('name', 'LIKE', "%{$keyword}%") // 部分一致
         ->orWhereHas('tags', function ($query) use ($keyword){
-            $query->where('name', '=', "{$keyword}"); // 完全一致
+            $query->where('name', '=', $keyword); // 完全一致
         })
         ->get();
 

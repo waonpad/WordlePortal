@@ -53,6 +53,8 @@ Route::prefix('user')->group(function (){
         Route::post('password', [UserController::class, 'updatePassword'])->middleware('auth');
     });
     Route::post('followtoggle', [UserController::class, 'followToggle'])->middleware('auth');
+    Route::get('follows', [UserController::class, 'follows']);
+    Route::get('followers', [UserController::class, 'followers']);
 });
 
 // ログアウト

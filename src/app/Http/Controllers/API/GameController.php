@@ -224,10 +224,9 @@ class GameController extends Controller
     {
         $keyword = $request->wordle_game_search_param;
 
-        // CAUTION: TODO: 上手く検索できない
         $games = Game::with('user', 'gameUsers.user', 'gameLogs')
         ->where('name', 'LIKE', "%{$keyword}%") // 部分一致
-        ->orWhere('tags->name', '=', "{$keyword}") // 完全一致
+        ->orWhereJsonContains('tags', [['name' => $keyword]]) // 完全一致 // https://stackoverflow.com/questions/53641403/search-in-json-column-with-laravel
         ->get();
 
         $filtered_games = $this->filterGame($games, $request->game_status);
