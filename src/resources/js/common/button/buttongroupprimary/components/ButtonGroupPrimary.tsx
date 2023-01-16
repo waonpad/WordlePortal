@@ -25,6 +25,7 @@ function ButtonGroupPrimary(props: ButtonGroupPrimaryProps): React.ReactElement 
                     <Grid item key={index} xs={12 / items.length}>
                         <ButtonTypeSwitcher link={item.link}>
                             <Button
+                                {...item.attributes}
                                 fullWidth
                                 variant={'outlined'}
                                 value={item.value}

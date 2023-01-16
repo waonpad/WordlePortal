@@ -116,16 +116,17 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                             <Typography color={grey[500]}>Post</Typography>
                         </Grid>
                         <Grid item xs={4}>
-                            {/* <Link to={`user/${user.screen_name}/follows`}> */}
+                            {/* TODO: userページにいたらページを更新しないようにしたい */}
+                            <Link to={`/user/${user.screen_name}/follows`}>
                                 <Typography color={grey[700]}>{user.follows.length}</Typography>
                                 <Typography color={grey[500]}>Follow</Typography>
-                            {/* </Link> */}
+                            </Link>
                         </Grid>
                         <Grid item xs={4}>
-                            {/* <Link to={`user/${user.screen_name}/followers`}> */}
+                            <Link to={`/user/${user.screen_name}/followers`}>
                                 <Typography color={grey[700]}>{user.followers.length}</Typography>
                                 <Typography color={grey[500]}>Follower</Typography>
-                            {/* </Link> */}
+                            </Link>
                         </Grid>
                     </Grid>
                     {/* description */}
