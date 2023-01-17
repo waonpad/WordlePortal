@@ -12,15 +12,6 @@ function UserListItem(props: UserListItemProps): React.ReactElement {
             alignItems="flex-start"
             sx={{paddingRight: '140px'}} // もっと良い調整方法あるかも
         >
-            <ListItemSecondaryAction sx={{top: '35px'}}>
-                {
-                    user.myself ? (
-                        <></>
-                    ) : (
-                        <Button variant='outlined' sx={{width: '110px'}} onClick={followToggle} value={user.screen_name}>{user.follow ? 'unFollow' : 'Follow'}</Button>
-                    )
-                }
-            </ListItemSecondaryAction>
             <ListItemAvatar>
                 <Avatar src={`/storage/${user.icon}`} />
             </ListItemAvatar>
@@ -50,6 +41,15 @@ function UserListItem(props: UserListItemProps): React.ReactElement {
                 </React.Fragment>
                 }
             />
+            <ListItemSecondaryAction sx={{top: '35px'}}>
+                {
+                    user.myself ? (
+                        <></>
+                    ) : (
+                        <Button variant='outlined' sx={{width: '110px'}} onClick={followToggle} value={user.screen_name}>{user.follow ? 'unFollow' : 'Follow'}</Button>
+                    )
+                }
+            </ListItemSecondaryAction>
         </ListItem>
     )
 }
