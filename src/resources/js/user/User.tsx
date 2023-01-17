@@ -1,16 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
-import { Button, Container, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
 import UserPrimaryDetail from './components/UserPrimaryDetail';
 import WordleList from '../wordle/components/wordlelist/components/WordleList';
 import GameList from '../wordle/components/gamelist/components/GameList';
 import SuspensePrimary from '../common/suspense/suspenseprimary/components/SuspensePrimary';
 import ButtonGroupPrimary from '../common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import UserList from './components/UserList';
+import { useCustomPath } from '../contexts/CustomPathContext';
+import ParticalRenderLink from '../common/link/particalrenderlink/components/ParticalRenderLink';
 
 function User(props: any): React.ReactElement {
     const location = useLocation();
+    const custom_path = useCustomPath();
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>({});
@@ -21,6 +24,9 @@ function User(props: any): React.ReactElement {
     // 見かけ上のパスを変超するやつ /////////////////////////////////////////////////////////////////////////
     const handleChangePath = (event: any) => {
         event.preventDefault();
+
+        // custom_path?.changePath(event.currentTarget.getAttribute('data-path'));
+
         history.pushState(null, '', event.currentTarget.getAttribute('data-path'));
         setRouterPath(event.currentTarget.getAttribute('data-router-path'));
     }
@@ -28,6 +34,7 @@ function User(props: any): React.ReactElement {
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
+        console.log(props);
         setExpanded(false);
         setLoading(true);
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
@@ -46,7 +53,15 @@ function User(props: any): React.ReactElement {
     return (
         <SuspensePrimary open={loading} backdrop={true}>
             <Container maxWidth={'lg'} key={key}>
-                <Button onClick={handleChangePath}>change path</Button>
+                {/* <Box sx={{display: 'flex'}}>
+                    <Button onClick={handleChangePath}>change path</Button>
+                    <ParticalRenderLink
+                        path={`/user/${screen_name}/follows`}
+                        partical_render_path={[`/user/${screen_name}/follows`, `/user/${screen_name}/followers`]}
+                    >
+                        <Button>{custom_path?.path}</Button>
+                    </ParticalRenderLink>
+                </Box> */}
                 <Grid container spacing={2}>
                     {/* 左のエリア */}
                     <Grid item container xs={4} spacing={2} height={'fit-content'}>
