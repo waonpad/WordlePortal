@@ -19,6 +19,8 @@ function AxiosInterceptors({children}: Props): React.ReactElement {
         config.headers = config.headers ?? {};
         const token = localStorage.getItem('auth_token');
         config.headers.Authorization = token ? `Bearer ${token}` : '';
+
+        // console.log(config);
         return config;
     }, function(error) {
         handleError(error);
@@ -26,7 +28,9 @@ function AxiosInterceptors({children}: Props): React.ReactElement {
     });
     axios.interceptors.response.use(
         async (response) => {
-            console.log(response);
+            if(response.config.url !== '/sanctum/csrf-cookie' && response.config.url !== '/api/broadcasting/auth' && response.config.url !== "/api/notification/unread") {
+                console.log(response);
+            }
             // 自分で作ったapiでないものを省く
             if(response.config.url !== '/sanctum/csrf-cookie' && response.config.url !== '/api/broadcasting/auth') {
                 if(response.data.status !== undefined || response.data.validation_errors !== undefined) {

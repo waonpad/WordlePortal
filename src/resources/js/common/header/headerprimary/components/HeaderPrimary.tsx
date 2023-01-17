@@ -32,6 +32,7 @@ import { HeaderPrimaryProps } from '../types/HeaderPrimaryType';
 /////////////////////////////////////////////////////////////////////////
 
 export default function HeaderPrimary({children}: HeaderPrimaryProps) {
+    const project_name = 'Wordle Portal';
     const history = useHistory();
     const auth = useAuth();
     const notification = useNotification();
@@ -215,7 +216,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                     <MenuIcon />
                 </IconButton>
                 <Typography className={classes.title} variant="h6" noWrap component={Link} to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    Material-UI
+                    {project_name}
                 </Typography>
                 <HeaderSearch classes={classes} />
                 <div className={classes.grow} />

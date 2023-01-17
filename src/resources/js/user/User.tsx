@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation, useHistory } from "react-router-dom";
 import axios from 'axios';
 import { Box, Button, Container, Grid, Paper, Typography } from '@mui/material';
 import UserPrimaryDetail from './components/UserPrimaryDetail';
@@ -13,28 +13,32 @@ import ParticalRenderLink from '../common/link/particalrenderlink/components/Par
 
 function User(props: any): React.ReactElement {
     const location = useLocation();
+    const history = useHistory();
     const custom_path = useCustomPath();
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>({});
     const [key, setKey] = useState('');
     const [expanded, setExpanded] = useState(false);
-    const [router_path, setRouterPath] = useState<string>(props.match.path);
 
-    // 見かけ上のパスを変超するやつ /////////////////////////////////////////////////////////////////////////
-    const handleChangePath = (event: any) => {
-        event.preventDefault();
-
-        // custom_path?.changePath(event.currentTarget.getAttribute('data-path'));
-
-        history.pushState(null, '', event.currentTarget.getAttribute('data-path'));
-        setRouterPath(event.currentTarget.getAttribute('data-router-path'));
-    }
-    /////////////////////////////////////////////////////////////////////////
+    const partical_render_route_paths = [
+        `/user/:screen_name`,
+        `/user/:screen_name/follows`,
+        `/user/:screen_name/followers`,
+        `/user/:screen_name/wordle`,
+        `/user/:screen_name/wordle/game`,
+        `/user/:screen_name/wordle/like`,
+    ];
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
+        console.log('props');
         console.log(props);
+        custom_path?.changePath({
+            path: props.location.pathname,
+            route_path: props.match.path,
+            params: props.match.params
+        })
         setExpanded(false);
         setLoading(true);
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
@@ -50,18 +54,14 @@ function User(props: any): React.ReactElement {
     }, [location])
     /////////////////////////////////////////////////////////////////////////
 
+    const handlePathCheck = (event: any) => {
+        console.log(location);
+        console.log(history);
+    }
+
     return (
         <SuspensePrimary open={loading} backdrop={true}>
             <Container maxWidth={'lg'} key={key}>
-                {/* <Box sx={{display: 'flex'}}>
-                    <Button onClick={handleChangePath}>change path</Button>
-                    <ParticalRenderLink
-                        path={`/user/${screen_name}/follows`}
-                        partical_render_path={[`/user/${screen_name}/follows`, `/user/${screen_name}/followers`]}
-                    >
-                        <Button>{custom_path?.path}</Button>
-                    </ParticalRenderLink>
-                </Box> */}
                 <Grid container spacing={2}>
                     {/* 左のエリア */}
                     <Grid item container xs={4} spacing={2} height={'fit-content'}>
@@ -93,7 +93,7 @@ function User(props: any): React.ReactElement {
                             <Button
                                 fullWidth
                                 variant='outlined'
-                                sx={{fontWeight: 'bold', pointerEvents: 'none', backgroundColor: '#fff'}}
+                                sx={{fontWeight: 'bold', pointerEvents: 'none', backgroundColor: '#fffcustom_path?.path.path'}}
                             >
                                 Join {user.name}'s Game!
                             </Button>
@@ -111,7 +111,7 @@ function User(props: any): React.ReactElement {
                             />
                         </Grid>
                         {
-                            router_path === '/user/:screen_name/follows' || router_path === '/user/:screen_name/followers' ?
+                            custom_path?.path.path === `/user/${screen_name}/follows` || custom_path?.path.path === `/user/${screen_name}/followers` ?
                             <Grid item xs={12}>
                                 <UserList
                                     head={
@@ -121,36 +121,40 @@ function User(props: any): React.ReactElement {
                                                 {
                                                     text: 'Follows',
                                                     value: 'follows',
-                                                    link: `/user/${screen_name}/follows`,
-                                                    attributes: {
-                                                        'data-path': `/user/${screen_name}/follows`,
-                                                        'data-router-path': '/user/:screen_name/follows'
+                                                    link: {
+                                                        path: {
+                                                            path: `/user/${screen_name}/follows`,
+                                                            route_path: `/user/:screen_name/follows`,
+                                                            params: {screen_name: screen_name}
+                                                        },
+                                                        partical_render_route_paths: partical_render_route_paths
                                                     },
-                                                    onClick: handleChangePath,
-                                                    active: router_path === '/user/:screen_name/follows'
+                                                    active: custom_path?.path.path === `/user/${screen_name}/follows`
                                                 },
                                                 {
                                                     text: 'Followers',
                                                     value: 'followers',
-                                                    link: `/user/${screen_name}/followers`,
-                                                    attributes: {
-                                                        'data-path': `/user/${screen_name}/followers`,
-                                                        'data-router-path': '/user/:screen_name/followers'
+                                                    link: {
+                                                        path: {
+                                                            path: `/user/${screen_name}/followers`,
+                                                            route_path: `/user/:screen_name/followers`,
+                                                            params: {screen_name: screen_name}
+                                                        },
+                                                        partical_render_route_paths: partical_render_route_paths
                                                     },
-                                                    onClick: handleChangePath,
-                                                    active: router_path === '/user/:screen_name/followers'
+                                                    active: custom_path?.path.path === `/user/${screen_name}/followers`
                                                 },
                                             ]}
                                         />
                                     }
                                     request_config={{
-                                        api_url: `user/${router_path === '/user/:screen_name/follows' ? 'follows' : router_path === '/user/:screen_name/followers' ? 'followers' : ''}`,
+                                        api_url: `user/${custom_path?.path.path === `/user/${screen_name}/follows` ? 'follows' : custom_path?.path.path === `/user/${screen_name}/followers` ? 'followers' : ''}`,
                                         params: {screen_name: screen_name},
                                         response_keys: ['users'],
                                     }}
                                     listen={false}
-                                    no_item_text={router_path === '/user/:screen_name/follows' ? 'No Follows' : router_path === '/user/:screen_name/followers' ? 'No Followers' : ''}
-                                    key={key + router_path}
+                                    no_item_text={custom_path?.path.path === `/user/${screen_name}/follows` ? 'No Follows' : custom_path?.path.path === `/user/${screen_name}/followers` ? 'No Followers' : ''}
+                                    key={key + custom_path?.path.path}
                                 />
                             </Grid>
                             :
@@ -162,42 +166,48 @@ function User(props: any): React.ReactElement {
                                             {
                                                 text: 'Wordles',
                                                 value: 'wordles',
-                                                link: `/user/${screen_name}/wordle`,
-                                                attributes: {
-                                                    'data-path': `/user/${screen_name}/wordle`,
-                                                    'data-router-path': '/user/:screen_name/wordle'
+                                                link: {
+                                                    path: {
+                                                        path: `/user/${screen_name}/wordle`,
+                                                        route_path: `/user/:screen_name/wordle`,
+                                                        params: {screen_name: screen_name}
+                                                    },
+                                                    partical_render_route_paths: partical_render_route_paths
                                                 },
-                                                onClick: handleChangePath,
-                                                active: router_path === '/user/:screen_name/wordle' || router_path === '/user/:screen_name'
+                                                active: custom_path?.path.path === `/user/${screen_name}/wordle` || custom_path?.path.path === `/user/${screen_name}`
                                             },
                                             {
                                                 text: 'GAME RESULTS',
                                                 value: 'game_results',
-                                                link: `/user/${screen_name}/wordle/game`,
-                                                attributes: {
-                                                    'data-path': `/user/${screen_name}/wordle/game`,
-                                                    'data-router-path': '/user/:screen_name/wordle/game'
+                                                link: {
+                                                    path: {
+                                                        path: `/user/${screen_name}/wordle/game`,
+                                                        route_path: `/user/:screen_name/wordle/game`,
+                                                        params: {screen_name: screen_name}
+                                                    },
+                                                    partical_render_route_paths: partical_render_route_paths
                                                 },
-                                                onClick: handleChangePath,
-                                                active: router_path === '/user/:screen_name/wordle/game'
+                                                active: custom_path?.path.path === `/user/${screen_name}/wordle/game`
                                             },
                                             {
                                                 text: 'LIKES',
                                                 value: 'likes',
-                                                link: `/user/${screen_name}/wordle/like`,
-                                                attributes: {
-                                                    'data-path': `/user/${screen_name}/wordle/like`,
-                                                    'data-router-path': '/user/:screen_name/wordle/like'
+                                                link: {
+                                                    path: {
+                                                        path: `/user/${screen_name}/wordle/like`,
+                                                        route_path: `/user/:screen_name/wordle/like`,
+                                                        params: {screen_name: screen_name}
+                                                    },
+                                                    partical_render_route_paths: partical_render_route_paths
                                                 },
-                                                onClick: handleChangePath,
-                                                active: router_path === '/user/:screen_name/wordle/like'
+                                                active: custom_path?.path.path === `/user/${screen_name}/wordle/like`
                                             }
                                         ]}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
                                     {
-                                        router_path === '/user/:screen_name/wordle' || router_path === '/user/:screen_name' ?
+                                        custom_path?.path.path === `/user/${screen_name}/wordle` || custom_path?.path.path === `/user/${screen_name}` ?
                                         <WordleList
                                             request_config={{
                                                 api_url: 'wordle/user',
@@ -208,7 +218,7 @@ function User(props: any): React.ReactElement {
                                             key={key + 'wordles'}
                                         />
                                         :
-                                        router_path === '/user/:screen_name/wordle/game' ?
+                                        custom_path?.path.path === `/user/${screen_name}/wordle/game` ?
                                         <GameList
                                             game_status={['end']}
                                             request_config={{
@@ -220,7 +230,7 @@ function User(props: any): React.ReactElement {
                                             key={key + 'games'}
                                         />
                                         :
-                                        router_path === '/user/:screen_name/wordle/like' ?
+                                        custom_path?.path.path === `/user/${screen_name}/wordle/like` ?
                                         <WordleList
                                             request_config={{
                                                 api_url: 'wordle/userlikes',
