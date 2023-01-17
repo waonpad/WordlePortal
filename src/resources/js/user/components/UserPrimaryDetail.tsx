@@ -9,13 +9,25 @@ import { MenuItem, Menu } from '@material-ui/core';
 import { UserPrimaryDetailProps } from '../types/UserType';
 import ModalPrimary from '../../common/modal/modalprimary/components/ModalPrimary';
 import EditProfile from './EditProfile';
+import { useCustomPath } from '../../contexts/CustomPathContext';
+import ParticalRenderLink from '../../common/link/particalrenderlink/components/ParticalRenderLink';
 
 function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     const {user, setUser, expanded, setExpanded} = props;
 
+    const custom_path = useCustomPath();
     const [user_menu_anchor_el, setUserMenuAnchorEl] = useState<null | HTMLElement>(null);
     const is_menu_open = Boolean(user_menu_anchor_el);
     const [modalIsOpen, setIsOpen] = useState(false);
+
+    const partical_render_route_paths = [
+        `/user/:screen_name`,
+        `/user/:screen_name/follows`,
+        `/user/:screen_name/followers`,
+        `/user/:screen_name/wordle`,
+        `/user/:screen_name/wordle/game`,
+        `/user/:screen_name/wordle/like`,
+    ];
     
     // descriptionの展開 ///////////////////////////////////////////////////////////////////////
     const handleExpandClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -111,22 +123,43 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                     </Grid>
                     <Grid item container xs={12} spacing={1} sx={{marginTop: 0.5}}>
                         <Grid item xs={4}>
-                            {/* 投稿数をカウント */}
-                            <Typography color={grey[700]}>0</Typography>
-                            <Typography color={grey[500]}>Post</Typography>
+                            <ParticalRenderLink
+                                path={{
+                                    path: `/user/${user.screen_name}/wordle`,
+                                    route_path: `/user/:screen_name/wordle`,
+                                    params: {screen_name: user.screen_name}
+                                }}
+                                partical_render_route_paths={partical_render_route_paths}
+                            >
+                                <Typography color={grey[700]}>{user.wordles.length}</Typography>
+                                <Typography color={grey[500]}>Post</Typography>
+                            </ParticalRenderLink>
                         </Grid>
                         <Grid item xs={4}>
-                            {/* TODO: userページにいたらページを更新しないようにしたい */}
-                            <Link to={`/user/${user.screen_name}/follows`}>
+                            <ParticalRenderLink
+                                path={{
+                                    path: `/user/${user.screen_name}/follows`,
+                                    route_path: `/user/:screen_name/follows`,
+                                    params: {screen_name: user.screen_name}
+                                }}
+                                partical_render_route_paths={partical_render_route_paths}
+                            >
                                 <Typography color={grey[700]}>{user.follows.length}</Typography>
                                 <Typography color={grey[500]}>Follow</Typography>
-                            </Link>
+                            </ParticalRenderLink>
                         </Grid>
                         <Grid item xs={4}>
-                            <Link to={`/user/${user.screen_name}/followers`}>
+                            <ParticalRenderLink
+                                path={{
+                                    path: `/user/${user.screen_name}/followers`,
+                                    route_path: `/user/:screen_name/followers`,
+                                    params: {screen_name: user.screen_name}
+                                }}
+                                partical_render_route_paths={partical_render_route_paths}
+                            >
                                 <Typography color={grey[700]}>{user.followers.length}</Typography>
                                 <Typography color={grey[500]}>Follower</Typography>
-                            </Link>
+                            </ParticalRenderLink>
                         </Grid>
                     </Grid>
                     {/* description */}

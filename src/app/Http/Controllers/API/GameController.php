@@ -77,6 +77,8 @@ class GameController extends Controller
         gettype($games) === 'object' ? $games = $games->toArray() : null;
 
         $filtered_games = array_filter($games, function($game) use($target_status_array) {
+            gettype($game) === 'object' ? $game = $game->toArray() : null;
+            
             return in_array($game['status'], $target_status_array);
         });
 
