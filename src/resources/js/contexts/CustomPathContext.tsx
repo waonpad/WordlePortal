@@ -1,12 +1,19 @@
-import axios from 'axios';
-import { useAuth } from "./AuthContext";
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react";
-import { useLocation } from 'react-router-dom';
-import { useErrorHandler } from 'react-error-boundary';
+import { useLocation, useParams } from 'react-router-dom';
+
+export type customPath = {
+    path: string;
+    route_path: string;
+    params: any;
+}
 
 export type customPathData = {
-    path: string;
-    changePath: (target_path: string) => void;
+    path: customPath;
+    changePath: (path_data: {
+        path: string;
+        route_path: string;
+        params: any;
+    }) => void;
 }
 
 const customPathContext = createContext<customPathData | null>(null);
@@ -32,15 +39,21 @@ export const useCustomPath = () => {
 const useProvideCustomPath = () => {
     const location = useLocation();
 
-    const [path, setPath] = useState<string>(location.pathname);
+    const [path, setPath] = useState<any>({
+        path: location.pathname,
+        route_path: '',
+        params: {}
+    });
 
-    useEffect(() => {
-        console.log(location);
-        setPath(location.pathname);
-    }, [location]);
+    const changePath = (path_data: {path: string, route_path: string, params: object}) => {
+        console.log('set path data');
 
-    const changePath = (target_path: string) => {
-        setPath(target_path)
+        console.log(path_data);
+        setPath({
+            path: path_data.path,
+            route_path: path_data.route_path,
+            params: path_data.params
+        })
     }
 
     return {
