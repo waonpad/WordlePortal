@@ -11,7 +11,7 @@ import UserList from './components/UserList';
 import { useCustomPath } from '../contexts/CustomPathContext';
 import ParticalRenderLink from '../common/link/particalrenderlink/components/ParticalRenderLink';
 
-function User(props: any): React.ReactElement {
+function User(): React.ReactElement {
     const location = useLocation();
     const history = useHistory();
     const custom_path = useCustomPath();
@@ -20,15 +20,20 @@ function User(props: any): React.ReactElement {
     const [user, setUser] = useState<any>({});
     const [key, setKey] = useState('');
     const [expanded, setExpanded] = useState(false);
+    const [display_ff_component, setDisplayFFComponent] = useState<'follows' | 'followers'>('follows');
+    const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'game_results' | 'likes'>('wordles');
 
-    const partical_render_route_paths = [
-        `/user/:screen_name`,
-        `/user/:screen_name/follows`,
-        `/user/:screen_name/followers`,
-        `/user/:screen_name/wordle`,
-        `/user/:screen_name/wordle/game`,
-        `/user/:screen_name/wordle/like`,
-    ];
+    // 表示するffの種類を切り替える /////////////////////////////////////////////////////////////////////////
+    const handleDisplayFFSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setDisplayFFComponent(event.currentTarget.value as 'follows' | 'followers');
+    }
+    /////////////////////////////////////////////////////////////////////////
+
+    // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
+    const handleDisplayWordleListSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setDisplayListComponent(event.currentTarget.value as 'wordles' | 'game_results' | 'likes');
+    }
+    /////////////////////////////////////////////////////////////////////////
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
@@ -41,6 +46,9 @@ function User(props: any): React.ReactElement {
         })
         setExpanded(false);
         setLoading(true);
+        setDisplayFFComponent('follows');
+        setDisplayListComponent('wordles');
+        
         axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
             if(res.data.status === true) {
                 setUser(res.data.user);
@@ -110,141 +118,6 @@ function User(props: any): React.ReactElement {
                                 key={key + 'games'}
                             />
                         </Grid>
-                        {
-                            custom_path?.path.path === `/user/${screen_name}/follows` || custom_path?.path.path === `/user/${screen_name}/followers` ?
-                            <Grid item xs={12}>
-                                <UserList
-                                    head={
-                                        <ButtonGroupPrimary
-                                            head={true}
-                                            items={[
-                                                {
-                                                    text: 'Follows',
-                                                    value: 'follows',
-                                                    link: {
-                                                        path: {
-                                                            path: `/user/${screen_name}/follows`,
-                                                            route_path: `/user/:screen_name/follows`,
-                                                            params: {screen_name: screen_name}
-                                                        },
-                                                        partical_render_route_paths: partical_render_route_paths
-                                                    },
-                                                    active: custom_path?.path.path === `/user/${screen_name}/follows`
-                                                },
-                                                {
-                                                    text: 'Followers',
-                                                    value: 'followers',
-                                                    link: {
-                                                        path: {
-                                                            path: `/user/${screen_name}/followers`,
-                                                            route_path: `/user/:screen_name/followers`,
-                                                            params: {screen_name: screen_name}
-                                                        },
-                                                        partical_render_route_paths: partical_render_route_paths
-                                                    },
-                                                    active: custom_path?.path.path === `/user/${screen_name}/followers`
-                                                },
-                                            ]}
-                                        />
-                                    }
-                                    request_config={{
-                                        api_url: `user/${custom_path?.path.path === `/user/${screen_name}/follows` ? 'follows' : custom_path?.path.path === `/user/${screen_name}/followers` ? 'followers' : ''}`,
-                                        params: {screen_name: screen_name},
-                                        response_keys: ['users'],
-                                    }}
-                                    listen={false}
-                                    no_item_text={custom_path?.path.path === `/user/${screen_name}/follows` ? 'No Follows' : custom_path?.path.path === `/user/${screen_name}/followers` ? 'No Followers' : ''}
-                                    key={key + custom_path?.path.path}
-                                />
-                            </Grid>
-                            :
-                            // TODO: 表示の分岐を増やすならここの条件を詳しくする必要がある
-                            <React.Fragment>
-                                <Grid item xs={12}>
-                                    <ButtonGroupPrimary
-                                        items={[
-                                            {
-                                                text: 'Wordles',
-                                                value: 'wordles',
-                                                link: {
-                                                    path: {
-                                                        path: `/user/${screen_name}/wordle`,
-                                                        route_path: `/user/:screen_name/wordle`,
-                                                        params: {screen_name: screen_name}
-                                                    },
-                                                    partical_render_route_paths: partical_render_route_paths
-                                                },
-                                                active: custom_path?.path.path === `/user/${screen_name}/wordle` || custom_path?.path.path === `/user/${screen_name}`
-                                            },
-                                            {
-                                                text: 'GAME RESULTS',
-                                                value: 'game_results',
-                                                link: {
-                                                    path: {
-                                                        path: `/user/${screen_name}/wordle/game`,
-                                                        route_path: `/user/:screen_name/wordle/game`,
-                                                        params: {screen_name: screen_name}
-                                                    },
-                                                    partical_render_route_paths: partical_render_route_paths
-                                                },
-                                                active: custom_path?.path.path === `/user/${screen_name}/wordle/game`
-                                            },
-                                            {
-                                                text: 'LIKES',
-                                                value: 'likes',
-                                                link: {
-                                                    path: {
-                                                        path: `/user/${screen_name}/wordle/like`,
-                                                        route_path: `/user/:screen_name/wordle/like`,
-                                                        params: {screen_name: screen_name}
-                                                    },
-                                                    partical_render_route_paths: partical_render_route_paths
-                                                },
-                                                active: custom_path?.path.path === `/user/${screen_name}/wordle/like`
-                                            }
-                                        ]}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    {
-                                        custom_path?.path.path === `/user/${screen_name}/wordle` || custom_path?.path.path === `/user/${screen_name}` ?
-                                        <WordleList
-                                            request_config={{
-                                                api_url: 'wordle/user',
-                                                params: {screen_name: screen_name},
-                                                response_keys: ['wordles'],
-                                            }}
-                                            listen={false}
-                                            key={key + 'wordles'}
-                                        />
-                                        :
-                                        custom_path?.path.path === `/user/${screen_name}/wordle/game` ?
-                                        <GameList
-                                            game_status={['end']}
-                                            request_config={{
-                                                api_url: 'wordle/game/userjoining',
-                                                params: {screen_name: screen_name},
-                                                response_keys: ['games'],
-                                            }}
-                                            listen={false}
-                                            key={key + 'games'}
-                                        />
-                                        :
-                                        custom_path?.path.path === `/user/${screen_name}/wordle/like` ?
-                                        <WordleList
-                                            request_config={{
-                                                api_url: 'wordle/userlikes',
-                                                params: {screen_name: screen_name},
-                                                response_keys: ['wordles'],
-                                            }}
-                                            listen={false}
-                                            key={key + 'wordle_likes'}
-                                        />
-                                        : <></>
-                                    }
-                                </Grid>
-                            </React.Fragment>
-                        }
                     </Grid>
                 </Grid>
             </Container>
