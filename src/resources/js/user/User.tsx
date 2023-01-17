@@ -37,13 +37,6 @@ function User(): React.ReactElement {
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
-        console.log('props');
-        console.log(props);
-        custom_path?.changePath({
-            path: props.location.pathname,
-            route_path: props.match.path,
-            params: props.match.params
-        })
         setExpanded(false);
         setLoading(true);
         setDisplayFFComponent('follows');
@@ -118,6 +111,101 @@ function User(): React.ReactElement {
                                 key={key + 'games'}
                             />
                         </Grid>
+                        <Grid item xs={12}>
+                            <UserList
+                                head={
+                                    <ButtonGroupPrimary
+                                        head={true}
+                                        items={[
+                                            {
+                                                text: 'Follows',
+                                                value: 'follows',
+                                                onClick: handleDisplayFFSelect,
+                                                active: display_ff_component === 'follows'
+                                            },
+                                            {
+                                                text: 'Followers',
+                                                value: 'followers',
+                                                onClick: handleDisplayFFSelect,
+                                                active: display_ff_component === 'followers'
+                                            },
+                                        ]}
+                                    />
+                                }
+                                request_config={{
+                                    api_url: `user/${display_ff_component}`,
+                                    params: {screen_name: screen_name},
+                                    response_keys: ['users'],
+                                }}
+                                listen={false}
+                                no_item_text={display_ff_component === 'follows' ? 'No Follows' : 'No Followers'}
+                                key={key + display_ff_component}
+                            />
+                        </Grid>
+                        <React.Fragment>
+                            <Grid item xs={12}>
+                                <ButtonGroupPrimary
+                                    items={[
+                                        {
+                                            text: 'Wordles',
+                                            value: 'wordles',
+                                            onClick: handleDisplayWordleListSelect,
+                                            active: display_list_component === 'wordles'
+                                        },
+                                        {
+                                            text: 'GAME RESULTS',
+                                            value: 'game_results',
+                                            onClick: handleDisplayWordleListSelect,
+                                            active: display_list_component === 'game_results'
+                                        },
+                                        {
+                                            text: 'LIKES',
+                                            value: 'likes',
+                                            onClick: handleDisplayWordleListSelect,
+                                            active: display_list_component === 'likes'
+                                        }
+                                    ]}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                {
+                                    display_list_component === 'wordles' ?
+                                    <WordleList
+                                        request_config={{
+                                            api_url: 'wordle/user',
+                                            params: {screen_name: screen_name},
+                                            response_keys: ['wordles'],
+                                        }}
+                                        listen={false}
+                                        key={key + 'wordles'}
+                                    />
+                                    :
+                                    display_list_component === 'game_results' ?
+                                    <GameList
+                                        game_status={['end']}
+                                        request_config={{
+                                            api_url: 'wordle/game/userjoining',
+                                            params: {screen_name: screen_name},
+                                            response_keys: ['games'],
+                                        }}
+                                        listen={false}
+                                        key={key + 'games'}
+                                    />
+                                    :
+                                    display_list_component === 'likes' ?
+                                    <WordleList
+                                        request_config={{
+                                            api_url: 'wordle/userlikes',
+                                            params: {screen_name: screen_name},
+                                            response_keys: ['wordles'],
+                                        }}
+                                        listen={false}
+                                        key={key + 'wordle_likes'}
+                                    />
+                                    : <></>
+                                }
+                            </Grid>
+                        </React.Fragment>
                     </Grid>
                 </Grid>
             </Container>
