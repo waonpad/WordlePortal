@@ -17,33 +17,11 @@ import InvertColorsOffIcon from '@mui/icons-material/InvertColorsOff'; // 着色
 import { yellow } from '@mui/material/colors';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { GameListItemProps } from '../../../types/GameType';
-import ParticalRenderLink from '../../../../common/link/particalrenderlink/components/ParticalRenderLink';
 
 function GameListItem(props: GameListItemProps): React.ReactElement {
     const {game, handleDeleteGame, handleVSPlayOptionOpen} = props;
 
     const auth = useAuth();
-    
-    const user_partical_render_route_paths = [
-        `/user/:screen_name`,
-        `/user/:screen_name/follows`,
-        `/user/:screen_name/followers`,
-        `/user/:screen_name/wordle`,
-        `/user/:screen_name/wordle/game`,
-        `/user/:screen_name/wordle/like`,
-    ];
-
-    const game_partical_render_route_paths = [
-        '/',
-        '/wordle/index',
-        '/wordle/follows',
-        `/wordle/tag/:wordle_tag_id`,
-        `/wordle/search/:wordle_search_param`,
-        `/wordle/game/index`,
-        `/wordle/game/follows`,
-        `/wordle/game/tag/:game_tag_id`,
-        `/wordle/game/search/:wordle_game_search_param`
-    ];
 
     return (
         <Card elevation={1}>
@@ -59,17 +37,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                 }
                 subheader={
                     <React.Fragment>
-                        <ParticalRenderLink
-                            path={{
-                                path: `/user/${game.user.screen_name}`,
-                                route_path: `/user/:screen_name`,
-                                params: {screen_name: game.user.screen_name}
-                            }}
-                            partical_render_params={{screen_name: game.user.screen_name}}
-                            partical_render_route_paths={user_partical_render_route_paths}
-                        >
-                            <Typography color='#000000DE'>{game.user.name}</Typography>
-                        </ParticalRenderLink>
+                        <Link to={`/user/${game.user.screen_name}`} style={{color: '#000000DE'}}>{game.user.name}</Link>
                         <Typography>{new Date(game.created_at).toLocaleString()}</Typography>
                     </React.Fragment>
                 }
@@ -86,18 +54,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                         <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                             <LocalOfferIcon sx={{color: '#757575'}} />
                             {(game.tags as any[]).map((tag: any, index: number) => (
-                                <ParticalRenderLink
-                                    path={{
-                                        path: `/wordle/game/tag/${tag.id}`,
-                                        route_path: `/wordle/game/tag/:game_tag_id`,
-                                        params: {game_tag_id: tag.id}
-                                    }}
-                                    partical_render_params={{game_tag_id: tag.id}}
-                                    partical_render_route_paths={game_partical_render_route_paths}
-                                    key={index}
-                                >
-                                    <Chip clickable label={tag.name} />
-                                </ParticalRenderLink>
+                                <Link to={`/wordle/game/tag/${tag.id}`} key={index}><Chip clickable label={tag.name} /></Link>
                             ))}
                         </Stack>
                     </Grid>
@@ -187,16 +144,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                                     {(game.game_users.filter((game_user: any) => (
                                         game_user.result === 1
                                     ))).map((game_user: any, index: number) => (
-                                        <ParticalRenderLink
-                                            path={{
-                                                path: `/user/${game_user.user.screen_name}`,
-                                                route_path: `/user/:screen_name`,
-                                                params: {screen_name: game_user.user.screen_name}
-                                            }}
-                                            partical_render_params={{screen_name: game_user.user.screen_name}}
-                                            partical_render_route_paths={user_partical_render_route_paths}
-                                            key={index}
-                                        >
+                                        <Link to={`/user/${game_user.user.screen_name}`} key={index}>
                                             <Chip
                                                 avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
                                                 label={game_user.user.name}
@@ -205,28 +153,19 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                                                 // sx={{backgroundColor: yellow[200]}}
                                                 clickable
                                             />
-                                        </ParticalRenderLink>
+                                        </Link>
                                     ))}
                                     {(game.game_users.filter((game_user: any) => (
                                         game_user.result !== 1
                                     ))).map((game_user: any, index: number) => (
-                                        <ParticalRenderLink
-                                            path={{
-                                                path: `/user/${game_user.user.screen_name}`,
-                                                route_path: `/user/:screen_name`,
-                                                params: {screen_name: game_user.user.screen_name}
-                                            }}
-                                            partical_render_params={{screen_name: game_user.user.screen_name}}
-                                            partical_render_route_paths={user_partical_render_route_paths}
-                                            key={index}
-                                        >
+                                        <Link to={`/user/${game_user.user.screen_name}`} key={index}>
                                             <Chip
                                                 avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
                                                 label={game_user.user.name}
                                                 variant="outlined"
                                                 clickable
                                             />
-                                        </ParticalRenderLink>
+                                        </Link>
                                     ))}
                                 </Stack>
                             </Grid>

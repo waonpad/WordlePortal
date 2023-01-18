@@ -12,33 +12,11 @@ import KeyboardIcon from '@mui/icons-material/Keyboard';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { WordleListItemProps } from '../../../types/WordleType';
-import ParticalRenderLink from '../../../../common/link/particalrenderlink/components/ParticalRenderLink';
 
 function WordleListItem(props: WordleListItemProps): React.ReactElement {
     const {wordle, handleLikeToggle, handleDeleteWordle, handleSinglePlayStart, handleVSPlayOptionOpen} = props;
 
     const auth = useAuth();
-
-    const user_partical_render_route_paths = [
-        `/user/:screen_name`,
-        `/user/:screen_name/follows`,
-        `/user/:screen_name/followers`,
-        `/user/:screen_name/wordle`,
-        `/user/:screen_name/wordle/game`,
-        `/user/:screen_name/wordle/like`,
-    ];
-
-    const wordle_partical_render_route_paths = [
-        '/',
-        '/wordle/index',
-        '/wordle/follows',
-        `/wordle/tag/:wordle_tag_id`,
-        `/wordle/search/:wordle_search_param`,
-        `/wordle/game/index`,
-        `/wordle/game/follows`,
-        `/wordle/game/tag/:game_tag_id`,
-        `/wordle/game/search/:wordle_game_search_param`
-    ];
 
     return (
         <Card elevation={1}>
@@ -54,17 +32,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                 }
                 subheader={
                     <React.Fragment>
-                        <ParticalRenderLink
-                            path={{
-                                path: `/user/${wordle.user.screen_name}`,
-                                route_path: `/user/:screen_name`,
-                                params: {screen_name: wordle.user.screen_name}
-                            }}
-                            partical_render_params={{screen_name: wordle.user.screen_name}}
-                            partical_render_route_paths={user_partical_render_route_paths}
-                        >
-                            <Typography color='#000000DE'>{wordle.user.name}</Typography>
-                        </ParticalRenderLink>
+                        <Link to={`/user/${wordle.user.screen_name}`} style={{color: '#000000DE'}}>{wordle.user.name}</Link>
                         <Typography>{new Date(wordle.created_at).toLocaleString()}</Typography>
                     </React.Fragment>
                 }
@@ -82,18 +50,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                         <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                             <LocalOfferIcon sx={{color: '#757575'}} />
                             {(wordle.tags as any[]).map((tag: any, index: number) => (
-                                <ParticalRenderLink
-                                    path={{
-                                        path: `/wordle/tag/${tag.id}`,
-                                        route_path: `/wordle/tag/:game_tag_id`,
-                                        params: {wordle_tag_id: tag.id}
-                                    }}
-                                    partical_render_params={{wordle_tag_id: tag.id}}
-                                    partical_render_route_paths={wordle_partical_render_route_paths}
-                                    key={index}
-                                >
-                                    <Chip clickable label={tag.name} />
-                                </ParticalRenderLink>
+                                <Link to={`/wordle/tag/${tag.id}`} key={index}><Chip clickable label={tag.name} /></Link>
                             ))}
                         </Stack>
                     </Grid>
@@ -134,6 +91,10 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                             <Button style={{fontWeight: 'bold', color: '#fff'}} data-wordle-id={wordle.id} onClick={handleSinglePlayStart}>Single Play</Button>
                             <Button style={{fontWeight: 'bold', color: '#fff'}} data-wordle-id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
                         </ButtonGroup>
+                        {/* <Box sx={{marginLeft: 'auto'}}>
+                            <LoadingButton variant='contained' loading={singleplay_loading} style={{fontWeight: 'bold', color: '#fff', borderTopRightRadius: 0, borderBottomRightRadius: 0}} data-wordle-id={wordle.id} onClick={handleSinglePlayStart}>Single Play</LoadingButton>
+                            <Button variant='contained' style={{fontWeight: 'bold', color: '#fff', borderTopLeftRadius: 0, borderBottomLeftRadius: 0}} data-wordle-id={wordle.id} onClick={handleVSPlayOptionOpen}>VS Play</Button>
+                        </Box> */}
                     </Grid>
                 </Grid>
             </CardContent>
