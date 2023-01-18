@@ -8,10 +8,7 @@ function UserListItem(props: UserListItemProps): React.ReactElement {
     const {user, followToggle} = props;
     
     return (
-        <ListItem
-            alignItems="flex-start"
-            sx={{paddingRight: '140px'}} // もっと良い調整方法あるかも
-        >
+        <ListItem alignItems="flex-start" sx={{paddingRight: '140px'}}>
             <ListItemAvatar>
                 <Avatar src={`/storage/${user.icon}`} />
             </ListItemAvatar>

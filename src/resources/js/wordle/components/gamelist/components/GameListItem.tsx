@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { Button, Grid, Card, CardHeader, CardContent, Chip, Stack, Avatar, IconButton, Typography, Tooltip } from '@mui/material';
+import { Box, Button, Grid, Card, CardHeader, CardContent, Chip, Stack, Avatar, IconButton, Typography, Tooltip } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,15 +31,24 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                     <Avatar src={`/storage/${game.user.icon}`} />
                 }
                 action={
-                <IconButton aria-label="settings">
-                    <MoreVertIcon />
-                    {/* TODO: アクション追加 */}
-                </IconButton>
+                    <IconButton aria-label="settings">
+                        <MoreVertIcon />
+                        {/* TODO: アクション追加 */}
+                    </IconButton>
                 }
                 subheader={
                     <React.Fragment>
-                        <Link to={`/user/${game.user.screen_name}`} style={{color: '#000000DE'}}>{game.user.name}</Link>
-                        <Typography>{new Date(game.created_at).toLocaleString()}</Typography>
+                        <Link to={`/user/${game.user.screen_name}`} style={{color: '#000000DE'}}>
+                            <Box sx={{display: 'flex'}}>
+                                <Typography color={'#000000DE'}>
+                                    {game.user.name}
+                                </Typography>
+                                <Typography color={grey[500]} sx={{marginLeft: 1}}>
+                                    @{game.user.screen_name}
+                                </Typography>
+                            </Box>
+                        </Link>
+                        <Typography color={grey[500]}>{new Date(game.created_at).toLocaleString()}</Typography>
                     </React.Fragment>
                 }
                 sx={{pb: 1}}
