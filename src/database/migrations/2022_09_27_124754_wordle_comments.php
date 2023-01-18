@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('wordle_comments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('wordle_id');
             $table->unsignedBigInteger('user_id')->nullable();

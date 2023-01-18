@@ -34,4 +34,8 @@ class Wordle extends Model
     public function likes() {
         return $this->belongsToMany('App\Models\User', 'wordle_likes', 'wordle_id', 'user_id');
     }
+
+    public function comments() {
+        return $this->hasMany(WordleComment::class);
+    }
 }
