@@ -31,12 +31,12 @@ function ButtonGroupPrimary(props: ButtonGroupPrimaryProps): React.ReactElement 
                                 onClick={item.onClick}
                                 style={
                                     head ?
-                                    items.length === 1 ? {borderLeft: 'none', borderTop: 'none', borderRight: 'none', borderBottom: 'none'}
+                                    items.length === 1 ? {pointerEvents: 'none', borderLeft: 'none', borderTop: 'none', borderRight: 'none', borderBottom: 'none'}
                                     : index === 0 ? {borderLeft: 'none', borderTop: 'none', borderBottom: 'none'}
                                     : index === items.length - 1 ? {borderRight: 'none', borderTop: 'none', borderBottom: 'none'}
                                     : {borderTop: 'none', borderBottom: 'none'}
                                     :
-                                    items.length === 1 ? {borderRadius: '4px 4px 4px 4px'}
+                                    items.length === 1 ? {pointerEvents: 'none', borderRadius: '4px 4px 4px 4px'}
                                     : index === 0 ? {borderRadius: '4px 0px 0px 4px'}
                                     : index === items.length - 1 ? {borderRadius: '0px 4px 4px 0px'}
                                     : {borderRadius: '0px 0px 0px 0px'}

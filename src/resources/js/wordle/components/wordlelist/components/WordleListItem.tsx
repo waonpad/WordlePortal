@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { Button, Grid, Card, CardHeader, CardContent, Chip, Stack, Avatar, IconButton, Typography, ButtonGroup, CircularProgress, Box } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import { LoadingButton } from '@mui/lab';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,8 +33,17 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                 }
                 subheader={
                     <React.Fragment>
-                        <Link to={`/user/${wordle.user.screen_name}`} style={{color: '#000000DE'}}>{wordle.user.name}</Link>
-                        <Typography>{new Date(wordle.created_at).toLocaleString()}</Typography>
+                        <Link to={`/user/${wordle.user.screen_name}`} style={{color: '#000000DE'}}>
+                            <Box sx={{display: 'flex'}}>
+                                <Typography color={'#000000DE'}>
+                                    {wordle.user.name}
+                                </Typography>
+                                <Typography color={grey[500]} sx={{marginLeft: 1}}>
+                                    @{wordle.user.screen_name}
+                                </Typography>
+                            </Box>
+                        </Link>
+                        <Typography color={grey[500]}>{new Date(wordle.created_at).toLocaleString()}</Typography>
                     </React.Fragment>
                 }
                 sx={{pb: 1}}

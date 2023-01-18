@@ -44,7 +44,6 @@ function UserList(props: UserListProps): React.ReactElement {
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         getUsers(event.currentTarget.value as 'prev' | 'next');
     }
-
     /////////////////////////////////////////////////////////////////////////
 
 
@@ -68,29 +67,27 @@ function UserList(props: UserListProps): React.ReactElement {
             {head}
             <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
                 <SuspensePrimary open={users_loading} backdrop={false}>
-                    <React.Fragment>
-                        {
-                            users.map((user: any, index: number) => (
-                                <React.Fragment key={index}>
-                                    <UserListItem
-                                        user={user}
-                                        followToggle={followToggle}
-                                    />
-                                    <Divider />
-                                </React.Fragment>
-                            ))
-                        }
-                        {
-                            users.length > 0 ?
-                            <Grid item xs={12}>
-                                <PaginationPrimary
-                                    handlePageChange={handlePageChange}
-                                />
-                            </Grid>
-                            :
-                            <SimpleTextListItem text={no_item_text} />
-                        }
-                    </React.Fragment>
+                    {
+                        users.length > 0 ?
+                        <React.Fragment>
+                            {
+                                users.map((user: any, index: number) => (
+                                    <React.Fragment key={index}>
+                                        <UserListItem
+                                            user={user}
+                                            followToggle={followToggle}
+                                        />
+                                        <Divider />
+                                    </React.Fragment>
+                                ))
+                            }
+                            <PaginationPrimary
+                                handlePageChange={handlePageChange}
+                            />
+                        </React.Fragment>
+                        :
+                        <SimpleTextListItem text={no_item_text} />
+                    }
                 </SuspensePrimary>
             </List>
         </Card>
