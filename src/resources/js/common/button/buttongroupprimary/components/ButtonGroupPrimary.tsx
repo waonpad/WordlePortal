@@ -3,16 +3,12 @@ import { Link } from "react-router-dom";
 import { Box, Grid, Button, Divider } from '@mui/material';
 import { globalTheme } from '../../../../Theme';
 import { ButtonGroupPrimaryProps } from '../types/ButtonGroupPrimaryType';
-import { useCustomPath } from '../../../../contexts/CustomPathContext';
-import ParticalRenderLink from '../../../link/particalrenderlink/components/ParticalRenderLink';
-import { ParticalRenderLinkProps } from '../../../link/particalrenderlink/components/ParticalRenderLink';
-import { customPath } from '../../../../contexts/CustomPathContext';
 
-function ButtonTypeSwitcher(props: {link?: ParticalRenderLinkProps, children: React.ReactElement}): React.ReactElement {
+function ButtonTypeSwitcher(props: {link?: string, children: React.ReactElement}): React.ReactElement {
     const {link, children} = props;
 
     if(link) {
-        return (<ParticalRenderLink path={link.path} partical_render_route_paths={link.partical_render_route_paths}>{children}</ParticalRenderLink>);
+        return (<Link to={link}>{children}</Link>);
     }
     else {
         return children;
@@ -29,7 +25,6 @@ function ButtonGroupPrimary(props: ButtonGroupPrimaryProps): React.ReactElement 
                     <Grid item key={index} xs={12 / items.length}>
                         <ButtonTypeSwitcher link={item.link}>
                             <Button
-                                {...item.attributes}
                                 fullWidth
                                 variant={'outlined'}
                                 value={item.value}
