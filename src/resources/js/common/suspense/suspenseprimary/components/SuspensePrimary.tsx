@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Backdrop, CircularProgress, Box } from '@mui/material';
 import { SuspensePrimaryProps } from '../types/SuspensePrimaryType';
 
+// CAUTION: TODO: 囲んでいるやつの中身の読み込みはされるのでchildrenを囲む意味がない！！
+
 function SuspensePrimary(props: SuspensePrimaryProps): React.ReactElement {
     const {open, backdrop, children} = props;
 

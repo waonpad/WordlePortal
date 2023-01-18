@@ -45,12 +45,12 @@ function App(): React.ReactElement {
                                             <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                             <PublicRoute path='/register' exact><Register/></PublicRoute>
                                             <PublicRoute path='/login' exact><LogIn/></PublicRoute>
-                                            <Route key={'user'} path='/user/:screen_name' exact component={User} />
-                                            <Route key={'user_follows'} path='/user/:screen_name/follows' exact component={User} />
-                                            <Route key={'user_followers'} path='/user/:screen_name/followers' exact component={User} />
-                                            <Route key={'user_wordle'} path='/user/:screen_name/wordle' exact component={User} />
-                                            <Route key={'user_game'} path='/user/:screen_name/wordle/game' exact component={User} />
-                                            <Route key={'user_wordle_like'} path='/user/:screen_name/wordle/like' exact component={User} />
+                                            <Route path='/user/:screen_name' exact component={User} />
+                                            <Route path='/user/:screen_name/follows' exact component={User} />
+                                            <Route path='/user/:screen_name/followers' exact component={User} />
+                                            <Route path='/user/:screen_name/wordle' exact component={User} />
+                                            <Route path='/user/:screen_name/wordle/game' exact component={User} />
+                                            <Route path='/user/:screen_name/wordle/like' exact component={User} />
                                             {/* <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
                                             <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
                                             <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>

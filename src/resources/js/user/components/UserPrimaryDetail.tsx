@@ -111,21 +111,22 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                     </Grid>
                     <Grid item container xs={12} spacing={1} sx={{marginTop: 0.5}}>
                         <Grid item xs={4}>
-                            {/* 投稿数をカウント */}
-                            <Typography color={grey[700]}>0</Typography>
-                            <Typography color={grey[500]}>Post</Typography>
+                            <Link to={`/user/${user.screen_name}/wordle`}>
+                                <Typography color={grey[700]}>0</Typography>
+                                <Typography color={grey[500]}>Post</Typography>
+                            </Link>
                         </Grid>
                         <Grid item xs={4}>
-                            {/* <Link to={`user/${user.screen_name}/follows`}> */}
+                            <Link to={`/user/${user.screen_name}/follows`}>
                                 <Typography color={grey[700]}>{user.follows.length}</Typography>
                                 <Typography color={grey[500]}>Follow</Typography>
-                            {/* </Link> */}
+                            </Link>
                         </Grid>
                         <Grid item xs={4}>
-                            {/* <Link to={`user/${user.screen_name}/followers`}> */}
+                            <Link to={`/user/${user.screen_name}/followers`}>
                                 <Typography color={grey[700]}>{user.followers.length}</Typography>
                                 <Typography color={grey[500]}>Follower</Typography>
-                            {/* </Link> */}
+                            </Link>
                         </Grid>
                     </Grid>
                     {/* description */}
