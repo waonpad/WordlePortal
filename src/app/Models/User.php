@@ -98,4 +98,8 @@ class User extends Authenticatable
     public function gameUsers() {
         return $this->hasMany(GameUser::class);
     }
+
+    public function wordle_comments() {
+        return $this->hasMany(WordleComment::class);
+    }
 }

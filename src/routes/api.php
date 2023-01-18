@@ -12,7 +12,7 @@ use App\Http\Controllers\API\GroupPostController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\WordleController;
-use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\WordleCommentController;
 use App\Http\Controllers\API\GameController;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -107,8 +107,9 @@ Route::prefix('wordle')->group(function (){
 
     // comments
     Route::prefix('comment')->group(function (){
-        Route::post('upsert', [CommentController::class, 'upsert'])->middleware('auth');
-        Route::post('destroy', [CommentController::class, 'destroy'])->middleware('auth');
+        Route::post('comments', [WordleCommentController::class, 'comments'])->middleware('auth');
+        Route::post('upsert', [WordleCommentController::class, 'upsert'])->middleware('auth');
+        Route::post('destroy', [WordleCommentController::class, 'destroy'])->middleware('auth');
     });
 
     // games

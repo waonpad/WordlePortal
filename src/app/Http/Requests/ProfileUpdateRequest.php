@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CommentUpsertRequest extends FormRequest
+class ProfileUpdateRequest extends FormRequest
 {
 
     /**
@@ -15,7 +15,11 @@ class CommentUpsertRequest extends FormRequest
     public function rules()
     {
         return [
-            'comment' => 'required|max:16384'
+            'icon' => 'nullable|string',
+            'name' => 'required|string|max:191',
+            'description' => 'nullable|string|max:191',
+            'age' => 'required|numeric|min:0|max:130',
+            'gender' => 'required|string|in:male,female',
         ];
     }
 

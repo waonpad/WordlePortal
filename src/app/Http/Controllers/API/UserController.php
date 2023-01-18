@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -115,7 +115,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function updateProfile(UpdateProfileRequest $request)
+    public function updateProfile(ProfileUpdateRequest $request)
     {
         $validator = $request->getValidator();
         if($validator->fails()){
