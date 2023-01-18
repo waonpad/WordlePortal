@@ -24,6 +24,8 @@ import ProvideAuth, { PrivateRoute, PublicRoute } from './contexts/AuthContext'
 import ProvideNoification from './contexts/NotificationContext';
 import YupCustom from './contexts/YupCustom';
 
+import Test from './test/Test';
+
 function App(): React.ReactElement {
     return (
         <View>
@@ -35,6 +37,9 @@ function App(): React.ReactElement {
                                 <ProvideNoification>
                                     <HeaderPrimary>
                                         <Switch>
+
+                                            <Route path='/test' exact component={Test} />
+
                                             <Route key={'wordle_index'} path='/' exact component={Top} />
                                             <Route path='/example' exact component={Example} />
                                             <PrivateRoute path='/about' exact><About/></PrivateRoute>

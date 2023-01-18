@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, List, Divider } from '@mui/material';
+import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, List, ListItem, Divider } from '@mui/material';
 import PaginationPrimary from '../../../../common/pagination/paginationprimary/components/PaginationPrimary';
 import SuspensePrimary from '../../../../common/suspense/suspenseprimary/components/SuspensePrimary';
 import SimpleTextListItem from '../../../../common/listitem/simpletextlistitem/components/SimpleTextListItem';
@@ -44,7 +44,6 @@ function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         getWordleComments(event.currentTarget.value as 'prev' | 'next');
     }
-
     /////////////////////////////////////////////////////////////////////////
 
     return (
@@ -52,28 +51,26 @@ function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
             {head}
             <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
                 <SuspensePrimary open={wordle_comments_loading} backdrop={false}>
-                    <React.Fragment>
-                        {
-                            wordle_comments.map((wordle_comment: any, index: number) => (
-                                <React.Fragment key={index}>
-                                    <WordleCommentListItem
-                                        wordle_comment={wordle_comment}
-                                    />
-                                    <Divider />
-                                </React.Fragment>
-                            ))
-                        }
-                        {
-                            wordle_comments.length > 0 ?
-                            <Grid item xs={12}>
-                                <PaginationPrimary
-                                    handlePageChange={handlePageChange}
-                                />
-                            </Grid>
-                            :
-                            <SimpleTextListItem text={no_item_text} />
-                        }
-                    </React.Fragment>
+                    {
+                        wordle_comments.length > 0 ?
+                        <React.Fragment>
+                            {
+                                wordle_comments.map((wordle_comment: any, index: number) => (
+                                    <React.Fragment key={index}>
+                                        <WordleCommentListItem
+                                            wordle_comment={wordle_comment}
+                                        />
+                                        <Divider />
+                                    </React.Fragment>
+                                ))
+                            }
+                            <PaginationPrimary
+                                handlePageChange={handlePageChange}
+                            />
+                        </React.Fragment>
+                        :
+                        <SimpleTextListItem text={no_item_text} />
+                    }
                 </SuspensePrimary>
             </List>
         </Card>

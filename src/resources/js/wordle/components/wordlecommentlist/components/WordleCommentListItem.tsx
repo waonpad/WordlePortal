@@ -30,7 +30,7 @@ function WordleCommentListItem(props: WordleCommentListItemProps): React.ReactEl
                 secondary={
                 <React.Fragment>
                     <Typography
-                        sx={{ display: 'inline' }}
+                        sx={{display: 'inline', whiteSpace: 'pre-line'}}
                         component="span"
                         variant="body2"
                         color={grey[700]}
