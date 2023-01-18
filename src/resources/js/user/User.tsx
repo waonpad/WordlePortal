@@ -9,47 +9,75 @@ import SuspensePrimary from '../common/suspense/suspenseprimary/components/Suspe
 import ButtonGroupPrimary from '../common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import UserList from './components/UserList';
 
-function User(): React.ReactElement {
+function User(props: any): React.ReactElement {
     const location = useLocation();
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<any>({});
+    const [user, setUser] = useState<any>(undefined);
     const [key, setKey] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [display_ff_component, setDisplayFFComponent] = useState<'follows' | 'followers'>('follows');
     const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'game_results' | 'likes'>('wordles');
 
-    // 表示するffの種類を切り替える /////////////////////////////////////////////////////////////////////////
-    const handleDisplayFFSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        setDisplayFFComponent(event.currentTarget.value as 'follows' | 'followers');
-    }
-    /////////////////////////////////////////////////////////////////////////
+    const [route_store, setRouteStore] = useState({
+        path: '',
+        params: {}
+    });
+    
+    function objectSort(obj: object){
+        // ソートする
+        const sorted = Object.entries(obj).sort();
+        
+        // valueを調べ、objectならsorted entriesに変換する
+        for(let i in sorted){
+            const val = sorted[i][1];
+            if(typeof val === "object"){
+                sorted[i][1] = objectSort(val);
+            }
+        }
 
-    // 表示するWordleの種類を切り替える /////////////////////////////////////////////////////////////////////////
-    const handleDisplayWordleListSelect = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        setDisplayListComponent(event.currentTarget.value as 'wordles' | 'game_results' | 'likes');
+        return sorted;
     }
-    /////////////////////////////////////////////////////////////////////////
 
     // データ取得 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
-        setExpanded(false);
-        setDisplayFFComponent('follows');
-        setDisplayListComponent('wordles');
-        setLoading(true);
-        axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
-            if(res.data.status === true) {
-                setUser(res.data.user);
-                setKey(screen_name);
-                setLoading(false);
-            }
-            else if (res.data.status === false) {
-                // TODO: ユーザーが存在しない時の処理
-            }
-        })
+        if((JSON.stringify(objectSort(props.match.params)) !== JSON.stringify(objectSort(route_store.params)))) {
+            setLoading(true);
+            setRouteStore({
+                path: props.match.path,
+                params: props.match.params
+            });
+            setExpanded(false);
+            axios.get('/api/user/show', {params: {screen_name: screen_name}}).then(res => {
+                if(res.data.status === true) {
+                    setUser(res.data.user);
+                    setKey(screen_name);
+                    setLoading(false);
+                }
+                else if (res.data.status === false) {
+                    // TODO: ユーザーが存在しない時の処理
+                }
+            })
+        }
+        setDisplayFFComponent(
+            ['/user/:screen_name', '/user/:screen_name/follows'].includes(props.match.path) ? 'follows'
+            : ['/user/:screen_name/followers'].includes(props.match.path) ? 'followers'
+            : display_ff_component);
+        setDisplayListComponent(
+            ['/user/:screen_name', '/user/:screen_name/wordle'].includes(props.match.path) ? 'wordles'
+            : ['/user/:screen_name/wordle/game'].includes(props.match.path) ? 'game_results'
+            : ['/user/:screen_name/wordle/like'].includes(props.match.path) ? 'likes'
+            : display_list_component
+        );
     }, [location])
     /////////////////////////////////////////////////////////////////////////
 
+    if(loading) {
+        return (
+            <div>text</div>
+        )
+    }
+    else
     return (
         <SuspensePrimary open={loading} backdrop={true}>
             <Container maxWidth={'lg'} key={key}>
@@ -89,13 +117,13 @@ function User(): React.ReactElement {
                                             {
                                                 text: 'Follows',
                                                 value: 'follows',
-                                                onClick: handleDisplayFFSelect,
+                                                link: `/user/${screen_name}/follows`,
                                                 active: display_ff_component === 'follows'
                                             },
                                             {
                                                 text: 'Followers',
                                                 value: 'followers',
-                                                onClick: handleDisplayFFSelect,
+                                                link: `/user/${screen_name}/followers`,
                                                 active: display_ff_component === 'followers'
                                             },
                                         ]}
@@ -140,19 +168,19 @@ function User(): React.ReactElement {
                                     {
                                         text: 'Wordles',
                                         value: 'wordles',
-                                        onClick: handleDisplayWordleListSelect,
+                                        link: `/user/${screen_name}/wordle`,
                                         active: display_list_component === 'wordles'
                                     },
                                     {
                                         text: 'GAME RESULTS',
                                         value: 'game_results',
-                                        onClick: handleDisplayWordleListSelect,
+                                        link: `/user/${screen_name}/wordle/game`,
                                         active: display_list_component === 'game_results'
                                     },
                                     {
                                         text: 'LIKES',
                                         value: 'likes',
-                                        onClick: handleDisplayWordleListSelect,
+                                        link: `/user/${screen_name}/wordle/like`,
                                         active: display_list_component === 'likes'
                                     }
                                 ]}
