@@ -107,7 +107,7 @@ Route::prefix('wordle')->group(function (){
 
     // comments
     Route::prefix('comment')->group(function (){
-        Route::post('comments', [WordleCommentController::class, 'comments'])->middleware('auth');
+        Route::get('comments', [WordleCommentController::class, 'comments'])->middleware('auth');
         Route::post('upsert', [WordleCommentController::class, 'upsert'])->middleware('auth');
         Route::post('destroy', [WordleCommentController::class, 'destroy'])->middleware('auth');
     });

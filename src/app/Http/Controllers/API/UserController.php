@@ -10,63 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    private function ffCheck($users)
-    {
-        gettype($users) === 'object' ? $users = $users->toArray() : null;
-
-        $auth_user = Auth::user();
-
-        $ff_checked_users = array_map(function($user) use($auth_user) {
-            gettype($user) === 'object' ? $user = $user->toArray() : null;
-
-            $user['myself'] = $auth_user ? (($auth_user->id === $user['id']) ? true : false) : false;
-            $user['follow'] = $auth_user ? (in_array($auth_user->id, array_column($user['followers'], 'id')) ? true : false) : false;
-            $user['followed'] = $auth_user ? (in_array($auth_user->id, array_column($user['follows'], 'id')) ? true : false) : false;
-
-            return $user;
-        }, $users);
-
-        return $ff_checked_users;
-    }
-    
-    private function paginateUser($users, $per_page, $paginate, $start, $last,)
-    {
-        gettype($users) === 'object' ? $users = $users->toArray() : null;
-
-        if($paginate === 'prev') {
-            // prevなので、idがstartより大きいものの中からper_page個だけ取り出す
-            // startがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_users = $start !== null ? array_slice(array_filter($users, function ($user) use($start) {
-                return $user['id'] > $start;
-            }), 0, $per_page)
-            : array_slice($users, -$per_page);
-            // これだとprevで最新まで戻った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
-            // idがstart以下のものの後ろから、per_page個になるように
-            if(count($paginated_users) < $per_page) {
-                $paginated_users = array_merge(array_slice(array_filter($users, function($user) use($start) {
-                    return $user['id'] <= $start;
-                }), -($per_page - count($paginated_users))), $paginated_users);
-            }
-        }
-        
-        if($paginate === 'next') {
-            // nextなので、idがlastより小さいものの中からper_page個だけ取り出す
-            // lastがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_users = $last !== null ? array_slice(array_filter($users, function($user) use($last) {
-                return $user['id'] < $last;
-            }), -$per_page)
-            : array_slice($users, -$per_page);
-            // これだとnextで最後まで行った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
-            // idがlast以上のものの前から、per_page個になるように
-            if(count($paginated_users) < $per_page) {
-                $paginated_users = array_merge($paginated_users, array_slice(array_filter($users, function ($user) use($last) {
-                    return $user['id'] >= $last;
-                }), 0, $per_page - count($paginated_users)));
-            }
-        }
-
-        return $paginated_users;
-    }
+    use \App\Http\Trait\DataManipulation;
 
     public function auth()
     {
@@ -183,7 +127,7 @@ class UserController extends Controller
             'follows.follows', 'follows.followers'
         ])->where('screen_name', $request->screen_name)->first()->follows;
 
-        $paginated_follows = $this->paginateUser($follows, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_follows = $this->paginate($follows, $request->per_page, $request->paginate, $request->start, $request->last);
         $ff_checked_follows = $this->ffCheck($paginated_follows);
 
         return response()->json([
@@ -205,7 +149,7 @@ class UserController extends Controller
             'followers.follows', 'followers.followers'
         ])->where('screen_name', $request->screen_name)->first()->followers;
 
-        $paginated_followers = $this->paginateUser($followers, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_followers = $this->paginate($followers, $request->per_page, $request->paginate, $request->start, $request->last);
         $ff_checked_followers = $this->ffCheck($paginated_followers);
 
         return response()->json([
