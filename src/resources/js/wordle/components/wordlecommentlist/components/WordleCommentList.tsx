@@ -50,28 +50,29 @@ function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
         <Card elevation={1}>
             {head}
             <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
-                <SuspensePrimary open={wordle_comments_loading} backdrop={false}>
-                    {
-                        wordle_comments.length > 0 ?
-                        <React.Fragment>
-                            {
-                                wordle_comments.map((wordle_comment: any, index: number) => (
-                                    <React.Fragment key={index}>
-                                        <WordleCommentListItem
-                                            wordle_comment={wordle_comment}
-                                        />
-                                        <Divider />
-                                    </React.Fragment>
-                                ))
-                            }
-                            <PaginationPrimary
-                                handlePageChange={handlePageChange}
-                            />
-                        </React.Fragment>
-                        :
-                        <SimpleTextListItem text={no_item_text} />
-                    }
-                </SuspensePrimary>
+                {
+                    wordle_comments_loading ?
+                    <SuspensePrimary open={true} backdrop={false} />
+                    :
+                    wordle_comments.length > 0 ?
+                    <React.Fragment>
+                        {
+                            wordle_comments.map((wordle_comment: any, index: number) => (
+                                <React.Fragment key={index}>
+                                    <WordleCommentListItem
+                                        wordle_comment={wordle_comment}
+                                    />
+                                    <Divider />
+                                </React.Fragment>
+                            ))
+                        }
+                        <PaginationPrimary
+                            handlePageChange={handlePageChange}
+                        />
+                    </React.Fragment>
+                    :
+                    <SimpleTextListItem text={no_item_text} />
+                }
             </List>
         </Card>
     )

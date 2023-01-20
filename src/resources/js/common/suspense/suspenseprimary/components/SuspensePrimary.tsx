@@ -1,38 +1,32 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Backdrop, CircularProgress, Box } from '@mui/material';
 import { SuspensePrimaryProps } from '../types/SuspensePrimaryType';
+import { Typography } from '@material-ui/core';
 
 // CAUTION: TODO: 囲んでいるやつの中身の読み込みはされるのでchildrenを囲む意味がない！！
 
 function SuspensePrimary(props: SuspensePrimaryProps): React.ReactElement {
-    const {open, backdrop, children} = props;
+    const {open, backdrop} = props;
 
-    if(backdrop) {
+    if(open) {
         return (
-            <>
+            <React.Fragment>
                 {
-                    open ? (
-                        <Backdrop open={true}>
-                            <CircularProgress/>
-                        </Backdrop>
-                    )
-                    : children
+                    backdrop ?
+                    <Backdrop open={true}>
+                        <CircularProgress/>
+                    </Backdrop>
+                    :
+                    <Box sx={{mt: 5, mb: 5, display: 'flex', alignItems: "center", justifyContent: "center"}}>
+                        <CircularProgress/>
+                    </Box>
                 }
-            </>
+            </React.Fragment>
         )
     }
     else {
         return (
-            <>
-                {
-                    open ? (
-                        <Box sx={{mt: 5, mb: 5, display: 'flex', alignItems: "center", justifyContent: "center"}}>
-                            <CircularProgress/>
-                        </Box>
-                    )
-                    : children
-                }
-            </>
+            <Typography>コンポーネントを表示</Typography>
         )
     }
 }

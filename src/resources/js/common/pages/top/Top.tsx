@@ -7,8 +7,9 @@ import { globalTheme } from '../../../Theme';
 import { RequestConfig } from './types/TopType';
 import { useAuth } from '../../../contexts/AuthContext';
 import ButtonGroupPrimary from '../../button/buttongroupprimary/components/ButtonGroupPrimary';
+import SuspensePrimary from '../../suspense/suspenseprimary/components/SuspensePrimary';
 
-function Top(): React.ReactElement {
+function Top(props: any): React.ReactElement {
     const location = useLocation();
     const auth = useAuth();
     const {wordle_tag_id, game_tag_id, wordle_search_param, wordle_game_search_param} = useParams<{wordle_tag_id: string, game_tag_id: string, wordle_search_param: string, wordle_game_search_param: string}>();
@@ -25,7 +26,6 @@ function Top(): React.ReactElement {
     });
 
     useEffect(() => {
-        setInitialLoad(true);
         if(location.pathname === '/' || location.pathname === '/wordle/index') {
             setRequestConfig({
                 api_url: 'wordle/index',
@@ -114,61 +114,55 @@ function Top(): React.ReactElement {
     }, [location]);
 
     if(initial_load) {
-        return (
-			<Backdrop open={true}>
-                <CircularProgress/>
-            </Backdrop>
-        )
+        return (<SuspensePrimary open={true} backdrop={true} />)
     }
-    else {
-        return (
-            <Container maxWidth={'md'}>
-                <Grid container spacing={2}>
-                    {/* 表示するWordleの種類選択エリア */}
-                    <Grid item xs={12}>
-                        <ButtonGroupPrimary
-                            items={[
-                                {
-                                    text: 'WORDLES',
-                                    link: location.pathname.substring(0, 12) === '/wordle/game' ? `/wordle${location.pathname.substring(12)}` : location.pathname,
-                                    active: display_list_component === 'wordles'
-                                },
-                                {
-                                    text: 'GAMES',
-                                    link: location.pathname === '/' ? '/wordle/game/index' : location.pathname.substring(0, 12) !== '/wordle/game' ? `/wordle/game${location.pathname.substring(7)}` : location.pathname,
-                                    active: display_list_component === 'games'
-                                },
-                            ]}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        {
-                            display_list_component === 'wordles' ? (
-                                <WordleList
-                                    request_config={request_config}
-                                    // listen={true}
-                                    listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
-                                    key={key}
-                                />
-                            )
-                            :
-                            display_list_component === 'games' ? (
-                                <GameList
-                                    game_status={['wait']}
-                                    request_config={request_config}
-                                    // listen={true}
-                                    listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
-                                    key={key}
-                                />
-                            )
-                            :
-                            <></>
-                        }
-                    </Grid>
+    return (
+        <Container maxWidth={'md'}>
+            <Grid container spacing={2}>
+                {/* 表示するWordleの種類選択エリア */}
+                <Grid item xs={12}>
+                    <ButtonGroupPrimary
+                        items={[
+                            {
+                                text: 'WORDLES',
+                                link: location.pathname.substring(0, 12) === '/wordle/game' ? `/wordle${location.pathname.substring(12)}` : location.pathname,
+                                active: display_list_component === 'wordles'
+                            },
+                            {
+                                text: 'GAMES',
+                                link: location.pathname === '/' ? '/wordle/game/index' : location.pathname.substring(0, 12) !== '/wordle/game' ? `/wordle/game${location.pathname.substring(7)}` : location.pathname,
+                                active: display_list_component === 'games'
+                            },
+                        ]}
+                    />
                 </Grid>
-            </Container>
-        )
-    }
+                <Grid item xs={12}>
+                    {
+                        display_list_component === 'wordles' ? (
+                            <WordleList
+                                request_config={request_config}
+                                // listen={true}
+                                listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
+                                key={key}
+                            />
+                        )
+                        :
+                        display_list_component === 'games' ? (
+                            <GameList
+                                game_status={['wait']}
+                                request_config={request_config}
+                                // listen={true}
+                                listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
+                                key={key}
+                            />
+                        )
+                        :
+                        <></>
+                    }
+                </Grid>
+            </Grid>
+        </Container>
+    )
 }
 
 export default Top;

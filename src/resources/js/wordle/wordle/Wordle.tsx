@@ -526,8 +526,12 @@ function Wordle(): React.ReactElement {
         })
     }
 
+    if(initial_load || firebase_game_data?.users == undefined || game_status == undefined) {
+        return (<SuspensePrimary open={true} backdrop={true} />)
+    }
+
     return (
-        <SuspensePrimary open={initial_load || firebase_game_data?.users == undefined || game_status == undefined} backdrop={true}>
+        <React.Fragment>
             {
                 game_status?.game?.status === 'wait' ?
                 // game_status?.game?.status === 'wait' || 'start' ?
@@ -564,7 +568,7 @@ function Wordle(): React.ReactElement {
                     <CircularProgress/>
                 </Backdrop>
             }
-        </SuspensePrimary>
+        </React.Fragment>
     )
 }
 
