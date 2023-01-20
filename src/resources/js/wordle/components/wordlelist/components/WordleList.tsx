@@ -154,45 +154,46 @@ function WordleList(props: WordleListProps): React.ReactElement {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
+    if(wordle_loading) {
+        return (<SuspensePrimary open={true} backdrop={false} />)
+    }
     return (
-        <SuspensePrimary open={wordle_loading} backdrop={false}>
-            <Container maxWidth={'md'} disableGutters>
-                <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
-                    <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
-                    <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
-                </ModalPrimary>
-                {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
-                <Grid container spacing={1}>
-                    <Grid item container spacing={2} xs={12}>
-                        {wordles.map((wordle, index) => (
-                            <Grid item xs={12} key={index} sx={{minWidth: '100%'}}>
-                                <WordleListItem
-                                    wordle={wordle}
-                                    handleLikeToggle={handleLikeToggle}
-                                    handleDeleteWordle={handleDeleteWordle}
-                                    handleSinglePlayStart={handleSinglePlayStart}
-                                    handleVSPlayOptionOpen={handleVSPlayOptionOpen}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
-                    {
-                        wordles.length > 0 ?
-                        <Grid item xs={12}>
-                            <PaginationPrimary
-                                handlePageChange={handlePageChange}
+        <Container maxWidth={'md'} disableGutters>
+            <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
+                <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
+                <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
+            </ModalPrimary>
+            {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
+            <Grid container spacing={1}>
+                <Grid item container spacing={2} xs={12}>
+                    {wordles.map((wordle, index) => (
+                        <Grid item xs={12} key={index} sx={{minWidth: '100%'}}>
+                            <WordleListItem
+                                wordle={wordle}
+                                handleLikeToggle={handleLikeToggle}
+                                handleDeleteWordle={handleDeleteWordle}
+                                handleSinglePlayStart={handleSinglePlayStart}
+                                handleVSPlayOptionOpen={handleVSPlayOptionOpen}
                             />
                         </Grid>
-                        :
-                        <Grid item container spacing={2} xs={12}>
-                            <Grid item xs={12} sx={{minWidth: '100%'}}>
-                                <SimpleTextCard text={'No Item'} />
-                            </Grid>
-                        </Grid>
-                    }
+                    ))}
                 </Grid>
-            </Container>
-        </SuspensePrimary>
+                {
+                    wordles.length > 0 ?
+                    <Grid item xs={12}>
+                        <PaginationPrimary
+                            handlePageChange={handlePageChange}
+                        />
+                    </Grid>
+                    :
+                    <Grid item container spacing={2} xs={12}>
+                        <Grid item xs={12} sx={{minWidth: '100%'}}>
+                            <SimpleTextCard text={'No Item'} />
+                        </Grid>
+                    </Grid>
+                }
+            </Grid>
+        </Container>
     )
 }
 

@@ -40,7 +40,7 @@ function App(): React.ReactElement {
 
                                             <Route path='/test' exact component={Test} />
 
-                                            <Route key={'wordle_index'} path='/' exact component={Top} />
+                                            <Route path='/' exact component={Top} />
                                             <Route path='/example' exact component={Example} />
                                             <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                             <PublicRoute path='/register' exact><Register/></PublicRoute>
@@ -55,16 +55,16 @@ function App(): React.ReactElement {
                                             <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
                                             <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
                                             <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute> */}
-                                            <PrivateRoute key={'wordlecreate'} path='/wordle/create' exact><WordleManage/></PrivateRoute>
-                                            <PrivateRoute key={'wordlemanage'} path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
-                                            <Route key={'wordle_index'} path='/wordle/index' exact component={Top}></Route>
-                                            <Route key={'wordle_follows'} path='/wordle/follows' exact component={Top}></Route>
-                                            <Route key={'wordle_tag'} path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
-                                            <Route key={'wordle_search'} path='/wordle/search/:wordle_search_param' exact component={Top}></Route>
-                                            <Route key={'wordle_game_index'} path='/wordle/game/index' exact component={Top}></Route>
-                                            <Route key={'wordle_game_follows'} path='/wordle/game/follows' exact component={Top}></Route>
-                                            <Route key={'wordle_game_tag'} path='/wordle/game/tag/:game_tag_id' exact component={Top}></Route>
-                                            <Route key={'wordle_game_search'} path='/wordle/game/search/:wordle_game_search_param' exact component={Top}></Route>
+                                            <PrivateRoute path='/wordle/create' exact><WordleManage/></PrivateRoute>
+                                            <PrivateRoute path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
+                                            <Route path='/wordle/index' exact component={Top}></Route>
+                                            <Route path='/wordle/follows' exact component={Top}></Route>
+                                            <Route path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>
+                                            <Route path='/wordle/search/:wordle_search_param' exact component={Top}></Route>
+                                            <Route path='/wordle/game/index' exact component={Top}></Route>
+                                            <Route path='/wordle/game/follows' exact component={Top}></Route>
+                                            <Route path='/wordle/game/tag/:game_tag_id' exact component={Top}></Route>
+                                            <Route path='/wordle/game/search/:wordle_game_search_param' exact component={Top}></Route>
                                             <PrivateRoute path='/wordle/game/play/:game_uuid' exact><Wordle/></PrivateRoute>
                                             <Route path='*' exact component={Page404} />
                                         </Switch>

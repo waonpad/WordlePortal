@@ -66,29 +66,30 @@ function UserList(props: UserListProps): React.ReactElement {
         <Card elevation={1}>
             {head}
             <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
-                <SuspensePrimary open={users_loading} backdrop={false}>
-                    {
-                        users.length > 0 ?
-                        <React.Fragment>
-                            {
-                                users.map((user: any, index: number) => (
-                                    <React.Fragment key={index}>
-                                        <UserListItem
-                                            user={user}
-                                            followToggle={followToggle}
-                                        />
-                                        <Divider />
-                                    </React.Fragment>
-                                ))
-                            }
-                            <PaginationPrimary
-                                handlePageChange={handlePageChange}
-                            />
-                        </React.Fragment>
-                        :
-                        <SimpleTextListItem text={no_item_text} />
-                    }
-                </SuspensePrimary>
+                {
+                    users_loading ?
+                    <SuspensePrimary open={users_loading} backdrop={false} />
+                    :
+                    users.length > 0 ?
+                    <React.Fragment>
+                        {
+                            users.map((user: any, index: number) => (
+                                <React.Fragment key={index}>
+                                    <UserListItem
+                                        user={user}
+                                        followToggle={followToggle}
+                                    />
+                                    <Divider />
+                                </React.Fragment>
+                            ))
+                        }
+                        <PaginationPrimary
+                            handlePageChange={handlePageChange}
+                        />
+                    </React.Fragment>
+                    :
+                    <SimpleTextListItem text={no_item_text} />
+                }
             </List>
         </Card>
     )

@@ -97,43 +97,44 @@ function GameList(props: GameListProps): React.ReactElement {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
+    if(game_loading) {
+        return (<SuspensePrimary open={true} backdrop={false} />)
+    }
     return (
-        <SuspensePrimary open={game_loading} backdrop={false}>
-            <Container maxWidth={'md'} disableGutters>
-                <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
-                    <VSPlayOption game={vs_target_game} handleModalClose={setIsOpen} />
-                    <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
-                </ModalPrimary>
-                {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
-                <Grid container spacing={1}>
-                    <Grid item container spacing={2}>
-                        {games.map((game, index) => (
-                            <Grid item xs={12} key={index} sx={{minWidth: '100%'}}>
-                                <GameListItem
-                                    game={game}
-                                    handleDeleteGame={handleDeleteGame}
-                                    handleVSPlayOptionOpen={handleVSPlayOptionOpen}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
-                    {
-                        games.length > 0 ? 
-                        <Grid item xs={12}>
-                            <PaginationPrimary
-                                handlePageChange={handlePageChange}
+        <Container maxWidth={'md'} disableGutters>
+            <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
+                <VSPlayOption game={vs_target_game} handleModalClose={setIsOpen} />
+                <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
+            </ModalPrimary>
+            {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
+            <Grid container spacing={1}>
+                <Grid item container spacing={2}>
+                    {games.map((game, index) => (
+                        <Grid item xs={12} key={index} sx={{minWidth: '100%'}}>
+                            <GameListItem
+                                game={game}
+                                handleDeleteGame={handleDeleteGame}
+                                handleVSPlayOptionOpen={handleVSPlayOptionOpen}
                             />
                         </Grid>
-                        :
-                        <Grid item container spacing={2} xs={12}>
-                            <Grid item xs={12} sx={{minWidth: '100%'}}>
-                                <SimpleTextCard text={'No Item'} />
-                            </Grid>
-                        </Grid>
-                    }
+                    ))}
                 </Grid>
-            </Container>
-        </SuspensePrimary>
+                {
+                    games.length > 0 ? 
+                    <Grid item xs={12}>
+                        <PaginationPrimary
+                            handlePageChange={handlePageChange}
+                        />
+                    </Grid>
+                    :
+                    <Grid item container spacing={2} xs={12}>
+                        <Grid item xs={12} sx={{minWidth: '100%'}}>
+                            <SimpleTextCard text={'No Item'} />
+                        </Grid>
+                    </Grid>
+                }
+            </Grid>
+        </Container>
     )
 }
 
