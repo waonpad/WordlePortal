@@ -10,7 +10,7 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        $notifications = $request->user()->Notifications()->get();
+        $notifications = $request->user()->notifications()->load('resource')->get();
 
         return response()->json([
             'status' => true,

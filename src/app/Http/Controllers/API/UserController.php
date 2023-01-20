@@ -6,7 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\CommonNotification;
+use App\Notifications\FollowNotification;
+use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
 {
@@ -106,7 +110,14 @@ class UserController extends Controller
             $follow = false;
         }
 
+        $record = Follow::where('following_user_id', $user->id)->where('followed_user_id', $target_user->id)->first();
+
         // 通知を送る
+        if($follow === true) {
+            Notification::send([$target_user], new FollowNotification(
+                $record
+            ));
+        }
 
         return response()->json([
             'status' => true,

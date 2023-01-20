@@ -29,26 +29,26 @@ const useProvideNoification = () => {
     const [unread_notifications, setUnreadNotifications] = useState<any[]>([]);
 
     useEffect(() => {
-    if(auth?.user !== null) {
-        axios.get('/api/notification/unread').then(res => {
-            if (res.data.status === true) {
-                // console.log(res);
-                setUnreadNotifications(res.data.unread_notifications);
+        if(auth?.user !== null) {
+            axios.get('/api/notification/unread').then(res => {
+                if (res.data.status === true) {
+                    // console.log(res);
+                    setUnreadNotifications(res.data.unread_notifications);
 
-                // setInitialLoad(false);
-            }
-        })
+                    // setInitialLoad(false);
+                }
+            })
 
-        window.Echo.private('App.Models.User.' + auth?.user?.id)
-        .notification((notification: any) => {
-            console.log(notification);
-            setUnreadNotifications([...unread_notifications, notification]);
-        })
-    }
+            window.Echo.private('App.Models.User.' + auth?.user?.id)
+            .notification((notification: any) => {
+                console.log(notification);
+                setUnreadNotifications((unread_notifications) => [...unread_notifications, notification]);
+            })
+        }
 
-    // readNotification("37d6b77b-ec53-4858-b0e4-ab9eaa5d4e07");
+        // readNotification("37d6b77b-ec53-4858-b0e4-ab9eaa5d4e07");
 
-    // readAllNotifications();
+        // readAllNotifications();
     }, [auth?.user])
 
 

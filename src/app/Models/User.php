@@ -47,6 +47,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // `Illuminate\Notifications\HasDatabaseNotifications::notifications()` をオーバーライド
+    public function notifications()
+    {
+        return $this->morphMany(DatabaseNotification::class, 'notifiable')
+            ->orderBy('created_at', 'desc');
+    }
+
     // フォロワー→フォロー
     public function followers()
     {

@@ -28,9 +28,15 @@ function AxiosInterceptors({children}: Props): React.ReactElement {
     });
     axios.interceptors.response.use(
         async (response) => {
-            if(response.config.url !== '/sanctum/csrf-cookie' && response.config.url !== '/api/broadcasting/auth' && response.config.url !== "/api/notification/unread") {
+            const no_console_log_urls = [
+                '/sanctum/csrf-cookie',
+                '/api/broadcasting/auth',
+                // "/api/notification/unread",
+            ];
+            if(no_console_log_urls.includes(response.config.url as string) === false) {
                 console.log(response);
             }
+
             // 自分で作ったapiでないものを省く
             if(response.config.url !== '/sanctum/csrf-cookie' && response.config.url !== '/api/broadcasting/auth') {
                 if(response.data.status !== undefined || response.data.validation_errors !== undefined) {
