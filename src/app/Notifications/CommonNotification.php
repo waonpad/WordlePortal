@@ -57,8 +57,6 @@ class CommonNotification extends Notification
      */
     public function toArray($notifiable)
     {
-        return [
-            'data' => $this->data,
-        ];
+        return $this->data; // これがdataカラムに入る
     }
 }

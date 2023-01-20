@@ -28,7 +28,7 @@ class GroupPostController extends Controller
         $group = Group::where('id', $request->group_id)->first();
         $group_users = $group->groupUsers()->get();
 
-        Notification::send($group_users, new CommonNotification($group_post));
+        // Notification::send($group_users, new CommonNotification($group_post));
 
         return response()->json([
             'message' => '投稿しました。'
