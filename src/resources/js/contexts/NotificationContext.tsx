@@ -2,10 +2,21 @@ import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react";
 
-const notificationContext = createContext<any>(null);
+export type NotificationsProps = {
+    notifications_loading: boolean;
+    unread_notifications: any[];
+    readNotification: (notification_id: any) => void;
+    readAllNotifications: () => void;
+}
+
+const notificationContext = createContext<NotificationsProps | null>(null);
 
 type Props = {
     children: ReactNode
+}
+
+declare var window: {
+    Echo: any;
 }
 
 const ProvideNoification = ({children}: Props) => {
@@ -25,16 +36,19 @@ export const useNotification = () => {
 const useProvideNoification = () => {
     const auth = useAuth();
 
+    const [notifications_loading, setNotificationsLoading] = useState<boolean>(true);
     const [unread_notifications, setUnreadNotifications] = useState<any[]>([]);
 
     useEffect(() => {
         if(auth?.user !== null) {
             axios.get('/api/notification/unread').then(res => {
                 if (res.data.status === true) {
-                    // console.log(res);
-                    setUnreadNotifications(res.data.unread_notifications);
+                    const exist_resource_notifications = res.data.unread_notifications.filter((notification: any) => (
+                        notification.resource !== null
+                    ))
 
-                    // setInitialLoad(false);
+                    setUnreadNotifications(exist_resource_notifications);
+                    setNotificationsLoading(false);
                 }
             })
 
@@ -68,6 +82,7 @@ const useProvideNoification = () => {
     }
 
     return {
+        notifications_loading,
         unread_notifications,
         readNotification,
         readAllNotifications

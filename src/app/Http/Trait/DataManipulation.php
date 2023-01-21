@@ -5,22 +5,22 @@ use Illuminate\Support\Facades\Auth;
 
 trait DataManipulation
 {
-    private function paginate($items, $per_page, $paginate, $start, $last,)
+    private function paginate($items, $key, $per_page, $paginate, $start, $last,)
     {
         gettype($items) === 'object' ? $items = $items->toArray() : null;
 
         if($paginate === 'prev') {
             // prevなので、idがstartより大きいものの中からper_page個だけ取り出す
             // startがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_items = $start !== null ? array_slice(array_filter($items, function ($item) use($start) {
-                return $item['id'] > $start;
+            $paginated_items = $start !== null ? array_slice(array_filter($items, function ($item) use($key, $start) {
+                return $item[$key] > $start;
             }), 0, $per_page)
             : array_slice($items, -$per_page);
             // これだとprevで最新まで戻った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
             // idがstart以下のものの後ろから、per_page個になるように
             if(count($paginated_items) < $per_page) {
-                $paginated_items = array_merge(array_slice(array_filter($items, function($item) use($start) {
-                    return $item['id'] <= $start;
+                $paginated_items = array_merge(array_slice(array_filter($items, function($item) use($key, $start) {
+                    return $item[$key] <= $start;
                 }), -($per_page - count($paginated_items))), $paginated_items);
             }
         }
@@ -28,15 +28,15 @@ trait DataManipulation
         if($paginate === 'next') {
             // nextなので、idがlastより小さいものの中からper_page個だけ取り出す
             // lastがnull(初期表示)なら、配列の後ろからper_page個だけ取り出す
-            $paginated_items = $last !== null ? array_slice(array_filter($items, function($item) use($last) {
-                return $item['id'] < $last;
+            $paginated_items = $last !== null ? array_slice(array_filter($items, function($item) use($key, $last) {
+                return $item[$key] < $last;
             }), -$per_page)
             : array_slice($items, -$per_page);
             // これだとnextで最後まで行った時、per_page個より少ない数しか取得できないのでその場合はさらに足す
             // idがlast以上のものの前から、per_page個になるように
             if(count($paginated_items) < $per_page) {
-                $paginated_items = array_merge($paginated_items, array_slice(array_filter($items, function ($item) use($last) {
-                    return $item['id'] >= $last;
+                $paginated_items = array_merge($paginated_items, array_slice(array_filter($items, function ($item) use($key, $last) {
+                    return $item[$key] >= $last;
                 }), 0, $per_page - count($paginated_items)));
             }
         }

@@ -94,7 +94,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                         ) : (
                             // いいねボタン
                             <IconButton data-like-id={wordle.id} onClick={handleLikeToggle} aria-label="add to favorites">
-                                <FavoriteIcon color={wordle.like_status ? 'secondary' : 'inherit'} />
+                                <FavoriteIcon color={wordle.like_status ? 'primary' : 'inherit'} />
                             </IconButton>
                         )}
                         <ButtonGroup variant='contained' sx={{marginLeft: 'auto'}}>

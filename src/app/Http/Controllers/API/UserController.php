@@ -136,7 +136,7 @@ class UserController extends Controller
             'follows.follows', 'follows.followers'
         ])->where('screen_name', $request->screen_name)->first()->follows;
 
-        $paginated_follows = $this->paginate($follows, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_follows = $this->paginate($follows, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
         $ff_checked_follows = $this->ffCheck($paginated_follows);
 
         return response()->json([
@@ -158,7 +158,7 @@ class UserController extends Controller
             'followers.follows', 'followers.followers'
         ])->where('screen_name', $request->screen_name)->first()->followers;
 
-        $paginated_followers = $this->paginate($followers, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_followers = $this->paginate($followers, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
         $ff_checked_followers = $this->ffCheck($paginated_followers);
 
         return response()->json([

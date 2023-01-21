@@ -19,7 +19,7 @@ class WordleCommentController extends Controller
     {
         $wordle_comments = WordleComment::with('user')->where('wordle_id', $request->wordle_id)->get();
 
-        $paginated_wordle_comments = $this->paginate($wordle_comments, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_wordle_comments = $this->paginate($wordle_comments, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
 
         return response()->json([
             'status' => true,

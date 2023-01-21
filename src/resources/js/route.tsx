@@ -5,16 +5,15 @@ import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '@/common/errorboundary/components/ErrorFallBack';
 
 import View from '@/View';
-import Top from '@/common/pages/top/Top';
-import Example from '@/common/pages/Example';
-import About from '@/common/pages/About';
+import Top from '@/top/Top';
+import About from '@/about/About';
 import Register from '@/auth/register/Register';
 import LogIn from '@/auth/login/LogIn';
 import User from '@/user/User';
 import HeaderPrimary from '@/common/header/headerprimary/components/HeaderPrimary';
 import Wordle from '@/wordle/wordle/Wordle';
 import WordleManage from '@/wordle/wordlemanage/WordleManage';
-import Page404 from '@/common/pages/Page404';
+import Page404 from '@/page404/Page404';
 
 import AxiosInterceptors from '@/contexts/AxiosInterceptors';
 import ProvideAuth, { PrivateRoute, PublicRoute } from '@/contexts/AuthContext'
@@ -38,7 +37,6 @@ function App(): React.ReactElement {
                                             <Route path='/test' exact component={Test} />
 
                                             <Route path='/' exact component={Top} />
-                                            <Route path='/example' exact component={Example} />
                                             <PrivateRoute path='/about' exact><About/></PrivateRoute>
                                             <PublicRoute path='/register' exact><Register/></PublicRoute>
                                             <PublicRoute path='/login' exact><LogIn/></PublicRoute>

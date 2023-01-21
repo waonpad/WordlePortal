@@ -13,6 +13,10 @@ import { push } from '@firebase/database'
 import { serverTimestamp } from 'firebase/database';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
+declare var window: {
+    Echo: any;
+}
+
 function Wordle(): React.ReactElement {
     const auth = useAuth();
     const classes = WordleStyle();

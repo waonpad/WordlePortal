@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import Container from '@mui/material/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { Badge } from '@mui/material'; // @material-ui/core/だと怒られる
+import { Badge } from '@mui/material';
+import Popover from '@material-ui/core/Popover';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { Home, Chat, Forum, Group, Login, PersonAdd } from '@mui/icons-material';
@@ -25,10 +26,17 @@ import HeaderSearch from '@/common/header/headerprimary/components/HeaderSearch'
 import { useNotification } from '@/contexts/NotificationContext';
 import SimpleFooter from '@/common/footer/simplefooter/components/SimpleFooter';
 import { HeaderPrimaryProps } from '@/common/header/headerprimary/types/HeaderPrimaryType';
+import { yellow, green, grey } from '@mui/material/colors';
+import NotificationList from '@/common/notification/components/NotificationList';
+import { NotificationListProps } from '@/common/notification/types/NotificationListType';
 
 /////////////////////////////////////////////////////////////////////////
 // muiのバージョンが違い、スタイルの書き方も違うため個別に設定しないといけない
 /////////////////////////////////////////////////////////////////////////
+
+const ReNotificationList = forwardRef<HTMLDivElement, NotificationListProps>((props, ref) => {
+    return (<NotificationList no_item_text={props.no_item_text} forwardRef={ref} />);
+});
 
 export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     const project_name = 'Wordle Portal';
@@ -39,10 +47,42 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     const classes = HeaderPrimaryStyle();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [settingAnchorEl, setSettingAnchorEl] = useState<null | HTMLElement>(null);
+    const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(anchorEl);
     const isSettingMenuOpen = Boolean(settingAnchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const isNotificationOpen = Boolean(notificationAnchorEl);
+
+    // notification ///////////////////////////////////////////////////////////////////////
+    const handleNotificationOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setNotificationAnchorEl(event.currentTarget);
+    }
+
+    const handleNotificationClose = () => {
+        setNotificationAnchorEl(null);
+    }
+    
+    const notificationPopoverId = 'primary--notification';
+    const renderNotificationPopover = (
+        <Popover
+            anchorEl={notificationAnchorEl}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            id={notificationPopoverId}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={isNotificationOpen}
+            onClose={handleNotificationClose}
+            BackdropProps={{ invisible: true }}
+        >
+            <Box sx={{minWidth: '500px'}}>
+                <ReNotificationList
+                    no_item_text={'No Notification'}
+                />
+            </Box>
+        </Popover>
+    );
+    /////////////////////////////////////////////////////////////////////////
 
     // Logout //////////////////////////////////////////////////
     const logout = () => {
@@ -157,9 +197,9 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={handleMobileMenuClose} aria-label="show new notifications" component={Link} to='/' style={{ textDecoration: 'none', color: "inherit" }}>
+            <MenuItem onClick={handleMobileMenuClose} aria-label="show new notifications">
                 <IconButton color="inherit">
-                    <Badge badgeContent={notification.unread_notifications ? Object.keys(notification.unread_notifications).length : 0} color="secondary">
+                    <Badge badgeContent={notification?.unread_notifications ? notification?.unread_notifications.length : 0} max={99} sx={{"& .MuiBadge-badge": {fontWeight: 'bold', color: green[700], backgroundColor: yellow[400]}}}>
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
@@ -230,8 +270,8 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                     // ログインしている
                     <div className={classes.sectionDesktop}>
                     
-                    <IconButton aria-label="show new notifications" component={Link} to='/' style={{ textDecoration: 'none', color: "inherit" }}>
-                        <Badge badgeContent={notification.unread_notifications ? Object.keys(notification.unread_notifications).length : 0} color="secondary">
+                    <IconButton aria-label="show new notifications" onClick={handleNotificationOpen} style={{color: "inherit"}}>
+                        <Badge badgeContent={notification?.unread_notifications ? notification?.unread_notifications.length : 0} max={99} sx={{"& .MuiBadge-badge": {fontWeight: 'bold', color: green[700], backgroundColor: yellow[400]}}}>
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
@@ -284,6 +324,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             {renderMobileMenu}
             {renderMenu}
             {renderSettingMenu}
+            {renderNotificationPopover}
         </div>
     );
 }

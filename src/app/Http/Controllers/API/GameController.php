@@ -112,7 +112,7 @@ class GameController extends Controller
         $games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
 
         $filtered_games = $this->filterGame($games, $request->game_status);
-        $paginated_games = $this->paginate($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
 
         return response()->json([
             'games' => $paginated_games,
@@ -138,7 +138,7 @@ class GameController extends Controller
         $games = Game::with('user', 'gameUsers.user', 'gameLogs')->whereIn('game_create_user_id', User::find(Auth::user()->id)->follows()->pluck('followed_user_id'))->latest()->get();
 
         $filtered_games = $this->filterGame($games, $request->game_status);
-        $paginated_games = $this->paginate($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
         
         return response()->json([
             'games' => $paginated_games,
@@ -151,7 +151,7 @@ class GameController extends Controller
         $games = User::with('games.user', 'games.gameUsers.user', 'games.gameLogs')->where('screen_name', $request->screen_name)->first()->games;
 
         $filtered_games = $this->filterGame($games, $request->game_status);
-        $paginated_games = $this->paginate($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
         
         return response()->json([
             'games' => $paginated_games,
@@ -164,7 +164,7 @@ class GameController extends Controller
         $games = User::with('joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs')->where('screen_name', $request->screen_name)->first()->joiningGames;
 
         $filtered_games = $this->filterGame($games, $request->game_status);
-        $paginated_games = $this->paginate($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
         
         return response()->json([
             'games' => $paginated_games,
@@ -182,7 +182,7 @@ class GameController extends Controller
         ->get();
 
         $filtered_games = $this->filterGame($games, $request->game_status);
-        $paginated_games = $this->paginate($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
 
         return response()->json([
             'games' => $paginated_games,
@@ -200,7 +200,7 @@ class GameController extends Controller
         });
 
         $filtered_games = $this->filterGame($games, $request->game_status);
-        $paginated_games = $this->paginate($filtered_games, $request->per_page, $request->paginate, $request->start, $request->last);
+        $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
 
         return response()->json([
             'status' => true,
