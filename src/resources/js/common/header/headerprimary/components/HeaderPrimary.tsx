@@ -61,6 +61,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
 
     const handleNotificationClose = () => {
         setNotificationAnchorEl(null);
+        notification?.readAllNotifications();
     }
     
     const notificationPopoverId = 'primary--notification';
