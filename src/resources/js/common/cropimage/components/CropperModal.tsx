@@ -1,8 +1,6 @@
-import { Button, makeStyles, Modal, Slider } from "@material-ui/core";
+import { Theme, Button, makeStyles, Modal, Slider } from "@material-ui/core";
 import React from "react";
-import { Theme } from '@material-ui/core';
 import Cropper, { Area, MediaSize } from "react-easy-crop";
-// import { ASPECT_RATIO, CROP_WIDTH } from "./CropImage";
 
 const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
     root: {

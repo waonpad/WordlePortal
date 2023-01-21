@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Grid } from '@mui/material';
 import Chip from "@material-ui/core/Chip"; // v4
-import { WordleBoardProps } from '../../../types/WordleType';
+import { WordleBoardProps } from '@/wordle/types/WordleType';
 
 function WordleBoard(props: WordleBoardProps): React.ReactElement {
     const {game_words, classes} = props;

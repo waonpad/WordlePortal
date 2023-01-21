@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, List, ListItem, Divider } from '@mui/material';
-import PaginationPrimary from '../../../../common/pagination/paginationprimary/components/PaginationPrimary';
-import SuspensePrimary from '../../../../common/suspense/suspenseprimary/components/SuspensePrimary';
-import SimpleTextListItem from '../../../../common/listitem/simpletextlistitem/components/SimpleTextListItem';
-import WordleCommentListItem from './WordleCommentListItem';
-import { WordleCommentListProps } from '../types/WordleCommentListType';
+import PaginationPrimary from '@/common/pagination/paginationprimary/components/PaginationPrimary';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
+import SimpleTextListItem from '@/common/listitem/simpletextlistitem/components/SimpleTextListItem';
+import WordleCommentListItem from '@/wordle/components/wordlecommentlist/components/WordleCommentListItem';
+import { WordleCommentListProps } from '@/wordle/components/wordlecommentlist/types/WordleCommentListType';
 
 function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
     const {head, request_config, listen, no_item_text} = props;

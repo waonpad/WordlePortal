@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Area, MediaSize } from "react-easy-crop";
-import { Theme } from '@material-ui/core';
-import CropperModal from "./CropperModal";
-import { Button, makeStyles } from "@material-ui/core";
-import getCroppedImg from "./getCroppedImg";
+import { Theme, makeStyles } from '@material-ui/core';
+import CropperModal from "@/common/cropimage/components/CropperModal";
+import getCroppedImg from "@/common/cropimage/components/getCroppedImg";
 
 type CropImageProps = {
     default_img_src?: string;

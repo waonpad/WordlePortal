@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Backdrop, CircularProgress, Box } from '@mui/material';
-import { SuspensePrimaryProps } from '../types/SuspensePrimaryType';
-import { Typography } from '@material-ui/core';
+import { Backdrop, CircularProgress, Box, Typography } from '@mui/material';
+import { SuspensePrimaryProps } from '@/common/suspense/suspenseprimary/types/SuspensePrimaryType';
 
 // CAUTION: TODO: 囲んでいるやつの中身の読み込みはされるのでchildrenを囲む意味がない！！
 

@@ -6,10 +6,10 @@ import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel,
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import CropImage from '../../common/cropimage/components/CropImage';
-import { EditProfileData, EditProfileErrorData } from '../../auth/types/AuthType';
-import { useAuth } from '../../contexts/AuthContext';
-import { EditProfileProps } from '../types/UserType';
+import CropImage from '@/common/cropimage/components/CropImage';
+import { EditProfileData, EditProfileErrorData } from '@/auth/types/AuthType';
+import { useAuth } from '@/contexts/AuthContext';
+import { EditProfileProps } from '@/user/types/UserType';
 
 export default function EditProfile(props: EditProfileProps): React.ReactElement {
     const {user, handleModalClose} = props;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import swal from 'sweetalert';
-import { Box, Typography, Button, Grid, Container, CircularProgress } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 function SimpleFooter(props: any): React.ReactElement {
     return (

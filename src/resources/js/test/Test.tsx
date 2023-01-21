@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Container } from '@mui/material';
-import WordleCommentList from '../wordle/components/wordlecommentlist/components/WordleCommentList';
-import ButtonGroupPrimary from '../common/button/buttongroupprimary/components/ButtonGroupPrimary';
+import WordleCommentList from '@/wordle/components/wordlecommentlist/components/WordleCommentList';
+import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 
 function Test(): React.ReactElement {
     return (

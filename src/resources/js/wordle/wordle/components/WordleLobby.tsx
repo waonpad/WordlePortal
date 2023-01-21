@@ -20,9 +20,9 @@ import { LoadingButton } from '@mui/lab';
 import { alpha, createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles'
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import BackspaceIcon from '@mui/icons-material/Backspace';
-import { WordleLobbyProps } from '../../types/WordleType';
+import { WordleLobbyProps } from '@/wordle/types/WordleType';
 
 function WordleLobby(props: WordleLobbyProps): React.ReactElement {
     const {classes, game_status, firebase_game_data, handleGameStart} = props;

@@ -7,8 +7,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useAuth } from '../../contexts/AuthContext';
-import { LogInData, LogInErrorData } from '../types/AuthType';
+import { useAuth } from '@/contexts/AuthContext';
+import { LogInData, LogInErrorData } from '@/auth/types/AuthType';
 
 export default function LogIn(): React.ReactElement {
     const basicSchema = Yup.object().shape({

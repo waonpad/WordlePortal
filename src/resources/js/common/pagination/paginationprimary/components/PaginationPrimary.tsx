@@ -3,7 +3,7 @@ import { Button, IconButton, Grid, Container, CircularProgress } from '@mui/mate
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CircleIcon from '@mui/icons-material/Circle';
-import { PaginationPrimaryProps } from '../types/PaginationPrimaryType';
+import { PaginationPrimaryProps } from '@/common/pagination/paginationprimary/types/PaginationPrimaryType';
 
 function PaginationPrimary(props: PaginationPrimaryProps): React.ReactElement {
     const {handlePageChange} = props;

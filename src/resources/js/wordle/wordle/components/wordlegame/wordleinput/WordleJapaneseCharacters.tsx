@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Box, Grid } from '@mui/material';
-import { WordleCharactersProps } from '../../../../types/WordleType';
+import { WordleCharactersProps } from '@/wordle/types/WordleType';
 
 function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElement {
     const {classes, turn_flag, handleInputStack, errata} = props;

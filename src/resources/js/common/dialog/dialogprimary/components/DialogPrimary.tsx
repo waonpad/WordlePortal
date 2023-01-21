@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button } from '@mui/material'
-import { DialogPrimaryProps } from '../types/DialogPrimaryType';
+import { DialogPrimaryProps } from '@/common/dialog/dialogprimary/types/DialogPrimaryType';
 
 function DialogPrimary(props: DialogPrimaryProps): React.ReactElement {
     const { onClose, title, message } = props

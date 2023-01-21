@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const path = require('path');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,7 +12,16 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.ts('resources/js/app.js', 'public/js')
+mix.webpackConfig(
+        {
+            resolve: {
+                alias: {
+                    "@": path.resolve(__dirname, "resources/js"),
+                },
+            },
+        }
+    )
+    .ts('resources/js/app.js', 'public/js')
     .react()
     .sass('resources/sass/app.scss', 'public/css')
     .version();

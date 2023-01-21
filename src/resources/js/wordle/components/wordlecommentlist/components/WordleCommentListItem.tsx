@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Box, Grid, Typography, Avatar, Button, IconButton, ListItem, ListItemText, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { WordleCommentListItemProps } from '../types/WordleCommentListType';
+import { WordleCommentListItemProps } from '@/wordle/components/wordlecommentlist/types/WordleCommentListType';
 
 function WordleCommentListItem(props: WordleCommentListItemProps): React.ReactElement {
     const {wordle_comment} = props;

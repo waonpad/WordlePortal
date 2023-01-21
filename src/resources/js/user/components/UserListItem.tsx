@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Typography, Avatar, Button, ListItem, ListItemText, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { UserListItemProps } from '../types/UserType';
+import { UserListItemProps } from '@/user/types/UserType';
 
 function UserListItem(props: UserListItemProps): React.ReactElement {
     const {user, followToggle} = props;

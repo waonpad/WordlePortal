@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
 import { Button, Container, Grid, Paper, Typography } from '@mui/material';
-import UserPrimaryDetail from './components/UserPrimaryDetail';
-import WordleList from '../wordle/components/wordlelist/components/WordleList';
-import GameList from '../wordle/components/gamelist/components/GameList';
-import SuspensePrimary from '../common/suspense/suspenseprimary/components/SuspensePrimary';
-import ButtonGroupPrimary from '../common/button/buttongroupprimary/components/ButtonGroupPrimary';
-import UserList from './components/UserList';
+import UserPrimaryDetail from '@/user/components/UserPrimaryDetail';
+import WordleList from '@/wordle/components/wordlelist/components/WordleList';
+import GameList from '@/wordle/components/gamelist/components/GameList';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
+import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
+import UserList from '@/user/components/UserList';
 
 function User(props: any): React.ReactElement {
     const location = useLocation();

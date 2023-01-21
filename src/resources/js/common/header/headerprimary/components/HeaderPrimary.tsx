@@ -18,14 +18,13 @@ import InfoIcon from '@mui/icons-material/Info';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
 import { Link, useHistory } from "react-router-dom";
-import swal from 'sweetalert';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { HeaderPrimaryStyle } from '../styles/HeaderPrimaryStyle';
-import DrawerPrimary from "../../../drawer/drawerprimary/components/DrawerPrimary";
-import HeaderSearch from "./HeaderSearch";
-import { useNotification } from '../../../../contexts/NotificationContext';
-import SimpleFooter from '../../../footer/simplefooter/components/SimpleFooter';
-import { HeaderPrimaryProps } from '../types/HeaderPrimaryType';
+import { useAuth } from '@/contexts/AuthContext';
+import { HeaderPrimaryStyle } from '@/common/header/headerprimary/styles/HeaderPrimaryStyle';
+import DrawerPrimary from '@/common/drawer/drawerprimary/components/DrawerPrimary';
+import HeaderSearch from '@/common/header/headerprimary/components/HeaderSearch';
+import { useNotification } from '@/contexts/NotificationContext';
+import SimpleFooter from '@/common/footer/simplefooter/components/SimpleFooter';
+import { HeaderPrimaryProps } from '@/common/header/headerprimary/types/HeaderPrimaryType';
 
 /////////////////////////////////////////////////////////////////////////
 // muiのバージョンが違い、スタイルの書き方も違うため個別に設定しないといけない

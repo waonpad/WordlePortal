@@ -12,7 +12,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { Link, useHistory } from "react-router-dom";
-import { DrawerPrimaryProps } from '../types/DrawerPrimaryType';
+import { DrawerPrimaryProps } from '@/common/drawer/drawerprimary/types/DrawerPrimaryType';
 
 function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
     const {classes, open, handleDrawerOpen, } = props;

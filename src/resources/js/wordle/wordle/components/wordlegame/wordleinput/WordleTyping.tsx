@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextField, Box, Grid } from '@mui/material';
-import { WordleTypingProps } from '../../../../types/WordleType';
+import { WordleTypingProps } from '@/wordle/types/WordleType';
 
 function WordleTyping(props: WordleTypingProps): React.ReactElement {
     const {classes, turn_flag, input_stack, handleTypingStack} = props;

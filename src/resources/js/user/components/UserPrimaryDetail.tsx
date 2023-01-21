@@ -6,9 +6,9 @@ import { Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButt
 import { grey } from '@mui/material/colors';
 import { ExpandMore, ExpandLess, MoreHoriz } from '@mui/icons-material';
 import { MenuItem, Menu } from '@material-ui/core';
-import { UserPrimaryDetailProps } from '../types/UserType';
-import ModalPrimary from '../../common/modal/modalprimary/components/ModalPrimary';
-import EditProfile from './EditProfile';
+import { UserPrimaryDetailProps } from '@/user/types/UserType';
+import ModalPrimary from '@/common/modal/modalprimary/components/ModalPrimary';
+import EditProfile from '@/user/components/EditProfile';
 
 function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     const {user, setUser, expanded, setExpanded} = props;

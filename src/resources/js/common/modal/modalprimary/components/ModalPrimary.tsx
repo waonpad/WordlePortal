@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from "react-modal";
-import { ModalPrimaryProps } from '../types/ModalPrimaryType';
+import { ModalPrimaryProps } from '@/common/modal/modalprimary/types/ModalPrimaryType';
 
 Modal.setAppElement('#app');
 

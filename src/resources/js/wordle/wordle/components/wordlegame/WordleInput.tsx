@@ -1,10 +1,10 @@
 import React from 'react';
 import { CircularProgress } from '@mui/material';
-import { WordleInputProps } from '../../../types/WordleType';
-import WordleJapaneseCharacters from './wordleinput/WordleJapaneseCharacters';
-import WordleEnglishCharacters from './wordleinput/WordleEnglishCharacters';
-import WordleNumberCharacters from './wordleinput/WordleNumberCharacters';
-import WordleTyping from './wordleinput/WordleTyping';
+import { WordleInputProps } from '@/wordle/types/WordleType';
+import WordleJapaneseCharacters from '@/wordle/wordle/components/wordlegame/wordleinput/WordleJapaneseCharacters';
+import WordleEnglishCharacters from '@/wordle/wordle/components/wordlegame/wordleinput/WordleEnglishCharacters';
+import WordleNumberCharacters from '@/wordle/wordle/components/wordlegame/wordleinput/WordleNumberCharacters';
+import WordleTyping from '@/wordle/wordle/components/wordlegame/wordleinput/WordleTyping';
 
 function WordleInput(props: WordleInputProps): React.ReactElement {
     const {classes, turn_flag, handleInputStack, errata, input_stack, handleTypingStack, display_input_component} = props;
