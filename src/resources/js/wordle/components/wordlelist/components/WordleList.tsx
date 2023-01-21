@@ -17,6 +17,10 @@ import { VSPlayOptionData } from '@/wordle/types/VSPlayOptionType';
 import { useAuth } from '@/contexts/AuthContext';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
+declare var window: {
+    Echo: any;
+}
+
 function WordleList(props: WordleListProps): React.ReactElement {
     const {request_config, listen} = props;
 

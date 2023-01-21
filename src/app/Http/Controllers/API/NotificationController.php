@@ -11,6 +11,8 @@ use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
+    use \App\Http\Trait\DataManipulation;
+
     public function index(Request $request)
     {
         $notifications = $request->user()->notifications()->get();
@@ -29,6 +31,8 @@ class NotificationController extends Controller
             WordleLike::class => ['user', 'wordle'],
             WordleComment::class => ['user', 'wordle']
         ]);
+
+        // TDO: resourceのリレーション先のレコードが無いものは無視したい
 
         return response()->json([
             'status' => true,

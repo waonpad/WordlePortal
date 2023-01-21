@@ -12,6 +12,10 @@ import AreYouSureDialog from '@/common/dialog/areyousuredialog/components/AreYou
 import { AreYouSureDialogProps } from '@/common/dialog/areyousuredialog/types/AreYouSureDialogType';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
+declare var window: {
+    Echo: any;
+}
+
 function GameList(props: GameListProps): React.ReactElement {
     const {game_status, request_config, listen} = props;
 
