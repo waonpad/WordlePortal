@@ -44,18 +44,6 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
                 <ListItemIcon><TimelineIcon /></ListItemIcon>
                 <ListItemText primary='TimeLine'></ListItemText>
             </ListItem>
-            {/* <ListItem button component={Link} to='/chat' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemIcon><Chat /></ListItemIcon>
-                <ListItemText primary='Chat'></ListItemText>
-            </ListItem>
-            <ListItem button component={Link} to='/privatechat/waonpad' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemIcon><Forum /></ListItemIcon>
-                <ListItemText primary='Private Chat'></ListItemText>
-            </ListItem>
-            <ListItem button component={Link} to='/groupchat/test' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemIcon><Group /></ListItemIcon>
-                <ListItemText primary='Group Chat'></ListItemText>
-            </ListItem> */}
             <ListItem button component={Link} to='/wordle/create' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Wordle Create'></ListItemText>
             </ListItem>

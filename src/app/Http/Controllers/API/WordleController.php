@@ -12,6 +12,9 @@ use App\Models\WordleTag;
 use App\Events\WordleEvent;
 use App\Events\WordleTagEvent;
 use App\Http\Requests\WordleUpsertRequest;
+use App\Models\WordleLike;
+use App\Notifications\WordleLikeNotification;
+use Illuminate\Support\Facades\Notification;
 
 class WordleController extends Controller
 {
@@ -211,6 +214,12 @@ class WordleController extends Controller
         }
 
         // 通知を送る
+        if($like_status === true) {
+            $wordle = Wordle::with('user')->find($request->wordle_id);
+            $record = WordleLike::with('user', 'wordle')->where('user_id', $user->id)->where('wordle_id', $request->wordle_id)->first();
+            
+            Notification::send([$wordle->user], new WordleLikeNotification($record));
+        }
 
         return response()->json([
             'status' => true,

@@ -11,9 +11,6 @@ import About from '@/common/pages/About';
 import Register from '@/auth/register/Register';
 import LogIn from '@/auth/login/LogIn';
 import User from '@/user/User';
-import Chat from '@/chat/chat/Chat';
-import PrivateChat from '@/chat/privatechat/PrivateChat';
-import GroupChat from '@/chat/groupchat/GroupChat';
 import HeaderPrimary from '@/common/header/headerprimary/components/HeaderPrimary';
 import Wordle from '@/wordle/wordle/Wordle';
 import WordleManage from '@/wordle/wordlemanage/WordleManage';
@@ -51,10 +48,6 @@ function App(): React.ReactElement {
                                             <Route path='/user/:screen_name/wordle' exact component={User} />
                                             <Route path='/user/:screen_name/wordle/game' exact component={User} />
                                             <Route path='/user/:screen_name/wordle/like' exact component={User} />
-                                            {/* <PrivateRoute key={'index'} path='/chat' exact><Chat/></PrivateRoute>
-                                            <PrivateRoute path='/privatechat/:id' exact><PrivateChat/></PrivateRoute>
-                                            <PrivateRoute path='/groupchat/:id' exact><GroupChat/></PrivateRoute>
-                                            <PrivateRoute key={'category'} path='/category/:category_id' exact><Chat/></PrivateRoute> */}
                                             <PrivateRoute path='/wordle/create' exact><WordleManage/></PrivateRoute>
                                             <PrivateRoute path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
                                             <Route path='/wordle/index' exact component={Top}></Route>

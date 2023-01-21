@@ -15,4 +15,14 @@ class Follow extends Pivot
 
     protected $table = 'follows';
 
+    public function following()
+    {
+        return $this->belongsTo(User::class, 'following_user_id', 'id');
+    }
+
+    public function followed()
+    {
+        return $this->belongsTo(User::class, 'followed_user_id', 'id');
+    }
+
 }

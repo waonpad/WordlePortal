@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Wordle;
 use App\Models\WordleComment;
 use App\Http\Requests\WordleCommentUpsertRequest;
+use App\Notifications\WordleCommentNotification;
+use Illuminate\Support\Facades\Notification;
 
 class WordleCommentController extends Controller
 {
@@ -43,6 +46,10 @@ class WordleCommentController extends Controller
         );
 
         // ページに通知する処理を後から作る
+
+        // ユーザーに通知
+        $wordle = Wordle::with('user')->find($request->wordle_id);
+        Notification::send([$wordle->user], new WordleCommentNotification($wordle_comment));
 
         return response()->json([
             'status' => true

@@ -13,4 +13,14 @@ class WordleLike extends Pivot
     protected $fillable = ['user_id', 'wordle_id'];
 
     protected $table = 'wordle_likes';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function wordle()
+    {
+        return $this->belongsTo(Wordle::class, 'wordle_id', 'id');
+    }
 }
