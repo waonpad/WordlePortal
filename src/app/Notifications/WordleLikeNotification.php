@@ -28,6 +28,7 @@ class WordleLikeNotification extends Notification
     {
         return new BroadcastMessage([
             'resource' => $this->resource,
+            'resource_type' => 'App\\Models\\WordleLike'
         ]);
     }
 

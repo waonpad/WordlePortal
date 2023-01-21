@@ -4,6 +4,7 @@ import React, {useContext, createContext, useState, ReactNode, useEffect } from 
 
 export type NotificationsProps = {
     notifications_loading: boolean;
+    all_notifications: any[];
     unread_notifications: any[];
     readNotification: (notification_id: any) => void;
     readAllNotifications: () => void;
@@ -37,52 +38,54 @@ const useProvideNoification = () => {
     const auth = useAuth();
 
     const [notifications_loading, setNotificationsLoading] = useState<boolean>(true);
+    const [all_notifications, setAllNotifications] = useState<any[]>([]);
     const [unread_notifications, setUnreadNotifications] = useState<any[]>([]);
 
     useEffect(() => {
         if(auth?.user !== null) {
-            axios.get('/api/notification/unread').then(res => {
-                if (res.data.status === true) {
-                    const exist_resource_notifications = res.data.unread_notifications.filter((notification: any) => (
-                        notification.resource !== null
-                    ))
+            const api1 = axios.get('/api/notification/unread');
+            const api2 = axios.get('/api/notification/index');
 
-                    setUnreadNotifications(exist_resource_notifications);
-                    setNotificationsLoading(false);
+            axios.all([api1, api2]).then(axios.spread((res1, res2) => {
+                if (res1.data.status === true) {
+                    setUnreadNotifications(res1.data.unread_notifications);
+
+                    window.Echo.private('App.Models.User.' + auth?.user?.id)
+                    .notification((notification: any) => {
+                        console.log(notification);
+                        setUnreadNotifications((unread_notifications) => [...unread_notifications, notification]);
+                        setAllNotifications((all_notifications) => [...all_notifications, notification]);
+                    })
                 }
-            })
-
-            window.Echo.private('App.Models.User.' + auth?.user?.id)
-            .notification((notification: any) => {
-                console.log(notification);
-                setUnreadNotifications((unread_notifications) => [...unread_notifications, notification]);
-            })
+                if (res2.data.status === true) {
+                    setAllNotifications(res2.data.notifications);
+                }
+                setNotificationsLoading(false);
+            }))
         }
-
-        // readNotification("37d6b77b-ec53-4858-b0e4-ab9eaa5d4e07");
-
-        // readAllNotifications();
     }, [auth?.user])
 
 
     const readNotification = (notification_id: any) => {
         axios.post('/api/notification/read', {notification_id: notification_id}).then(res => {
             if (res.data.status === true) {
-                console.log(res);
+                console.log('read: ' + notification_id);
             }
         })
     }
 
     const readAllNotifications = () => {
-        axios.post('/api/notifications/readall').then(res => {
+        axios.post('/api/notification/readall').then(res => {
             if (res.data.status === true) {
-                console.log(res);
+                console.log('readAll');
+                setUnreadNotifications([]);
             }
         })
     }
 
     return {
         notifications_loading,
+        all_notifications,
         unread_notifications,
         readNotification,
         readAllNotifications

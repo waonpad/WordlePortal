@@ -15,7 +15,18 @@ class NotificationController extends Controller
 
     public function index(Request $request)
     {
-        $notifications = $request->user()->notifications()->get();
+        $notifications = $request->user()->notifications()
+        ->whereHas('resource', function ($query) {
+            $query->whereExists(function ($query) {
+                return $query;
+            });
+        })
+        ->get()
+        ->loadMorph('resource', [
+            Follow::class => ['following', 'followed'],
+            WordleLike::class => ['user', 'wordle'],
+            WordleComment::class => ['user', 'wordle']
+        ]);
 
         return response()->json([
             'status' => true,
@@ -25,14 +36,18 @@ class NotificationController extends Controller
 
     public function unread(Request $request)
     {
-        $unread_notifications = $request->user()->unreadNotifications()->get()
+        $unread_notifications = $request->user()->unreadNotifications()
+        ->whereHas('resource', function ($query) {
+            $query->whereExists(function ($query) {
+                return $query;
+            });
+        })
+        ->get()
         ->loadMorph('resource', [
             Follow::class => ['following', 'followed'],
             WordleLike::class => ['user', 'wordle'],
             WordleComment::class => ['user', 'wordle']
         ]);
-
-        // TDO: resourceのリレーション先のレコードが無いものは無視したい
 
         return response()->json([
             'status' => true,
