@@ -16,8 +16,8 @@ import AlarmOffIcon from '@mui/icons-material/AlarmOff'; // 制限時間無し
 import InvertColorsIcon from '@mui/icons-material/InvertColors'; // 着色
 import InvertColorsOffIcon from '@mui/icons-material/InvertColorsOff'; // 着色無し
 import { yellow } from '@mui/material/colors';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { GameListItemProps } from '../../../types/GameType';
+import { useAuth } from '@/contexts/AuthContext';
+import { GameListItemProps } from '@/wordle/types/GameType';
 
 function GameListItem(props: GameListItemProps): React.ReactElement {
     const {game, handleDeleteGame, handleVSPlayOptionOpen} = props;

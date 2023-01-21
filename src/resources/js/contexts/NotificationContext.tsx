@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { useAuth } from "./AuthContext";
+import { useAuth } from '@/contexts/AuthContext';
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react";
-import { useErrorHandler } from 'react-error-boundary';
 
 const notificationContext = createContext<any>(null);
 

@@ -6,9 +6,9 @@ import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel,
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useAuth } from '../../contexts/AuthContext';
-import { RegisterData, RegisterErrorData } from '../types/AuthType';
-import CropImage from '../../common/cropimage/components/CropImage';
+import { useAuth } from '@/contexts/AuthContext';
+import { RegisterData, RegisterErrorData } from '@/auth/types/AuthType';
+import CropImage from '@/common/cropimage/components/CropImage';
 
 export default function Register(): React.ReactElement {
     const basicSchema = Yup.object().shape({

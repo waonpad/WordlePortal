@@ -4,14 +4,6 @@ export type VSPlayOptionProps = {
     handleModalClose: Function;
 }
 
-// Options ///////////////////
-// 人数
-// 周回数
-// 公開設定
-// 回答制限時間
-// ワードのハイライト有無(難易度)
-//////////////////////////////
-
 export type VSPlayOptionData = {
     game_id: number | null;
     wordle_id: number;

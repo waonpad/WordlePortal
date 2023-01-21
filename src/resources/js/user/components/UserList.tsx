@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, List, Divider } from '@mui/material';
-import PaginationPrimary from '../../common/pagination/paginationprimary/components/PaginationPrimary';
-import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
-import UserListItem from './UserListItem';
-import { UserListProps } from '../types/UserType';
-import SimpleTextListItem from '../../common/listitem/simpletextlistitem/components/SimpleTextListItem';
+import PaginationPrimary from '@/common/pagination/paginationprimary/components/PaginationPrimary';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
+import UserListItem from '@/user/components/UserListItem';
+import { UserListProps } from '@/user/types/UserType';
+import SimpleTextListItem from '@/common/listitem/simpletextlistitem/components/SimpleTextListItem';
 
 function UserList(props: UserListProps): React.ReactElement {
     const {head, request_config, listen, no_item_text} = props;

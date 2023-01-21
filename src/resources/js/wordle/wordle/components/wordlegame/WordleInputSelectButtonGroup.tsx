@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Box } from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
 import PinIcon from '@mui/icons-material/Pin';
 import KeyboardIcon from '@mui/icons-material/Keyboard';
-import { WordleInputSelectButtonGroupProps } from '../../../types/WordleType';
+import { WordleInputSelectButtonGroupProps } from '@/wordle/types/WordleType';
 
 function WordleInputSelectButtonGroup(props: WordleInputSelectButtonGroupProps): React.ReactElement {
     const {input, handleDisplayInputComponentSelect} = props;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { Box, Grid, Button, Divider } from '@mui/material';
-import { globalTheme } from '../../../../Theme';
-import { ButtonGroupPrimaryProps } from '../types/ButtonGroupPrimaryType';
+import { globalTheme } from '@/Theme';
+import { ButtonGroupPrimaryProps } from '@/common/button/buttongroupprimary/types/ButtonGroupPrimaryType';
 
 function ButtonTypeSwitcher(props: {link?: string, children: React.ReactElement}): React.ReactElement {
     const {link, children} = props;

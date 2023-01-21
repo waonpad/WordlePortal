@@ -3,15 +3,15 @@ import swal from "sweetalert";
 import { useParams, useHistory } from "react-router-dom";
 import axios from 'axios';
 import { CircularProgress, Backdrop } from '@mui/material';
-import {useAuth} from "../../contexts/AuthContext";
-import { WordleStyle } from './styles/WordleStyle';
-import { GameWords, ErrataList, DisplayInputComponent } from '../types/WordleType';
-import WordleLobby from './components/WordleLobby';
-import WordleGame from './components/WordleGame';
-import firebaseApp from '../../contexts/FirebaseConfig';
+import {useAuth} from "@/contexts/AuthContext";
+import { WordleStyle } from '@/wordle/wordle/styles/WordleStyle';
+import { GameWords, ErrataList, DisplayInputComponent } from '@/wordle/types/WordleType';
+import WordleLobby from '@/wordle/wordle/components/WordleLobby';
+import WordleGame from '@/wordle/wordle/components/WordleGame';
+import firebaseApp from '@/contexts/FirebaseConfig';
 import { push } from '@firebase/database'
 import { serverTimestamp } from 'firebase/database';
-import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function Wordle(): React.ReactElement {
     const auth = useAuth();

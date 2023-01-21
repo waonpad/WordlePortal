@@ -1,17 +1,18 @@
 {
+    "extends": "./tsconfig.paths.json",
     "compilerOptions": {
-      "target": "ES2015",
-      "module": "commonjs",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
-      "jsx": "react"
+        "target": "ES2015",
+        "module": "commonjs",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "jsx": "react"
     },
     "exclude": [
-      "vendor",
-      "node_modules"
+        "vendor",
+        "node_modules"
     ],
     "$schema": "https://json.schemastore.org/tsconfig",
     "display": "Recommended"
-  }
+}

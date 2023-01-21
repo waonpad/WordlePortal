@@ -7,11 +7,11 @@ import { Grid, TextField, FormHelperText, Box, Radio, RadioGroup, FormControl, F
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '../types/VSPlayOptionType';
-import firebaseApp from '../../contexts/FirebaseConfig';
+import { VSPlayOptionProps, VSPlayOptionData, VSPlayOptionErrorData } from '@/wordle/types/VSPlayOptionType';
+import firebaseApp from '@/contexts/FirebaseConfig';
 import { serverTimestamp } from 'firebase/database';
 import { useErrorHandler } from 'react-error-boundary';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const {game, wordle, handleModalClose} = props;

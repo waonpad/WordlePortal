@@ -2,10 +2,10 @@ import React from 'react';
 import { Stack, IconButton, Grid, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import BackspaceIcon from '@mui/icons-material/Backspace';
-import WordleInput from './wordlegame/WordleInput';
-import WordleInputSelectButtonGroup from './wordlegame/WordleInputSelectButtonGroup';
-import WordleBoard from './wordlegame/WordleBoard';
-import { WordleGameProps } from '../../types/WordleType';
+import WordleInput from '@/wordle/wordle/components/wordlegame/WordleInput';
+import WordleInputSelectButtonGroup from '@/wordle/wordle/components/wordlegame/WordleInputSelectButtonGroup';
+import WordleBoard from '@/wordle/wordle/components/wordlegame/WordleBoard';
+import { WordleGameProps } from '@/wordle/types/WordleType';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
     const {

@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button, IconButton } from '@mui/material';
-import { Snackbar } from '@mui/material';
+import { Button, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@material-ui/icons/Close';
-import { SnackbarPrimaryProps } from '../types/SnackbarPrimaryType';
+import { SnackbarPrimaryProps } from '@/common/snackbar/snackbarprimary/types/SnackbarPrimaryType';
 
 function SnackbarPrimary(props: SnackbarPrimaryProps): React.ReactElement {
     const {open, handleClose, message} = props;

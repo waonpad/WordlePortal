@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import swal from 'sweetalert';
 import { Button, Grid, Container, CircularProgress } from '@mui/material';
 import axios from 'axios';
-import ModalPrimary from '../../../../common/modal/modalprimary/components/ModalPrimary';
-import VSPlayOption from '../../VSPlayOption';
-import { GameListProps } from '../../../types/GameType';
-import GameListItem from './GameListItem';
-import PaginationPrimary from '../../../../common/pagination/paginationprimary/components/PaginationPrimary';
-import SimpleTextCard from '../../../../common/card/simpletextcard/components/SimpleTextCard';
-import AreYouSureDialog from '../../../../common/dialog/areyousuredialog/components/AreYouSureDialog';
-import { AreYouSureDialogProps } from '../../../../common/dialog/areyousuredialog/types/AreYouSureDialogType';
-import SuspensePrimary from '../../../../common/suspense/suspenseprimary/components/SuspensePrimary';
+import ModalPrimary from '@/common/modal/modalprimary/components/ModalPrimary';
+import VSPlayOption from '@/wordle/components/VSPlayOption';
+import { GameListProps } from '@/wordle/types/GameType';
+import GameListItem from '@/wordle/components/gamelist/components/GameListItem';
+import PaginationPrimary from '@/common/pagination/paginationprimary/components/PaginationPrimary';
+import SimpleTextCard from '@/common/card/simpletextcard/components/SimpleTextCard';
+import AreYouSureDialog from '@/common/dialog/areyousuredialog/components/AreYouSureDialog';
+import { AreYouSureDialogProps } from '@/common/dialog/areyousuredialog/types/AreYouSureDialogType';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function GameList(props: GameListProps): React.ReactElement {
     const {game_status, request_config, listen} = props;

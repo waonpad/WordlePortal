@@ -9,8 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { WordleData, WordleErrorData, WordleDefaultData } from '../types/WordleType';
-import SuspensePrimary from '../../common/suspense/suspenseprimary/components/SuspensePrimary';
+import { WordleData, WordleErrorData, WordleDefaultData } from '@/wordle/types/WordleType';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function WordleManage(): React.ReactElement {
     const basicSchema = Yup.object().shape({

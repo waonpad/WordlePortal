@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from "react-router-dom";
 import { Backdrop, CircularProgress, Grid, Button, ButtonGroup, Container } from '@mui/material';
-import WordleList from '../../../wordle/components/wordlelist/components/WordleList';
-import GameList from '../../../wordle/components/gamelist/components/GameList';
-import { globalTheme } from '../../../Theme';
-import { RequestConfig } from './types/TopType';
-import { useAuth } from '../../../contexts/AuthContext';
-import ButtonGroupPrimary from '../../button/buttongroupprimary/components/ButtonGroupPrimary';
-import SuspensePrimary from '../../suspense/suspenseprimary/components/SuspensePrimary';
+import WordleList from '@/wordle/components/wordlelist/components/WordleList';
+import GameList from '@/wordle/components/gamelist/components/GameList';
+import { RequestConfig } from '@/common/pages/top/types/TopType';
+import { useAuth } from '@/contexts/AuthContext';
+import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function Top(props: any): React.ReactElement {
     const location = useLocation();
