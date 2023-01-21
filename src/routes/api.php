@@ -4,19 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController; 
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\PostController;
-use App\Http\Controllers\API\PrivatePostController;
-use App\Http\Controllers\API\GroupController;
-// use App\Http\Controllers\API\GroupUserController;
-use App\Http\Controllers\API\GroupPostController;
 use App\Http\Controllers\API\NotificationController;
-use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\WordleController;
 use App\Http\Controllers\API\WordleCommentController;
 use App\Http\Controllers\API\GameController;
 use Illuminate\Support\Facades\Broadcast;
-
-use App\Http\Controllers\API\CropTestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,29 +52,6 @@ Route::prefix('user')->group(function (){
 // ログアウト
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth');
 
-// 投稿
-Route::prefix('post')->group(function (){
-    Route::get('index', [PostController::class, 'index']);
-    Route::get('show', [PostController::class, 'show']);
-    Route::post('upsert', [PostController::class, 'upsert'])->middleware('auth');
-    Route::post('destroy', [PostController::class, 'destroy'])->middleware('auth');
-    Route::post('search', [PostController::class, 'search']);
-    Route::post('liketoggle', [LikeController::class, 'likeToggle'])->middleware('auth');
-    Route::get('category', [PostController::class, 'category']);
-});
-
-// プライベートチャット
-Route::post('privatepost', [PrivatePostController::class, 'privatePost'])->middleware('auth');
-
-// グループ
-Route::prefix('group')->group(function (){
-    Route::get('show', [GroupController::class, 'show'])->middleware('auth');
-    Route::post('create', [GroupController::class, 'create'])->middleware('auth');
-    // Route::post('join', [GroupUserController::class, 'join']);
-    // Route::post('leave', [GroupUserController::class, 'leave']);
-    Route::post('post', [GroupPostController::class, 'post'])->middleware('auth');
-});
-
 // 通知
 Route::prefix('notification')->group(function (){
     Route::get('index', [NotificationController::class, 'index'])->middleware('auth');
@@ -90,7 +59,6 @@ Route::prefix('notification')->group(function (){
     Route::post('read', [NotificationController::class, 'read'])->middleware('auth');
     Route::post('readall', [NotificationController::class, 'readAll'])->middleware('auth');
 });
-
 
 // Wordles
 Route::prefix('wordle')->group(function (){
@@ -131,7 +99,3 @@ Route::prefix('wordle')->group(function (){
         // Route::post('skip', [GameController::class, 'skip'])->middleware('auth');
     });
 });
-
-
-Route::get('cropindex', [CropTestController::class, 'index'])->middleware('auth');
-Route::post('croptest', [CropTestController::class, 'create'])->middleware('auth');

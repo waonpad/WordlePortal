@@ -46,7 +46,7 @@ class UserController extends Controller
         }
 
         $target_user = User::with([
-            'followers', 'follows', 'posts', 'likes',
+            'followers', 'follows',
             'wordles.user', 'wordles.tags', 'wordles.likes',
             'wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes',
             'games.user', 'games.gameUsers.user', 'games.gameLogs',
@@ -110,13 +110,11 @@ class UserController extends Controller
             $follow = false;
         }
 
-        $record = Follow::where('following_user_id', $user->id)->where('followed_user_id', $target_user->id)->first();
-
         // 通知を送る
         if($follow === true) {
-            Notification::send([$target_user], new FollowNotification(
-                $record
-            ));
+            $record = Follow::with('following', 'followed')->where('following_user_id', $user->id)->where('followed_user_id', $target_user->id)->first();
+            
+            Notification::send([$target_user], new FollowNotification($record));
         }
 
         return response()->json([

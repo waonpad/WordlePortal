@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Follow;
+use App\Models\WordleLike;
+use App\Models\WordleComment;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 
@@ -10,7 +13,7 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        $notifications = $request->user()->notifications()->load('resource')->get();
+        $notifications = $request->user()->notifications()->get();
 
         return response()->json([
             'status' => true,
@@ -20,7 +23,12 @@ class NotificationController extends Controller
 
     public function unread(Request $request)
     {
-        $unread_notifications = $request->user()->unreadNotifications()->get();
+        $unread_notifications = $request->user()->unreadNotifications()->get()
+        ->loadMorph('resource', [
+            Follow::class => ['following', 'followed'],
+            WordleLike::class => ['user', 'wordle'],
+            WordleComment::class => ['user', 'wordle']
+        ]);
 
         return response()->json([
             'status' => true,
