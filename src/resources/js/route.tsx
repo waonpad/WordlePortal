@@ -46,8 +46,8 @@ function App(): React.ReactElement {
                                             <Route path='/user/:screen_name/wordle' exact component={User} />
                                             <Route path='/user/:screen_name/wordle/game' exact component={User} />
                                             <Route path='/user/:screen_name/wordle/like' exact component={User} />
-                                            <PrivateRoute path='/wordle/create' exact><WordleManage/></PrivateRoute>
-                                            <PrivateRoute path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
+                                            <PrivateRoute key='wordle_create' path='/wordle/create' exact><WordleManage/></PrivateRoute>
+                                            <PrivateRoute key='wordle_manage' path='/wordle/manage/:wordle_id' exact><WordleManage/></PrivateRoute>
                                             <Route path='/wordle/index' exact component={Top}></Route>
                                             <Route path='/wordle/follows' exact component={Top}></Route>
                                             <Route path='/wordle/tag/:wordle_tag_id' exact component={Top}></Route>

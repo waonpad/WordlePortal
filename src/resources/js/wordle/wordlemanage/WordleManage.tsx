@@ -11,9 +11,25 @@ import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { WordleData, WordleErrorData, WordleDefaultData } from '@/wordle/types/WordleType';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
+import WordleCommentList from '@/wordle/components/wordlecommentlist/components/WordleCommentList';
+import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
+import WordlePrimaryManage from '@/wordle/wordlemanage/components/WordlePrimaryManage';
+import SimpleTextCard from '@/common/card/simpletextcard/components/SimpleTextCard';
+
+export type WordleCommentData = {
+    wordle_id: number;
+    comment: string;
+    submit: string;
+}
+
+export type WordleCommentErrorData = {
+    wordle_id: string;
+    comment: string;
+    submit: string;
+}
 
 function WordleManage(): React.ReactElement {
-    const basicSchema = Yup.object().shape({
+    const basicSchemaWordleManage = Yup.object().shape({
         name: Yup.string().max(50).required(),
         words: Yup.array()
                 .of(Yup.string().min(5).max(10).nullable()
@@ -26,21 +42,30 @@ function WordleManage(): React.ReactElement {
         description: Yup.string().max(255),
         // tagsはMuiChipsInputでバリデーションしている
     });
+    const basicSchemaWordleComment = Yup.object().shape({
+        comment: Yup.string().max(255),
+    });
     const location = useLocation();
     const {wordle_id} = useParams<{wordle_id: string}>();
     const [wordle_default_data, setWordleDefaultData] = useState<WordleDefaultData>();
     const [initial_load, setInitialLoad] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [wordle_comment_submit_loading, setWordleCommentSubmitLoading] = useState(false);
     const [tags, setTags] = useState<MuiChipsInputChip[]>([]);
     const [words, setWords] = useState<string[]>([]);
     const [input, setInput] = useState<{[key: string]: boolean}>({japanese: false, english: false, number: false, typing: false});
     const input_values = ['japanese', 'english', 'number', 'typing'];
 
-    const { register, handleSubmit, setError, clearErrors, formState: { errors } } = useForm<WordleData>({
+    const { register: registerWordleManage, handleSubmit: handleSubmitWordleManage, setError: setErrorWordleManage, clearErrors: clearErrorsWordleManage, formState: { errors: errorsWordleManage } } = useForm<WordleData>({
         mode: 'onBlur',
-        resolver: yupResolver(basicSchema)
+        resolver: yupResolver(basicSchemaWordleManage)
     });
     
+    const { register: registerWordleComment, handleSubmit: handleSubmitWordleComment, setError: setErrorWordleComment, clearErrors: clearErrorsWordleComment, formState: { errors: errorsWordleComment } } = useForm<WordleCommentData>({
+        mode: 'onBlur',
+        resolver: yupResolver(basicSchemaWordleComment)
+    });
+
     // Tags /////////////////////////////////////////////////////////////
     const handleSelecetedTags = (selectedItem: MuiChipsInputChip[]) => {
         setTags(selectedItem);
@@ -81,7 +106,7 @@ function WordleManage(): React.ReactElement {
     }
 
     // Submit ////////////////////////////////////////////////////////////////////
-    const onSubmit: SubmitHandler<WordleData> = (data: WordleData) => {
+    const onSubmitWordleManage: SubmitHandler<WordleData> = (data: WordleData) => {
         data.id = Number(wordle_id) ?? null;
         data.tags = tags;
         setLoading(true);
@@ -97,7 +122,7 @@ function WordleManage(): React.ReactElement {
             }
             else {
                 const obj: WordleErrorData = res.data.validation_errors;
-                (Object.keys(obj) as (keyof WordleErrorData)[]).forEach((key) => setError(key, {
+                (Object.keys(obj) as (keyof WordleErrorData)[]).forEach((key) => setErrorWordleManage(key, {
                     type: 'manual',
                     message: obj[key]
                 }))
@@ -108,9 +133,35 @@ function WordleManage(): React.ReactElement {
     }
     /////////////////////////////////////////////////////////////////////////////////////
 
+    // Submit Wordle Comment ////////////////////////////////////////////////////////////////////
+    const onSubmitWordleComment: SubmitHandler<WordleCommentData> = (data: WordleCommentData) => {
+        data.wordle_id = Number(wordle_id);
+        setWordleCommentSubmitLoading(true);
+
+        axios.post('/api/wordle/comment/upsert', data).then(res => {
+            if (res.data.status === true) {
+                // swal("Success", "登録成功", "success");
+                setWordleCommentSubmitLoading(false)
+            }
+            else if (res.data.status === false) {
+                // 失敗時の処理
+            }
+            else {
+                const obj: WordleCommentErrorData = res.data.validation_errors;
+                (Object.keys(obj) as (keyof WordleCommentErrorData)[]).forEach((key) => setErrorWordleComment(key, {
+                    type: 'manual',
+                    message: obj[key]
+                }))
+    
+                setWordleCommentSubmitLoading(false)
+            }
+        })
+    }
+    /////////////////////////////////////////////////////////////////////////////////////
+
 	useEffect(() => {
         // 作成済、管理用
-        if (wordle_id !== undefined) {
+        if (location.pathname ===  `/wordle/manage/${wordle_id}`) {
             axios.get('/api/wordle/show',  {params: {wordle_id: wordle_id}}).then(res => {
                 if (res.data.status === true) {
                     // 初期データ注入
@@ -140,124 +191,106 @@ function WordleManage(): React.ReactElement {
     }
 
     return (
-        <Container maxWidth={'md'}>
-            <Typography component="h1" variant="h5">
-                Wordle {wordle_id ? 'Manage' : 'Create'}
-            </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
-                <Grid container spacing={2}>
+        <Container maxWidth={'lg'}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Typography component="h1" variant="h5">
+                        Wordle {wordle_id ? 'Manage' : 'Create'}
+                    </Typography>
+                </Grid>
+                {/* 左のエリア */}
+                <Grid item container xs={6} spacing={2} height={'fit-content'}>
                     <Grid item xs={12}>
-                        <TextField
-                            required
-                            fullWidth
-                            id="wordle_name"
-                            label="Wordle Name"
-                            autoComplete="wordle-name"
-                            defaultValue={wordle_default_data?.name}
-                            {...register('name')}
-                            error={errors.name ? true : false}
-                            helperText={errors.name?.message}
+                        <WordlePrimaryManage
+                            handleSubmit={handleSubmitWordleManage}
+                            onSubmit={onSubmitWordleManage}
+                            wordle_default_data={wordle_default_data}
+                            register={registerWordleManage}
+                            errors={errorsWordleManage}
+                            tags={tags}
+                            handleSelecetedTags={handleSelecetedTags}
+                            input_values={input_values}
+                            input={input}
+                            handleInputChange={handleInputChange}
+                            words={words}
+                            handleDeleteWord={handleDeleteWord}
+                            handleChangeWord={handleChangeWord}
+                            handleAddWord={handleAddWord}
+                            loading={loading}
+                            wordle_id={wordle_id}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <MuiChipsInput
-                            value={(tags as string[])}
-                            onChange={handleSelecetedTags}
-                            fullWidth
-                            variant='outlined'
-                            id='tags'
-                            // name='tags'
-                            label='Tags'
-                            placeholder=''
-                            aria-multiline
-                            maxRows={10}
-                            validate={(chipValue) => {
-                                return {
-                                    isError: chipValue.length > 50,
-                                    textError: 'the value must be at least 50 characters long'
-                                }
-                            }}
-                        />
-                        <FormHelperText sx={{mt: 1, ml: 2}}>Double click to edit a tag</FormHelperText>
-                    </Grid>
-                    <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                        <FormLabel component="legend">Using Language Set</FormLabel>
-                        <FormGroup>
-                            {input_values.map((input_value, index) => 
-                                <FormControlLabel
-                                    key={index}
-                                    control={
-                                    <Checkbox value={input_value} checked={input[input_value]} {...register('input')} onChange={handleInputChange} id={input_value} />
-                                    }
-                                    label={input_value}
-                                />
-                            )}
-                        </FormGroup>
-                        <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.input?.message}</FormHelperText>
-                    </FormControl>
-                    <Grid item xs={12}>
-                        <TextField
-                            required
-                            fullWidth
-                            id="description"
-                            label="Description"
-                            autoComplete="description"
-                            defaultValue={wordle_default_data?.description}
-                            {...register('description')}
-                            error={errors.description ? true : false}
-                            helperText={errors.description?.message}
-                        />
-                    </Grid>
-                    <Grid container spacing={2} item xs={12}>
-                        {words.map((word, index) => 
-                            <Grid item xs={12} key={index}>
-                                <TextField
-                                    fullWidth
-                                    autoComplete="words"
-                                    value={word}
-                                    label="word"
-                                    data-word-id={index}
-                                    InputProps={{
-                                        endAdornment: 
-                                            <IconButton aria-label='delete-word-by-index' id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
-                                                <HighlightOffIcon />
-                                            </IconButton>,
-                                        style: {
-                                            padding: 0
-                                        }
-                                    }}
-                                    {...register(`words.${index}`)}
-                                    onChange={handleChangeWord}
-                                    error={errors.words ? errors.words[index]? true : false : false}
-                                    helperText={errors.words ? errors.words[index]?.message : ''}
-                                />
-                            </Grid>
-                        )}
-                        <Grid item xs={3} sx={{ mt: 1, mb: 1 }}>
-                            <Button
-                                type="button"
-                                fullWidth
-                                variant="contained"
-                                onClick={handleAddWord}
-                            >
-                                Add
-                            </Button>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormHelperText sx={{color: '#d74343', mt: 1, ml: 2}}>{errors.words?.message}</FormHelperText>
-                        </Grid>
                     </Grid>
                 </Grid>
-                <LoadingButton
-                    type="submit"
-                    loading={loading}
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    Wordle {wordle_id ? 'Update' : 'Create'}
-                </LoadingButton>
-            </Box>
+                {/* 右のエリア */}
+                <Grid item container xs={6} spacing={2} height={'fit-content'}>
+                    {/* コメントリスト */}
+                    <Grid item xs={12}>
+                        {
+                            wordle_id !== undefined ?
+                            <Grid item container xs={12} spacing={2}>
+                                {/* コメント投稿 */}
+                                <Grid item xs={12}>
+                                    <Box component="form" noValidate onSubmit={handleSubmitWordleComment(onSubmitWordleComment)}>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12}>
+                                                <TextField
+                                                    required
+                                                    fullWidth
+                                                    multiline
+                                                    rows={4}
+                                                    id="comment"
+                                                    label="Comment"
+                                                    autoComplete="comment"
+                                                    {...registerWordleComment('comment')}
+                                                    error={errorsWordleComment.comment ? true : false}
+                                                    helperText={errorsWordleComment.comment?.message}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                        <LoadingButton
+                                            type="submit"
+                                            loading={wordle_comment_submit_loading}
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 2, mb: 2 }}
+                                        >
+                                            Comment Submit
+                                        </LoadingButton>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <WordleCommentList
+                                        head={
+                                            <ButtonGroupPrimary
+                                                head={true}
+                                                items={[
+                                                    {
+                                                        text: 'Comments',
+                                                        value: 'wordle_comments',
+                                                        active: false
+                                                    },
+                                                ]}
+                                            />
+                                        }
+                                        request_config={{
+                                            api_url: 'wordle/comment/comments',
+                                            params: {wordle_id: wordle_id},
+                                            response_keys: ['wordle_comments'],
+                                        }}
+                                        listen={false}
+                                        no_item_text={'No Comments'}
+                                    />
+                                </Grid>
+                            </Grid>
+                            :
+                            // TODO: createの時に表示するものを決める
+                            <SimpleTextCard
+                                text={'Comment Area'}
+                            />
+                        }
+                    </Grid>
+                </Grid>
+            </Grid>
         </Container>
     );
 }
