@@ -40,6 +40,7 @@ const useProvideNoification = () => {
     const [notifications_loading, setNotificationsLoading] = useState<boolean>(true);
     const [all_notifications, setAllNotifications] = useState<any[]>([]);
     const [unread_notifications, setUnreadNotifications] = useState<any[]>([]);
+    // 新しい通知ほど配列のindexが若い
 
     useEffect(() => {
         if(auth?.user !== null) {
@@ -53,8 +54,8 @@ const useProvideNoification = () => {
                     window.Echo.private('App.Models.User.' + auth?.user?.id)
                     .notification((notification: any) => {
                         console.log(notification);
-                        setUnreadNotifications((unread_notifications) => [...unread_notifications, notification]);
-                        setAllNotifications((all_notifications) => [...all_notifications, notification]);
+                        setUnreadNotifications((unread_notifications) => [notification, ...unread_notifications]);
+                        setAllNotifications((all_notifications) => [notification, ...all_notifications]);
                     })
                 }
                 if (res2.data.status === true) {

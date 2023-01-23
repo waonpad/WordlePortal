@@ -41,7 +41,7 @@ class WordleCommentController extends Controller
             [
                 'wordle_id' => $request->wordle_id,
                 'user_id' => Auth::user()->id,
-                'wordle_comment' => $request->wordle_comment,
+                'comment' => $request->comment,
             ]
         );
 
@@ -49,7 +49,8 @@ class WordleCommentController extends Controller
 
         // ユーザーに通知
         $wordle = Wordle::with('user')->find($request->wordle_id);
-        Notification::send([$wordle->user], new WordleCommentNotification($wordle_comment));
+        $notify_wordle_comment = WordleComment::with('user', 'wordle')->find($wordle_comment->id);
+        Notification::send([$wordle->user], new WordleCommentNotification($notify_wordle_comment));
 
         return response()->json([
             'status' => true

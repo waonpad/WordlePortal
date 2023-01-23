@@ -104,37 +104,6 @@ function User(props: any): React.ReactElement {
                             <Typography>Paper</Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12}>
-                        <UserList
-                            head={
-                                <ButtonGroupPrimary
-                                    head={true}
-                                    items={[
-                                        {
-                                            text: 'Follows',
-                                            value: 'follows',
-                                            link: `/user/${screen_name}/follows`,
-                                            active: display_ff_component === 'follows'
-                                        },
-                                        {
-                                            text: 'Followers',
-                                            value: 'followers',
-                                            link: `/user/${screen_name}/followers`,
-                                            active: display_ff_component === 'followers'
-                                        },
-                                    ]}
-                                />
-                            }
-                            request_config={{
-                                api_url: `user/${display_ff_component}`,
-                                params: {screen_name: screen_name},
-                                response_keys: ['users'],
-                            }}
-                            listen={false}
-                            no_item_text={display_ff_component === 'follows' ? 'No Follows' : 'No Followers'}
-                            key={key + display_ff_component}
-                        />
-                    </Grid>
                     {/* 待機中のゲーム */}
                     <Grid item xs={12}>
                         <Button
@@ -145,82 +114,122 @@ function User(props: any): React.ReactElement {
                             Join {user.name}'s Game!
                         </Button>
                     </Grid>
-                    <Grid item xs={12}>
-                        <GameList
-                            game_status={['wait', 'start']} // start消す?
-                            request_config={{
-                                api_url: 'wordle/game/user',
-                                params: {screen_name: screen_name},
-                                response_keys: ['games'],
-                            }}
-                            listen={false}
-                            key={key + 'games'}
-                        />
-                    </Grid>
-                    {/* 表示するWordleの種類選択エリア */}
-                    <Grid item xs={12}>
-                        <ButtonGroupPrimary
-                            items={[
-                                {
-                                    text: 'Wordles',
-                                    value: 'wordles',
-                                    link: `/user/${screen_name}/wordle`,
-                                    active: display_list_component === 'wordles'
-                                },
-                                {
-                                    text: 'GAME RESULTS',
-                                    value: 'game_results',
-                                    link: `/user/${screen_name}/wordle/game`,
-                                    active: display_list_component === 'game_results'
-                                },
-                                {
-                                    text: 'LIKES',
-                                    value: 'likes',
-                                    link: `/user/${screen_name}/wordle/like`,
-                                    active: display_list_component === 'likes'
+                    {
+                        ['/user/:screen_name', '/user/:screen_name/follows', '/user/:screen_name/followers'].includes(props.match.path) ?
+                        <Grid item xs={12}>
+                            <UserList
+                                head={
+                                    <ButtonGroupPrimary
+                                        head={true}
+                                        items={[
+                                            {
+                                                text: 'Follows',
+                                                value: 'follows',
+                                                link: `/user/${screen_name}/follows`,
+                                                active: display_ff_component === 'follows'
+                                            },
+                                            {
+                                                text: 'Followers',
+                                                value: 'followers',
+                                                link: `/user/${screen_name}/followers`,
+                                                active: display_ff_component === 'followers'
+                                            },
+                                        ]}
+                                    />
                                 }
-                            ]}
-                        />
-                    </Grid>
-                    {/* Wordle */}
-                    <Grid item xs={12}>
-                        {
-                            display_list_component === 'wordles' ?
-                            <WordleList
                                 request_config={{
-                                    api_url: 'wordle/user',
+                                    api_url: `user/${display_ff_component}`,
                                     params: {screen_name: screen_name},
-                                    response_keys: ['wordles'],
+                                    response_keys: ['users'],
                                 }}
                                 listen={false}
-                                key={key + 'wordles'}
+                                no_item_text={display_ff_component === 'follows' ? 'No Follows' : 'No Followers'}
+                                key={key + display_ff_component}
                             />
-                            :
-                            display_list_component === 'game_results' ?
-                            <GameList
-                                game_status={['end']}
-                                request_config={{
-                                    api_url: 'wordle/game/userjoining',
-                                    params: {screen_name: screen_name},
-                                    response_keys: ['games'],
-                                }}
-                                listen={false}
-                                key={key + 'games'}
-                            />
-                            :
-                            display_list_component === 'likes' ?
-                            <WordleList
-                                request_config={{
-                                    api_url: 'wordle/userlikes',
-                                    params: {screen_name: screen_name},
-                                    response_keys: ['wordles'],
-                                }}
-                                listen={false}
-                                key={key + 'wordle_likes'}
-                            />
-                            : <></>
-                        }
-                    </Grid>
+                        </Grid>
+                        :
+                        ['/user/:screen_name', '/user/:screen_name/wordle', '/user/:screen_name/wordle/game', '/user/:screen_name/wordle/like'].includes(props.match.path) ?
+                        <React.Fragment>
+                            <Grid item xs={12}>
+                                <GameList
+                                    game_status={['wait', 'start']} // start消す?
+                                    request_config={{
+                                        api_url: 'wordle/game/user',
+                                        params: {screen_name: screen_name},
+                                        response_keys: ['games'],
+                                    }}
+                                    listen={false}
+                                    key={key + 'games'}
+                                />
+                            </Grid>
+                            {/* 表示するWordleの種類選択エリア */}
+                            <Grid item xs={12}>
+                                <ButtonGroupPrimary
+                                    items={[
+                                        {
+                                            text: 'Wordles',
+                                            value: 'wordles',
+                                            link: `/user/${screen_name}/wordle`,
+                                            active: display_list_component === 'wordles'
+                                        },
+                                        {
+                                            text: 'GAME RESULTS',
+                                            value: 'game_results',
+                                            link: `/user/${screen_name}/wordle/game`,
+                                            active: display_list_component === 'game_results'
+                                        },
+                                        {
+                                            text: 'LIKES',
+                                            value: 'likes',
+                                            link: `/user/${screen_name}/wordle/like`,
+                                            active: display_list_component === 'likes'
+                                        }
+                                    ]}
+                                />
+                            </Grid>
+                            {/* Wordle */}
+                            <Grid item xs={12}>
+                                {
+                                    display_list_component === 'wordles' ?
+                                    <WordleList
+                                        request_config={{
+                                            api_url: 'wordle/user',
+                                            params: {screen_name: screen_name},
+                                            response_keys: ['wordles'],
+                                        }}
+                                        listen={false}
+                                        key={key + 'wordles'}
+                                    />
+                                    :
+                                    display_list_component === 'game_results' ?
+                                    <GameList
+                                        game_status={['end']}
+                                        request_config={{
+                                            api_url: 'wordle/game/userjoining',
+                                            params: {screen_name: screen_name},
+                                            response_keys: ['games'],
+                                        }}
+                                        listen={false}
+                                        key={key + 'games'}
+                                    />
+                                    :
+                                    display_list_component === 'likes' ?
+                                    <WordleList
+                                        request_config={{
+                                            api_url: 'wordle/userlikes',
+                                            params: {screen_name: screen_name},
+                                            response_keys: ['wordles'],
+                                        }}
+                                        listen={false}
+                                        key={key + 'wordle_likes'}
+                                    />
+                                    : <></>
+                                }
+                            </Grid>
+                        </React.Fragment>
+                        :
+                        <></>
+                    }
                 </Grid>
             </Grid>
         </Container>

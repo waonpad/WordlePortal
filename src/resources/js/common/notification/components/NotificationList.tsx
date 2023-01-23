@@ -7,7 +7,9 @@ import SuspensePrimary from '@/common/suspense/suspenseprimary/components/Suspen
 import SimpleTextListItem from '@/common/listitem/simpletextlistitem/components/SimpleTextListItem';
 import { useNotification } from '@/contexts/NotificationContext';
 import { NotificationListProps } from '@/common/notification/types/NotificationListType';
-import NotificationListItemFollow from './NotificationListItemFollow';
+import NotificationListItemFollow from '@/common/notification/components/NotificationListItemFollow';
+import NotificationListItemWordleLike from '@/common/notification/components/NotificationListItemWordleLike';
+import NotificationListItemWordleComment from '@/common/notification/components/NotificationListItemWordleComment';
 import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 
 function NotificationList(props: NotificationListProps): React.ReactElement {
@@ -82,10 +84,14 @@ function NotificationList(props: NotificationListProps): React.ReactElement {
                                         />
                                         :
                                         notification.resource_type === 'App\\Models\\WordleLike' ?
-                                        <Typography>wordlelike</Typography>
+                                        <NotificationListItemWordleLike
+                                            wordle_like_notification={notification}
+                                        />
                                         :
                                         notification.resource_type === 'App\\Models\\WordleComment' ?
-                                        <Typography>wordlecomment</Typography>
+                                        <NotificationListItemWordleComment
+                                            wordle_comment_notification={notification}
+                                        />
                                         :
                                         <Typography>err</Typography>
                                     }

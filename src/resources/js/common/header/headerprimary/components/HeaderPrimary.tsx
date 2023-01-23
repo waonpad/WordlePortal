@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -19,6 +19,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
 import { Link, useHistory } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { HeaderPrimaryStyle } from '@/common/header/headerprimary/styles/HeaderPrimaryStyle';
 import DrawerPrimary from '@/common/drawer/drawerprimary/components/DrawerPrimary';
@@ -40,6 +41,7 @@ const ReNotificationList = forwardRef<HTMLDivElement, NotificationListProps>((pr
 
 export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     const project_name = 'Wordle Portal';
+    const location = useLocation();
     const history = useHistory();
     const auth = useAuth();
     const notification = useNotification();
@@ -54,6 +56,13 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const isNotificationOpen = Boolean(notificationAnchorEl);
 
+    useEffect(() => {
+        setAnchorEl(null);
+        setSettingAnchorEl(null);
+        setNotificationAnchorEl(null);
+        setMobileMoreAnchorEl(null);
+    }, [location])
+
     // notification ///////////////////////////////////////////////////////////////////////
     const handleNotificationOpen = (event: React.MouseEvent<HTMLElement>) => {
         setNotificationAnchorEl(event.currentTarget);
@@ -61,7 +70,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
 
     const handleNotificationClose = () => {
         setNotificationAnchorEl(null);
-        notification?.readAllNotifications();
+        // notification?.readAllNotifications(); // TODO: テスト用に既読処理を外している 後でコメントアウトを解除
     }
     
     const notificationPopoverId = 'primary--notification';
@@ -76,7 +85,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             onClose={handleNotificationClose}
             BackdropProps={{ invisible: true }}
         >
-            <Box sx={{minWidth: '500px'}}>
+            <Box sx={{width: '500px', maxWidth: '90vw'}}>
                 <ReNotificationList
                     no_item_text={'No Notification'}
                 />
@@ -90,7 +99,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
         auth?.signout().then((res: any) => {
             if (res.data.status === true) {
                 history.push('/');
-                location.reload();
+                window.location.reload();
             }
             else if (res.data.status === false) {
                 // 失敗時の処理
@@ -198,9 +207,9 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={handleMobileMenuClose} aria-label="show new notifications">
-                <IconButton color="inherit">
-                    <Badge badgeContent={notification?.unread_notifications ? notification?.unread_notifications.length : 0} max={99} sx={{"& .MuiBadge-badge": {fontWeight: 'bold', color: green[700], backgroundColor: yellow[400]}}}>
+            <MenuItem aria-label="show new notifications" onClick={handleNotificationOpen}>
+                <IconButton aria-label="show new notifications" color="inherit">
+                    <Badge badgeContent={notification?.unread_notifications ? notification?.unread_notifications.length : 0} max={99} sx={{"& .MuiBadge-badge": {fontWeight: 'bold', color: '#fff', backgroundColor: green[700]}}}>
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
