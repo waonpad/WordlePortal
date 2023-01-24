@@ -114,6 +114,18 @@ function User(props: any): React.ReactElement {
                             Join {user.name}'s Game!
                         </Button>
                     </Grid>
+                    <Grid item xs={12}>
+                        <GameList
+                            game_status={['wait', 'start']} // start消す?
+                            request_config={{
+                                api_url: 'wordle/game/user',
+                                params: {screen_name: screen_name},
+                                response_keys: ['games'],
+                            }}
+                            listen={false}
+                            key={key + 'games'}
+                        />
+                    </Grid>
                     {
                         ['/user/:screen_name', '/user/:screen_name/follows', '/user/:screen_name/followers'].includes(props.match.path) ?
                         <Grid item xs={12}>
@@ -150,18 +162,6 @@ function User(props: any): React.ReactElement {
                         :
                         ['/user/:screen_name', '/user/:screen_name/wordle', '/user/:screen_name/wordle/game', '/user/:screen_name/wordle/like'].includes(props.match.path) ?
                         <React.Fragment>
-                            <Grid item xs={12}>
-                                <GameList
-                                    game_status={['wait', 'start']} // start消す?
-                                    request_config={{
-                                        api_url: 'wordle/game/user',
-                                        params: {screen_name: screen_name},
-                                        response_keys: ['games'],
-                                    }}
-                                    listen={false}
-                                    key={key + 'games'}
-                                />
-                            </Grid>
                             {/* 表示するWordleの種類選択エリア */}
                             <Grid item xs={12}>
                                 <ButtonGroupPrimary

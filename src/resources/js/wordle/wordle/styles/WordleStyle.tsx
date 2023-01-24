@@ -39,7 +39,8 @@ export const WordleStyle = makeStyles((theme: Theme) => ({
         backgroundColor: grey[400]
     },
     board_character_plain: {
-        border: 'solid 1px rgba(0, 0, 0, 0.54)',
+        border: 'solid 1px rgba(0, 0, 0, 0.2)',
+        // border: 'solid 1px transparent',
         color: '#000000DE'
     },
     input_character: {
@@ -83,6 +84,7 @@ export const WordleStyle = makeStyles((theme: Theme) => ({
         // },
     },
     input_character_plain: {
+        border: 'solid 1px rgba(0, 0, 0, 0.2)',
         color: '#000000DE'
     },
 }));

@@ -125,10 +125,10 @@ function Wordle(): React.ReactElement {
             
                             const default_game_words: any[] = [];
             
-                            // const rows = game.game_users.length * game.laps;
-                            const rows = 10; // test
-                            // const max = game.max;
-                            const max = 6; // test
+                            const rows = current_game_status.game_users.length * game.laps;
+                            // const rows = 10; // test
+                            const max = game.max;
+                            // const max = 6; // test
                             ([...Array(rows)]).forEach((row, index) => {
                                 if(current_game_status.board[index]) {
                                     default_game_words.push(current_game_status.board[index]);
@@ -144,6 +144,8 @@ function Wordle(): React.ReactElement {
                                     default_game_words.push(default_game_word);
                                 }
                             });
+
+                            console.log(default_game_words);
             
                             setGameStatus(current_game_status);
                             setErrataList(current_game_status.errata);
@@ -182,7 +184,7 @@ function Wordle(): React.ReactElement {
                                 console.log(error);
                             });
             
-                            setInitialLoad(false);
+                            // setInitialLoad(false);
                         }
                     }
                 });
@@ -265,6 +267,8 @@ function Wordle(): React.ReactElement {
             game_users: firebase_game_data.users
         };
 
+        console.log(data);
+
         axios.post('/api/wordle/game/input', data).then(res => {
             if(res.data.status === true) {
                 const default_input_stack: any[] = [];
@@ -299,10 +303,8 @@ function Wordle(): React.ReactElement {
                 }
 
                 // inputの反映
-                if(game_status.latest_game_log !== null) {
-                    if(game_status.latest_game_log.type === 'input') {
-                        mergeErrata(game_status, game_words);
-                    }
+                if(game_status.latest_game_log !== null && initial_load === false && game_status.latest_game_log.type === 'input') {
+                    mergeErrata(game_status, game_words);
                 }
 
                 if(firebase_game_data !== undefined) {
@@ -359,6 +361,7 @@ function Wordle(): React.ReactElement {
                     }
                 }
             }
+            setInitialLoad(false);
         }
     }, [game_status])
 
@@ -437,6 +440,10 @@ function Wordle(): React.ReactElement {
         }
     }, [counter]);
     /////////////////////////////////////////////////////////////////////////
+
+    useEffect(() => {
+        console.log(errata_list)
+    }, [errata_list])
 
     // errata ///////////////////////////////////////////////////////////////////////
     const mergeErrata = (game_status: any, game_words: any) => {
