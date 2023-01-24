@@ -57,12 +57,6 @@ class GameController extends Controller
                     return ($game_input_log['log']['input_and_errata']);  
                 }, $game_input_logs));
         
-                // errataを取得
-                // php側では初期表示なのか否かを判定できないため、最後のinput以外でまずerrataを整形
-                // その後はjsでの処理
-                // 初期表示の場合: $boardの最後の要素のcharacterをそれぞれ対応したerrata配列に追加してから反映する
-                // 初期表示でない: 一度反映させた後、$boardの最後の要素を1文字ずつ反映させる
-        
                 foreach(($initial_load ? $game_input_logs : $sliced_game_input_logs) as $game_input_log) {
                     $matchs = array_merge($matchs, $game_input_log['log']['matchs']);
                     $exists = array_merge($exists, $game_input_log['log']['exists']);
@@ -221,6 +215,7 @@ class GameController extends Controller
         $wordle = Wordle::find($request->wordle_id);
         $words = $wordle->words;
         $key = array_rand($words, 1);
+        // $answer = mb_convert_kana(strtoupper($words[intval($key)]), "KVC", 'UTF-8');
         $answer = strtoupper($words[intval($key)]);
 
         $lengths = [];
@@ -420,11 +415,19 @@ class GameController extends Controller
 
         // answerは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
         // 最大文字数が9でLaravelがanswerの場合、$answer_splitは[L,a,r,a,v,e,l,foo,foo]になる
-        $answer_split = str_split($game->answer, 1);
+        // $answer_split = mb_convert_encoding(str_split($game->answer, 1), 'UTF-8', 'UTF-8');
+        // for ($i=count($answer_split); $i < $game->max; $i++) {
+        //     array_push($answer_split, 'foo');
+        // }
+        // $input_split = $request->has('skip') ? array_fill(0, $game->max, '') : array_map('mb_strtoupper', $request->input)
+        $answer_split = preg_split("//u", (mb_convert_kana($game->answer, "KVC")), -1, PREG_SPLIT_NO_EMPTY);
         for ($i=count($answer_split); $i < $game->max; $i++) {
             array_push($answer_split, 'foo');
         }
-        $input_split = $request->has('skip') ? array_fill(0, $game->max, '') : array_map('strtoupper', $request->input);
+
+        $input_split = $request->has('skip') ? array_fill(0, $game->max, '') : array_map(function($v){
+            return (is_null($v)) ? "" : mb_convert_kana(strtoupper($v), "KVC");
+        }, $request->input);
 
         $matchs = [];
         $exists = [];
@@ -438,25 +441,28 @@ class GameController extends Controller
         // not_exists: [c,t,J,S]
         // errata: ['exist', 'exist', 'exist', 'not_exist'...]
         for ($i=0; $i < $game->max; $i++) {
+            // $target_character = mb_convert_kana($input_split[$i], "KVC");
+            $target_character = $input_split[$i];
+
             // 場所一致
-            if ($answer_split[$i] === $input_split[$i]) {
-                array_push($matchs, $input_split[$i]);
+            if ($answer_split[$i] == $target_character) {
+                array_push($matchs, $target_character);
                 array_push($errata, 'match');
             }
             // 存在
-            else if (false !== strpos($game->answer, (string)$input_split[$i])) {
-                if($input_split[$i] === '') {
+            else if (false !== strpos($game->answer, (string)$target_character)) {
+                if($target_character === '') {
                     array_push($errata, 'not_exist');
                 }
                 else {
-                    array_push($exists, $input_split[$i]);
+                    array_push($exists, $target_character);
                     array_push($errata, 'exist');
                 }
             }
             // 存在しない
             else {
-                if($input_split[$i] !== '') {
-                    array_push($not_exists, $input_split[$i]);
+                if($target_character !== '') {
+                    array_push($not_exists, $target_character);
                 }
                 array_push($errata, 'not_exist');
             }
@@ -509,6 +515,7 @@ class GameController extends Controller
 
         return response()->json([
             'status' => true,
+            'errata' => $errata
         ]);
 
     }

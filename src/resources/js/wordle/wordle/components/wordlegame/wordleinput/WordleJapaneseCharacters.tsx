@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Box, Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
+import { Button } from '@material-ui/core';
 import { WordleCharactersProps } from '@/wordle/types/WordleType';
 
 function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElement {
