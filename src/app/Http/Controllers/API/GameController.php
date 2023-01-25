@@ -11,6 +11,7 @@ use App\Models\GameUser;
 use App\Models\GameLog;
 use App\Events\GamePlayEvent;
 use App\Events\GameEvent;
+use App\Events\GameFollowsEvent;
 use App\Events\GameTagEvent;
 use App\Http\Requests\GameUpsertRequest;
 use Illuminate\Support\Str;
@@ -24,6 +25,8 @@ class GameController extends Controller
 
     public function eventHandler($game, $event_type, $sync_tags, $dettached_tags = [])
     {
+        $auth_user = User::find(Auth::user()->id);
+
         event(new GameEvent($game, $event_type));
 
         foreach($sync_tags as $tag) {
@@ -33,6 +36,10 @@ class GameController extends Controller
         // foreach($dettached_tags as $tag) {
         //     event(new GameTagEvent($wordle, 'destroy', $tag->id));
         // }
+
+        foreach($auth_user->followers()->get()->toArray() as $follower) {
+            event(new GameFollowsEvent($game, $event_type, $follower['id']));
+        }
     }
 
     private function currentGameStatus($game, $initial_load = false)
@@ -215,7 +222,6 @@ class GameController extends Controller
         $wordle = Wordle::find($request->wordle_id);
         $words = $wordle->words;
         $key = array_rand($words, 1);
-        // $answer = mb_convert_kana(strtoupper($words[intval($key)]), "KVC", 'UTF-8');
         $answer = strtoupper($words[intval($key)]);
 
         $lengths = [];
@@ -420,13 +426,13 @@ class GameController extends Controller
         //     array_push($answer_split, 'foo');
         // }
         // $input_split = $request->has('skip') ? array_fill(0, $game->max, '') : array_map('mb_strtoupper', $request->input)
-        $answer_split = preg_split("//u", (mb_convert_kana($game->answer, "KVC")), -1, PREG_SPLIT_NO_EMPTY);
+        $answer_split = preg_split("//u", (mb_convert_kana($game->answer, "KVCn")), -1, PREG_SPLIT_NO_EMPTY);
         for ($i=count($answer_split); $i < $game->max; $i++) {
             array_push($answer_split, 'foo');
         }
 
         $input_split = $request->has('skip') ? array_fill(0, $game->max, '') : array_map(function($v){
-            return (is_null($v)) ? "" : mb_convert_kana(strtoupper($v), "KVC");
+            return (is_null($v)) ? "" : mb_convert_kana(strtoupper($v), "KVCn");
         }, $request->input);
 
         $matchs = [];
@@ -441,7 +447,7 @@ class GameController extends Controller
         // not_exists: [c,t,J,S]
         // errata: ['exist', 'exist', 'exist', 'not_exist'...]
         for ($i=0; $i < $game->max; $i++) {
-            // $target_character = mb_convert_kana($input_split[$i], "KVC");
+            // $target_character = mb_convert_kana($input_split[$i], "KVCn");
             $target_character = $input_split[$i];
 
             // 場所一致

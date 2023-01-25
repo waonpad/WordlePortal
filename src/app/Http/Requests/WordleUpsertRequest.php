@@ -21,7 +21,7 @@ class WordleUpsertRequest extends FormRequest
             'words.*' => 'string|min:5|max:10|nullable',
             'input' => 'required|array',
             'input.*' => [
-                'string|',
+                'string',
                 Rule::in(['japanese', 'english', 'number', 'typing'])
             ],
             'description' => 'max:255',

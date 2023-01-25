@@ -8,37 +8,32 @@ import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { WordleData, WordleErrorData, WordleDefaultData } from '@/wordle/types/WordleType';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import WordleCommentList from '@/wordle/components/wordlecommentlist/components/WordleCommentList';
 import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import WordlePrimaryManage from '@/wordle/wordlemanage/components/WordlePrimaryManage';
 import SimpleTextCard from '@/common/card/simpletextcard/components/SimpleTextCard';
-
-export type WordleCommentData = {
-    wordle_id: number;
-    comment: string;
-    submit: string;
-}
-
-export type WordleCommentErrorData = {
-    wordle_id: string;
-    comment: string;
-    submit: string;
-}
+import { WordleCommentData, WordleCommentErrorData } from '../types/WordleCommentType';
 
 function WordleManage(): React.ReactElement {
     const basicSchemaWordleManage = Yup.object().shape({
         name: Yup.string().max(50).required(),
         words: Yup.array()
-                .of(Yup.string().min(5).max(10).nullable()
-                .transform((value, originalValue) =>String(originalValue).trim() === '' ? null : value))
-                .unique("must be unique", (val: any) => val || val === '')
-                .test('', 'words field must have at least 10 items', (words: any) => words?.filter(function(word: any){
-                    return !(word === null || word === undefined || word === "");
-                }).length >= 10),
-        input: Yup.array().min(1).of(Yup.string()),
+                // .of(
+                //     Yup.string().min(5).max(10).nullable()
+                //     .transform((value, originalValue) =>String(originalValue).trim() === '' ? null : value)
+                // )
+                // TextFieldを消しても実際のデータが消えないので本来無いデータがバリデーションされる
+                // ここでは処理せずバックエンドでバリデーションする
+                .unique("must be unique", (val: any) => val || val === '') // TODO: カタカナひらがなを同一のものとして扱いたい
+                // .test('', 'words field must have at least 10 items', (words: any) => words?.filter(function(word: any){
+                //     return !(word === null || word === undefined || word === "");
+                // }).length >= 10)
+                // 挙動がおかしい
+                // TextFieldを消しても実際のデータが消えないのでonSubmit内でstateを参照して対処する
+                ,
+        // input: Yup.array().min(1).of(Yup.string()),
         description: Yup.string().max(255),
         // tagsはMuiChipsInputでバリデーションしている
     });
@@ -66,6 +61,10 @@ function WordleManage(): React.ReactElement {
         resolver: yupResolver(basicSchemaWordleComment)
     });
 
+    useEffect(() => {
+        console.log(errorsWordleManage)
+    },[errorsWordleManage])
+
     // Tags /////////////////////////////////////////////////////////////
     const handleSelecetedTags = (selectedItem: MuiChipsInputChip[]) => {
         setTags(selectedItem);
@@ -85,8 +84,7 @@ function WordleManage(): React.ReactElement {
 
     const handleDeleteWord = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const target_word_id = Number(event.currentTarget.getAttribute('data-word-id'));
-        setWords((words) => words.map((word, index) => (index === target_word_id ? '' : word)));
-        setWords(words.filter((word, index) => (index !== target_word_id)));
+        setWords((words) => words.filter((word, index) => (index !== target_word_id)));
     }
     ///////////////////////////////////////////////////////////////////////
 
@@ -109,7 +107,10 @@ function WordleManage(): React.ReactElement {
     const onSubmitWordleManage: SubmitHandler<WordleData> = (data: WordleData) => {
         data.id = Number(wordle_id) ?? null;
         data.tags = tags;
+        data.words = words;
         setLoading(true);
+
+        console.log(data);
 
         axios.post('/api/wordle/upsert', data).then(res => {
             if (res.data.status === true) {
@@ -140,7 +141,6 @@ function WordleManage(): React.ReactElement {
 
         axios.post('/api/wordle/comment/upsert', data).then(res => {
             if (res.data.status === true) {
-                // swal("Success", "登録成功", "success");
                 setWordleCommentSubmitLoading(false)
             }
             else if (res.data.status === false) {

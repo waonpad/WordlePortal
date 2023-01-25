@@ -27,17 +27,33 @@ Broadcast::channel('wordle', function (){
     return true;
 });
 
+Broadcast::channel('wordle_follows.${user_id}', function (){
+    return true;
+});
+
 Broadcast::channel('wordle_tag.{tag_id}', function (){
     return true;
 });
 
+// Broadcast::channel('wordle_search.{wordle_search_param}', function (){
+//     return true;
+// });
+
 Broadcast::channel('game', function (){
+    return true;
+});
+
+Broadcast::channel('game_follows.${user_id}', function (){
     return true;
 });
 
 Broadcast::channel('game_tag.{tag_id}', function (){
     return true;
 });
+
+// Broadcast::channel('game_search.{game_search_param}', function (){
+//     return true;
+// });
 
 Broadcast::channel('game_play.{game_uuid}', function ($user, $game_uuid){
     return [

@@ -8,13 +8,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
-function Top(props: any): React.ReactElement {
+function Top(): React.ReactElement {
     const location = useLocation();
     const auth = useAuth();
     const {wordle_tag_id, game_tag_id, wordle_search_param, wordle_game_search_param} = useParams<{wordle_tag_id: string, game_tag_id: string, wordle_search_param: string, wordle_game_search_param: string}>();
     const [initial_load, setInitialLoad] = useState(true);
     const [display_list_component, setDisplayListComponent] = useState<'wordles' | 'games'>('wordles');
-    const [key, setKey] = useState(''); //再読み込みのためにkeyが必要
+    const [key, setKey] = useState('');
 
     const [request_config, setRequestConfig] = useState<RequestConfig>({
         api_url: 'wordle/index',
@@ -41,10 +41,11 @@ function Top(props: any): React.ReactElement {
                 api_url: 'wordle/follows',
                 params: {},
                 response_keys: ['wordles'],
+                listening_channel: `wordle_follows.${auth!.user!.id}`,
+                listening_event: 'WordleFollowsEvent',
             });
-            // チャンネルとイベントは作成していない
             setDisplayListComponent('wordles');
-            setKey(`wordle_follows`);
+            setKey(`wordle_follows.${auth!.user!.id}`);
         }
         if(location.pathname === `/wordle/tag/${wordle_tag_id}`) {
             setRequestConfig({
@@ -62,8 +63,9 @@ function Top(props: any): React.ReactElement {
                 api_url: 'wordle/search',
                 params: {wordle_search_param: wordle_search_param},
                 response_keys: ['wordles'],
+                // listening_channel: `wordle_search.${wordle_search_param}`,
+                // listening_event: 'WordleSearchEvent'
             })
-            // チャンネルとイベントは作成していない
             setDisplayListComponent('wordles');
             setKey(`wordle_search.${wordle_search_param}`);
         }
@@ -83,10 +85,11 @@ function Top(props: any): React.ReactElement {
                 api_url: 'wordle/game/follows',
                 params: {},
                 response_keys: ['games'],
+                listening_channel: `game_follows.${auth!.user!.id}`,
+                listening_event: 'GameFollowsEvent',
             })
-            // チャンネルとイベントは作成していない
             setDisplayListComponent('games');
-            setKey(`wordle_game_index`);
+            setKey(`game_follows.${auth!.user!.id}`);
         }
         if(location.pathname === `/wordle/game/tag/${game_tag_id}`) {
             setRequestConfig({
@@ -104,8 +107,9 @@ function Top(props: any): React.ReactElement {
                 api_url: 'wordle/game/search',
                 params: {wordle_game_search_param: wordle_game_search_param},
                 response_keys: ['games'],
+                // listening_channel: `wordle_game_search.${wordle_game_search_param}`,
+                // listening_event: 'WordleSearchEvent'
             })
-            // チャンネルとイベントは作成していない
             setDisplayListComponent('games');
             setKey(`wordle_game_search.${wordle_game_search_param}`);
         }
@@ -140,8 +144,7 @@ function Top(props: any): React.ReactElement {
                         display_list_component === 'wordles' ? (
                             <WordleList
                                 request_config={request_config}
-                                // listen={true}
-                                listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
+                                listen={location.pathname === `/wordle/search/${wordle_search_param}` ? false : true}
                                 key={key}
                             />
                         )
@@ -150,8 +153,7 @@ function Top(props: any): React.ReactElement {
                             <GameList
                                 game_status={['wait']}
                                 request_config={request_config}
-                                // listen={true}
-                                listen={false} // ページネーションとの兼ね合いと、使いやすさ的に同期的なリストにする (いい方法があれば今後変えるかも)
+                                listen={location.pathname === `/wordle/game/search/${wordle_game_search_param}` ? false : true}
                                 key={key}
                             />
                         )

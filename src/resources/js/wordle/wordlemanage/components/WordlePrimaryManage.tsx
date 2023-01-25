@@ -1,45 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import swal from "sweetalert";
-import { useParams, useHistory, useLocation } from "react-router-dom";
-import axios from 'axios';
-import { useForm, SubmitHandler, UseFormHandleSubmit, UseFormRegister, FieldErrorsImpl } from "react-hook-form";
-import { Backdrop, CircularProgress, IconButton, TextField, Button, FormLabel, FormControl, FormGroup, FormControlLabel, FormHelperText, Checkbox, Grid, Box, Typography, Container } from '@mui/material';
+import { IconButton, TextField, Button, FormLabel, FormControl, FormGroup, FormControlLabel, FormHelperText, Checkbox, Grid, Box, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
+import { MuiChipsInput } from 'mui-chips-input';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { WordleData, WordleErrorData, WordleDefaultData } from '@/wordle/types/WordleType';
-import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
-
-export type WordlePrimaryManageProps = {
-    handleSubmit: UseFormHandleSubmit<WordleData>
-    onSubmit: SubmitHandler<WordleData>
-    wordle_default_data: WordleDefaultData | undefined
-    register: UseFormRegister<WordleData>
-    errors: FieldErrorsImpl<{
-        id: number;
-        name: string;
-        words: string[];
-        input: string[];
-        description: string;
-        tags: string[];
-        submit: string;
-    }>
-    tags: string[]
-    handleSelecetedTags: (selectedItem: MuiChipsInputChip[]) => void
-    input_values: string[]
-    input: {
-        [key: string]: boolean;
-    }
-    handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-    words: string[]
-    handleDeleteWord: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-    handleChangeWord: (event: React.ChangeEvent<HTMLInputElement>) => void
-    handleAddWord: () => void
-    loading: boolean;
-    wordle_id: string;
-}
+import { WordlePrimaryManageProps } from '../types/WordleManageType';
 
 function WordlePrimaryManage(props: WordlePrimaryManageProps): React.ReactElement {
     const {
@@ -128,7 +92,7 @@ function WordlePrimaryManage(props: WordlePrimaryManageProps): React.ReactElemen
                         helperText={errors.description?.message}
                     />
                 </Grid>
-                <Grid container spacing={2} item xs={12}>
+                <Grid item container spacing={2} xs={12}>
                     {words.map((word, index) => 
                         <Grid item xs={12} key={index}>
                             <TextField
@@ -136,12 +100,15 @@ function WordlePrimaryManage(props: WordlePrimaryManageProps): React.ReactElemen
                                 autoComplete="words"
                                 value={word}
                                 label="word"
-                                data-word-id={index}
+                                inputProps={{
+                                    'data-word-id': index
+                                }}
                                 InputProps={{
-                                    endAdornment: 
-                                        <IconButton aria-label='delete-word-by-index' id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
+                                    endAdornment: (
+                                        <IconButton aria-label='delete-word-by-index' data-word-id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
                                             <HighlightOffIcon />
-                                        </IconButton>,
+                                        </IconButton>
+                                    ),
                                     style: {
                                         padding: 0
                                     }
