@@ -209,7 +209,6 @@ class GameController extends Controller
         ]);
     }
 
-    // TODO: 条件変更用に処理を書き換える
     public function upsert(GameUpsertRequest $request)
     {
         $validator = $request->getValidator();
@@ -217,6 +216,25 @@ class GameController extends Controller
             return response()->json([
                 'validation_errors'  =>  $validator->errors(),
             ]);
+        }
+
+        if($request->game_id !== null) {
+            $target_game = Game::find($request->game_id);
+    
+            if($target_game->status !== 'wait') {
+                return response()->json([
+                    'message' => '今は設定を変更できません',
+                    'status' => false
+                ]);
+            }
+    
+            if($request->max_participants < $target_game->max_participants) {
+                // 既に参加者が入っている場合処理がめんどうになるので弾く
+                return response()->json([
+                    'message' => '制限人数を減らすことはできません',
+                    'status' => false
+                ]);
+            }
         }
 
         $wordle = Wordle::find($request->wordle_id);
@@ -261,21 +279,6 @@ class GameController extends Controller
         else if($request_type === 'update') {
             $target_game = Game::find($request->game_id);
 
-            if($target_game->status !== 'wait') {
-                return response()->json([
-                    'message' => '今は設定を変更できません',
-                    'status' => false
-                ]);
-            }
-
-            if($request->max_participants < $target_game->max_participants) {
-                // 既に参加者が入っている場合処理がめんどうになるので弾く
-                return response()->json([
-                    'message' => '制限人数を減らすことはできません',
-                    'status' => false
-                ]);
-            }
-
             $target_game->update([
                 'max_participants' => $request->max_participants,
                 'laps' => $request->laps,
@@ -296,6 +299,7 @@ class GameController extends Controller
                 ]
             );
         }
+        
         if($request->max_participants > 1) {
             $response_game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($request->game_id !== null ? $request->game_id : $game_id);
             $this->eventHandler($response_game, $request_type, $response_game->tags);

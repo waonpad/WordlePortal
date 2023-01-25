@@ -4,7 +4,6 @@ import { useParams, useHistory } from "react-router-dom";
 import axios from 'axios';
 import { CircularProgress, Backdrop } from '@mui/material';
 import {useAuth} from "@/contexts/AuthContext";
-import { WordleStyle } from '@/wordle/wordle/styles/WordleStyle';
 import { GameWords, ErrataList, DisplayInputComponent } from '@/wordle/types/WordleType';
 import WordleLobby from '@/wordle/wordle/components/WordleLobby';
 import WordleGame from '@/wordle/wordle/components/WordleGame';
@@ -19,7 +18,6 @@ declare var window: {
 
 function Wordle(): React.ReactElement {
     const auth = useAuth();
-    const classes = WordleStyle();
     const {game_uuid} = useParams<{game_uuid: string}>();
     const [game_status, setGameStatus] = useState<any>();
     const [game_words, setGameWords] = useState<GameWords>([]);
@@ -123,43 +121,7 @@ function Wordle(): React.ReactElement {
                             const current_game_status = res.data.current_game_status;
                             console.log(current_game_status);
             
-                            const default_game_words: any[] = [];
-            
-                            const rows = current_game_status.game_users.length * game.laps;
-                            // const rows = 10; // test
-                            const max = game.max;
-                            // const max = 6; // test
-                            ([...Array(rows)]).forEach((row, index) => {
-                                if(current_game_status.board[index]) {
-                                    default_game_words.push(current_game_status.board[index]);
-                                }
-                                else {
-                                    const default_game_word: any[] = [];
-                                    ([...Array(max)]).forEach(() => {
-                                        default_game_word.push({
-                                            character: '',
-                                            errata: 'plain',
-                                        })
-                                    });
-                                    default_game_words.push(default_game_word);
-                                }
-                            });
-
-                            console.log(default_game_words);
-            
                             setGameStatus(current_game_status);
-                            setErrataList(current_game_status.errata);
-                            setGameWords(default_game_words);
-                            setDisplayInputComponent(game.input[0]);
-            
-                            const default_input_stack: any[] = [];
-                            ([...Array(max)]).forEach(() => {
-                                default_input_stack.push({
-                                    character: '',
-                                    errata: 'plain',
-                                })
-                            });
-                            setInputStack(default_input_stack);
             
                             window.Echo.join('game_play.' + game.uuid)
                             .listen('GamePlayEvent', (e: any) => {
@@ -292,6 +254,45 @@ function Wordle(): React.ReactElement {
     useEffect(() => {
         if(game_status !== undefined) {
             if(game_status.game.status === 'start') {
+
+                // gameがstartしていてgame_wordsのデフォルト値が入っていなかったら入れる
+                if((game_words as any[]).length === 0) {
+                    const default_game_words: any[] = [];
+            
+                    const rows = game_status.game_users.length * game_status.game.laps;
+                    // const rows = 10; // test
+                    const max = game_status.game.max;
+                    // const max = 6; // test
+                    ([...Array(rows)]).forEach((row, index) => {
+                        if(game_status.board[index]) {
+                            default_game_words.push(game_status.board[index]);
+                        }
+                        else {
+                            const default_game_word: any[] = [];
+                            ([...Array(max)]).forEach(() => {
+                                default_game_word.push({
+                                    character: '',
+                                    errata: 'plain',
+                                })
+                            });
+                            default_game_words.push(default_game_word);
+                        }
+                    });
+
+                    setErrataList(game_status.errata);
+                    setGameWords(default_game_words);
+                    setDisplayInputComponent(game_status.game.input[0]);
+    
+                    const default_input_stack: any[] = [];
+                    ([...Array(max)]).forEach(() => {
+                        default_input_stack.push({
+                            character: '',
+                            errata: 'plain',
+                        })
+                    });
+                    setInputStack(default_input_stack);
+                }
+
                 // ターン(inputエリアの入力可否)切り替え
                 if(auth?.user?.id === game_status.next_input_user) {
                     console.log('ターンプレイヤーです');
@@ -545,17 +546,14 @@ function Wordle(): React.ReactElement {
         <React.Fragment>
             {
                 game_status?.game?.status === 'wait' ?
-                // game_status?.game?.status === 'wait' || 'start' ?
                 <WordleLobby
-                    classes={classes}
                     game_status={game_status}
                     firebase_game_data={firebase_game_data}
                     handleGameStart={handleGameStart}
                 />
                 :
-                game_status?.game?.status === 'start' || 'end' ?
+                game_status?.game?.status === 'start' ?
                 <WordleGame
-                    classes={classes}
                     game_status={game_status}
                     game_words={game_words}
                     turn_flag={turn_flag}
@@ -575,9 +573,7 @@ function Wordle(): React.ReactElement {
                     <CircularProgress/>
                 </Backdrop>
                 :
-                <Backdrop open={true}>
-                    <CircularProgress/>
-                </Backdrop>
+                <></>
             }
         </React.Fragment>
     )
