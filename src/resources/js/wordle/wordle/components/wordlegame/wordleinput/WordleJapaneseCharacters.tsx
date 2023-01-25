@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 import { WordleCharactersProps } from '@/wordle/types/WordleType';
 
 function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElement {
-    const {classes, turn_flag, handleInputStack, errata} = props;
+    const {classes, coloring, turn_flag, handleInputStack, errata} = props;
 
     const japanese_characters: any[] = [
         'ア', 'カ', 'サ', 'タ', 'ナ', 'ハ', 'マ', 'ヤ', 'ラ', 'ワ',
@@ -29,7 +29,7 @@ function WordleJapaneseCharacters(props: WordleCharactersProps): React.ReactElem
                                 {(characters.slice(index*10, index*10+10) as any[]).map((character: any, index: number) => (
                                     <Grid item key={index}>
                                         {character !== null ? (
-                                                <Button data-character-value={character} disabled={!turn_flag} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${errata.matchs?.includes(character) ? 'match' : errata.exists?.includes(character) ? 'exist' : errata.not_exists?.includes(character) ? 'not_exist' : 'plain'}`]} onClick={handleInputStack}>{character}</Button>
+                                                <Button data-character-value={character} disabled={!turn_flag} className={classes.character + " " + classes.input_character + " " + classes[`input_character_${!coloring ? 'plain' : errata.matchs?.includes(character) ? 'match' : errata.exists?.includes(character) ? 'exist' : errata.not_exists?.includes(character) ? 'not_exist' : 'plain'}`]} onClick={handleInputStack}>{character}</Button>
                                             ) : (
                                                 <Box className={classes.character + " " + classes.input_character_null} />
                                             )

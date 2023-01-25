@@ -36,6 +36,7 @@ export type WordleBoardProps = {
 
 export type WordleInputProps = {
     classes: any;
+    coloring: boolean;
     turn_flag: boolean;
     handleInputStack: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     errata: any;
@@ -46,6 +47,7 @@ export type WordleInputProps = {
 
 export type WordleCharactersProps = {
     classes: any;
+    coloring: boolean;
     turn_flag: boolean;
     handleInputStack: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     errata: any;
@@ -74,7 +76,6 @@ export type ErrataList = {
 export type DisplayInputComponent = 'japanese' | 'english' | 'number' | 'typing' | null;
 
 export type WordleGameProps = {
-    classes: any;
     game_status: any;
     game_words: any;
     turn_flag: boolean;
@@ -90,7 +91,6 @@ export type WordleGameProps = {
 }
 
 export type WordleLobbyProps = {
-    classes: any;
     game_status: any;
     firebase_game_data: any;
     handleGameStart: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;

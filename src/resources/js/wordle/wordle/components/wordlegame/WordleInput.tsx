@@ -7,7 +7,7 @@ import WordleNumberCharacters from '@/wordle/wordle/components/wordlegame/wordle
 import WordleTyping from '@/wordle/wordle/components/wordlegame/wordleinput/WordleTyping';
 
 function WordleInput(props: WordleInputProps): React.ReactElement {
-    const {classes, turn_flag, handleInputStack, errata, input_stack, handleTypingStack, display_input_component} = props;
+    const {classes, coloring, turn_flag, handleInputStack, errata, input_stack, handleTypingStack, display_input_component} = props;
 
     return (
         <React.Fragment>
@@ -15,6 +15,7 @@ function WordleInput(props: WordleInputProps): React.ReactElement {
                 display_input_component === 'japanese' ?
                     <WordleJapaneseCharacters
                         classes={classes}
+                        coloring={coloring}
                         turn_flag={turn_flag}
                         handleInputStack={handleInputStack}
                         errata={errata}
@@ -23,6 +24,7 @@ function WordleInput(props: WordleInputProps): React.ReactElement {
                 display_input_component === 'english' ?
                     <WordleEnglishCharacters
                         classes={classes}
+                        coloring={coloring}
                         turn_flag={turn_flag}
                         handleInputStack={handleInputStack}
                         errata={errata}
@@ -31,6 +33,7 @@ function WordleInput(props: WordleInputProps): React.ReactElement {
                 display_input_component === 'number' ?
                     <WordleNumberCharacters
                         classes={classes}
+                        coloring={coloring}
                         turn_flag={turn_flag}
                         handleInputStack={handleInputStack}
                         errata={errata}

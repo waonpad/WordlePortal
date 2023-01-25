@@ -6,10 +6,10 @@ import WordleInput from '@/wordle/wordle/components/wordlegame/WordleInput';
 import WordleInputSelectButtonGroup from '@/wordle/wordle/components/wordlegame/WordleInputSelectButtonGroup';
 import WordleBoard from '@/wordle/wordle/components/wordlegame/WordleBoard';
 import { WordleGameProps } from '@/wordle/types/WordleType';
+import { WordleGameStyle } from '../styles/WordleGameStyle';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
     const {
-        classes,
         game_status,
         game_words,
         turn_flag,
@@ -24,6 +24,8 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
         display_input_component,
     } = props;
 
+    const classes = WordleGameStyle();
+
     return (
         <Container maxWidth={false}>
             <Grid container spacing={2}>
@@ -34,6 +36,7 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                 {/* input表示エリア */}
                 <Grid item xs={12}>
                     <WordleInput
+                        coloring={game_status.game.coloring}
                         classes={classes}
                         turn_flag={turn_flag}
                         handleInputStack={handleInputStack}
