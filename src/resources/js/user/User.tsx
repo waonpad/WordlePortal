@@ -127,7 +127,7 @@ function User(props: any): React.ReactElement {
                         />
                     </Grid>
                     {
-                        ['/user/:screen_name', '/user/:screen_name/follows', '/user/:screen_name/followers'].includes(props.match.path) ?
+                        ['/user/:screen_name/follows', '/user/:screen_name/followers'].includes(props.match.path) ?
                         <Grid item xs={12}>
                             <UserList
                                 head={

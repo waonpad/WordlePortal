@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import swal from 'sweetalert';
 import axios from 'axios';
-import { Button, Grid, Container, CircularProgress } from '@mui/material';
+import { Box, Button, Grid, Container, CircularProgress } from '@mui/material';
 import ModalPrimary from '@/common/modal/modalprimary/components/ModalPrimary';
 import VSPlayOption from '@/wordle/components/VSPlayOption';
 import { WordleListProps } from '@/wordle/types/WordleType';
@@ -18,12 +18,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import { useWindowDimensions } from '@/common/hooks/WindowDimensions';
 import NewPostSnackbar from '@/common/snackbar/newpostsnackbar/components/NewPostSnackbar';
+import { useNewPostSnackbarPosition } from '@/common/hooks/NewPostSnackbarPosition';
 
 declare var window: {
     Echo: any;
-    scrollY: any;
-    addEventListener: any;
-    removeEventListener: any;
 }
 
 function WordleList(props: WordleListProps): React.ReactElement {
@@ -32,37 +30,20 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const [wordle_loading, setWordleLoading] = useState(true);
     const history = useHistory();
     const auth = useAuth();
-    const {width, height} = useWindowDimensions();
-    const wordle_list_ref = useRef(null);
     const [wordles, setWordles] = useState<any[]>([]);
     const [are_you_sure_dialog_config, setAreYouSureDialogConfig] = useState<AreYouSureDialogProps | undefined>();
     const [vs_target_wordle, setVSTargetWordle] = useState<any>();
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [snackbar_position, setSnackbarPosition] = useState({top: 0, left: 0});
     const [snackbar_open, setSnackbarOpen] = useState<boolean>(false);
+    const {snackbar_position, parent_ref, setSnackbarParentDOMLoading} = useNewPostSnackbarPosition();
 
     useEffect(() => {
-        if(wordle_list_ref.current !== null) {
-            const client_rect = (wordle_list_ref.current as any).getBoundingClientRect();
-            setSnackbarPosition({ top: client_rect.top, left: client_rect.left + client_rect.width / 2 });
-        }
-
-        const handleScroll = () => {
-            if (wordle_list_ref.current !== null) {
-                const client_rect = (wordle_list_ref.current as any).getBoundingClientRect();
-                setSnackbarPosition({ top: client_rect.top, left: client_rect.left + client_rect.width / 2 });
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-          window.removeEventListener("scroll", handleScroll);
-        };
-    }, [wordle_loading, wordle_list_ref, width, height])
+        setSnackbarParentDOMLoading(wordle_loading);
+    }, [wordle_loading])
 
     // API ///////////////////////////////////////////////////////////////////////
-    const getWordles = (paginate: 'prev' | 'next') => {
-        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordles.length > 0 ? wordles[0].id : null , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
+    const getWordles = (paginate: 'prev' | 'next', latest?: boolean) => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordles.length === 0 || latest ? null : wordles[0].id , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
             if (res.data.status === true) {
                 var res_data = res.data;
                 request_config.response_keys.forEach(key => {
@@ -85,13 +66,16 @@ function WordleList(props: WordleListProps): React.ReactElement {
         if(listen) {
             window.Echo.channel(request_config.listening_channel).listen(request_config.listening_event, (channel_event: any) => {
                 console.log(channel_event);
-                if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
-                    // setWordles((wordles) => [channel_event.wordle, ...wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id))].sort(function(a, b) {
-                    //     return (a.id < b.id) ? 1 : -1;
-                    // }))
+                if(channel_event.event_type === 'create') {
+                    setSnackbarOpen(true); // 新規投稿があったらsnackbarで通知する
+                }
+                if(channel_event.event_type === 'update') {
+                    setWordles((wordles) => wordles.map((wordle) => (
+                        wordle.id === channel_event.wordle.id ? channel_event.wordle : wordle
+                    ))); // 投稿の更新があったらリアルタイムに更新する
                 }
                 if(channel_event.event_type === 'destroy') {
-                    setWordles((wordles) => wordles.filter((wordle) => (wordle.id !== channel_event.wordle.id)));
+                    // 削除された時の処理
                 }
             });
         }
@@ -100,11 +84,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
 
     // new /////////////////////////////////////////////////////////////////////////
     const getWordlesLeatest = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        console.log('leatest');
-
-        // 更新処理
-        // wordle_loadingをtrueにしてwordlesを[]にする?
-
+        getWordles('prev', true);
         setSnackbarOpen(false);
     }
 
@@ -115,6 +95,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const test = () => {
         setSnackbarOpen(true);
     }
+    /////////////////////////////////////////////////////////////////////////
 
     // Page Change ///////////////////////////////////////////////////////////////////////
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -204,11 +185,11 @@ function WordleList(props: WordleListProps): React.ReactElement {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(wordle_loading || wordle_list_ref === null) {
+    if(wordle_loading || parent_ref === null) {
         return (<SuspensePrimary open={true} backdrop={false} />)
     }
     return (
-        <Container maxWidth={'md'} disableGutters ref={wordle_list_ref}>
+        <Container maxWidth={'md'} disableGutters ref={parent_ref} sx={{position: 'relative'}}>
             <Button onClick={test}>testbutton</Button>
             <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
                 <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
@@ -220,7 +201,10 @@ function WordleList(props: WordleListProps): React.ReactElement {
                 handleApiGet={getWordlesLeatest}
                 handleClose={handleSnackbarCloce}
                 message={'New Wordle'}
-                position={snackbar_position}
+                position={{
+                    top: 0,
+                    left: snackbar_position.left
+                }}
             />
             <Grid container spacing={1}>
                 <Grid item container spacing={2} xs={12}>

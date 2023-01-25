@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { Button, IconButton, Snackbar } from '@mui/material';
+import { Box, Button, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@material-ui/icons/Close';
 import { NewPostSnackbarProps } from '@/common/snackbar/newpostsnackbar/types/NewPostSnackbarType';
 import { globalTheme } from '@/Theme';
@@ -31,6 +31,7 @@ function NewPostSnackbar(props: NewPostSnackbarProps): React.ReactElement {
             }}
             sx={{
                 '&.MuiSnackbar-root': {
+                    position: 'absolute', // 親要素にposition: relativeを設定
                     top: `${position.top}px`,
                     left: `${position.left}px`,
                     zIndex: 2, // headerの下に隠れる
