@@ -16,7 +16,6 @@ import { serverTimestamp } from 'firebase/database';
 import { VSPlayOptionData } from '@/wordle/types/VSPlayOptionType';
 import { useAuth } from '@/contexts/AuthContext';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
-import { useWindowDimensions } from '@/common/hooks/WindowDimensions';
 import NewPostSnackbar from '@/common/snackbar/newpostsnackbar/components/NewPostSnackbar';
 import { useElementClientRect } from '@/common/hooks/ElementClientRect';
 
@@ -43,7 +42,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
 
     // API ///////////////////////////////////////////////////////////////////////
     const getWordles = (paginate: 'prev' | 'next', latest?: boolean) => {
-        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordles.length === 0 || latest ? null : wordles[0].id , last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordles.length === 0 || latest ? null : wordles[0].id, last: wordles.length > 0 ? wordles.slice(-1)[0].id : null}}).then(res => {
             if (res.data.status === true) {
                 var res_data = res.data;
                 request_config.response_keys.forEach(key => {
@@ -90,10 +89,6 @@ function WordleList(props: WordleListProps): React.ReactElement {
 
     const handleSnackbarCloce = (event: React.SyntheticEvent | Event) => {
         setSnackbarOpen(false);
-    }
-
-    const test = () => {
-        setSnackbarOpen(true);
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -190,7 +185,6 @@ function WordleList(props: WordleListProps): React.ReactElement {
     }
     return (
         <Container maxWidth={'md'} disableGutters ref={ref} sx={{position: 'relative'}}>
-            <Button onClick={test}>testbutton</Button>
             <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
                 <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
                 <Button onClick={() => setIsOpen(false)}>Close Modal</Button>

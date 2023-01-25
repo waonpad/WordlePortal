@@ -61,10 +61,6 @@ function WordleManage(): React.ReactElement {
         resolver: yupResolver(basicSchemaWordleComment)
     });
 
-    useEffect(() => {
-        console.log(errorsWordleManage)
-    },[errorsWordleManage])
-
     // Tags /////////////////////////////////////////////////////////////
     const handleSelecetedTags = (selectedItem: MuiChipsInputChip[]) => {
         setTags(selectedItem);
@@ -276,8 +272,10 @@ function WordleManage(): React.ReactElement {
                                             api_url: 'wordle/comment/comments',
                                             params: {wordle_id: wordle_id},
                                             response_keys: ['wordle_comments'],
+                                            listening_channel: `wordle_comment.${wordle_id}`,
+                                            listening_event: 'WordleCommentEvent'
                                         }}
-                                        listen={false}
+                                        listen={true}
                                         no_item_text={'No Comments'}
                                     />
                                 </Grid>

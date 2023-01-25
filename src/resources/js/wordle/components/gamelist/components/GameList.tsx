@@ -11,6 +11,8 @@ import SimpleTextCard from '@/common/card/simpletextcard/components/SimpleTextCa
 import AreYouSureDialog from '@/common/dialog/areyousuredialog/components/AreYouSureDialog';
 import { AreYouSureDialogProps } from '@/common/dialog/areyousuredialog/types/AreYouSureDialogType';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
+import NewPostSnackbar from '@/common/snackbar/newpostsnackbar/components/NewPostSnackbar';
+import { useElementClientRect } from '@/common/hooks/ElementClientRect';
 
 declare var window: {
     Echo: any;
@@ -24,10 +26,16 @@ function GameList(props: GameListProps): React.ReactElement {
     const [are_you_sure_dialog_config, setAreYouSureDialogConfig] = useState<AreYouSureDialogProps | undefined>();
     const [vs_target_game, setVSTargetGame] = useState<any>();
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [snackbar_open, setSnackbarOpen] = useState<boolean>(false);
+    const {ref, client_rect, setDOMLoading} = useElementClientRect();
+
+    useEffect(() => {
+        setDOMLoading(game_loading);
+    }, [game_loading])
 
     // API ///////////////////////////////////////////////////////////////////////
-    const getGame = (paginate: 'prev' | 'next') => {
-        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, game_status: game_status, per_page: 10, paginate: paginate, start: games.length > 0 ? games[0].id : null , last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
+    const getGames = (paginate: 'prev' | 'next', latest?: boolean) => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, game_status: game_status, per_page: 10, paginate: paginate, start: games.length === 0 || latest ? null : games[0].id, last: games.length > 0 ? games.slice(-1)[0].id : null}}).then(res => {
             if (res.data.status === true) {
                 var res_data = res.data;
                 request_config.response_keys.forEach(key => {
@@ -46,27 +54,41 @@ function GameList(props: GameListProps): React.ReactElement {
     
     // Channel ////////////////////////////////////////////////////////////////////
 	useEffect(() => {
-        getGame('prev');
+        getGames('prev');
 
         if(listen) {
             window.Echo.channel(request_config.listening_channel).listen(request_config.listening_event, (channel_event: any) => {
                 console.log(channel_event);
-                if(channel_event.event_type === 'create' || channel_event.event_type === 'update') {
-                    setGames((games) => [channel_event.game, ...games.filter((game) => (game.id !== channel_event.game.id))].sort(function(a, b) {
-                        return (a.id < b.id) ? 1 : -1;
-                    }))
+                if(channel_event.event_type === 'create') {
+                    setSnackbarOpen(true); // 新規投稿があったらsnackbarで通知する
+                }
+                if(channel_event.event_type === 'update') {
+                    setGames((games) => games.map((game) => (
+                        game.id === channel_event.game.id ? channel_event.game : game
+                    ))); // 投稿の更新があったらリアルタイムに更新する
                 }
                 if(channel_event.event_type === 'destroy') {
-                    setGames((games) => games.filter((game) => (game.id !== channel_event.game.id)));
+                    // 削除された時の処理
                 }
             });
         }
 	}, [])
     /////////////////////////////////////////////////////////////////////////////////////
 
+    // new /////////////////////////////////////////////////////////////////////////
+    const getGamesLeatest = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        getGames('prev', true);
+        setSnackbarOpen(false);
+    }
+
+    const handleSnackbarCloce = (event: React.SyntheticEvent | Event) => {
+        setSnackbarOpen(false);
+    }
+    /////////////////////////////////////////////////////////////////////////
+
     // Page Change ///////////////////////////////////////////////////////////////////////
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        getGame(event.currentTarget.value as 'prev' | 'next');
+        getGames(event.currentTarget.value as 'prev' | 'next');
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -101,16 +123,26 @@ function GameList(props: GameListProps): React.ReactElement {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(game_loading) {
+    if(game_loading || ref === null) {
         return (<SuspensePrimary open={true} backdrop={false} />)
     }
     return (
-        <Container maxWidth={'md'} disableGutters>
+        <Container maxWidth={'md'} disableGutters ref={ref} sx={{position: 'relative'}}>
             <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
                 <VSPlayOption game={vs_target_game} handleModalClose={setIsOpen} />
                 <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
             </ModalPrimary>
             {are_you_sure_dialog_config && (<AreYouSureDialog {...are_you_sure_dialog_config} />)}
+            <NewPostSnackbar
+                open={snackbar_open}
+                handleApiGet={getGamesLeatest}
+                handleClose={handleSnackbarCloce}
+                message={'New Game'}
+                position={{
+                    top: 0,
+                    left: client_rect ? client_rect!.width / 2 : 0
+                }}
+            />
             <Grid container spacing={1}>
                 <Grid item container spacing={2}>
                     {games.map((game, index) => (

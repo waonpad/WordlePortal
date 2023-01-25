@@ -67,3 +67,7 @@ Broadcast::channel('game_play.{game_uuid}', function ($user, $game_uuid){
 //         ];
 //     }
 });
+
+Broadcast::channel('wordle_comment.{wordle_id}', function (){
+    return true;
+});

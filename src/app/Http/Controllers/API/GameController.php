@@ -296,9 +296,10 @@ class GameController extends Controller
                 ]
             );
         }
-
-        $response_game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($request->game_id !== null ? $request->game_id : $game_id);
-        $this->eventHandler($response_game, $request_type, $response_game->tags);
+        if($request->max_participants > 1) {
+            $response_game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($request->game_id !== null ? $request->game_id : $game_id);
+            $this->eventHandler($response_game, $request_type, $response_game->tags);
+        }
 
         return response()->json([
             'game' => $game,

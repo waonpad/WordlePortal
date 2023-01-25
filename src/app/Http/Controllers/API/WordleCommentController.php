@@ -5,8 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Models\Wordle;
 use App\Models\WordleComment;
+use App\Events\WordleCommentEvent;
 use App\Http\Requests\WordleCommentUpsertRequest;
 use App\Notifications\WordleCommentNotification;
 use Illuminate\Support\Facades\Notification;
@@ -14,6 +16,11 @@ use Illuminate\Support\Facades\Notification;
 class WordleCommentController extends Controller
 {
     use \App\Http\Trait\DataManipulation;
+
+    private function eventHandler($wordle_comment, $event_type)
+    {
+        event(new WordleCommentEvent($wordle_comment, $event_type, $wordle_comment->wordle_id));
+    }
 
     public function comments(Request $request)
     {
@@ -36,6 +43,8 @@ class WordleCommentController extends Controller
             ]);
         }
         
+        $event_type = $request->wordle_comment_id !== null ? 'update' : 'create';
+        
         $wordle_comment = WordleComment::updateOrCreate(
             ['id' => $request->wordle_comment_id],
             [
@@ -45,9 +54,8 @@ class WordleCommentController extends Controller
             ]
         );
 
-        // ページに通知する処理を後から作る
+        $this->eventHandler($wordle_comment, $event_type);
 
-        // ユーザーに通知
         $wordle = Wordle::with('user')->find($request->wordle_id);
         $notify_wordle_comment = WordleComment::with('user', 'wordle')->find($wordle_comment->id);
         Notification::send([$wordle->user], new WordleCommentNotification($notify_wordle_comment));

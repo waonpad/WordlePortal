@@ -7,16 +7,28 @@ import SuspensePrimary from '@/common/suspense/suspenseprimary/components/Suspen
 import SimpleTextListItem from '@/common/listitem/simpletextlistitem/components/SimpleTextListItem';
 import WordleCommentListItem from '@/wordle/components/wordlecommentlist/components/WordleCommentListItem';
 import { WordleCommentListProps } from '@/wordle/components/wordlecommentlist/types/WordleCommentListType';
+import NewPostSnackbar from '@/common/snackbar/newpostsnackbar/components/NewPostSnackbar';
+import { useElementClientRect } from '@/common/hooks/ElementClientRect';
+
+declare var window: {
+    Echo: any;
+}
 
 function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
     const {head, request_config, listen, no_item_text} = props;
 
     const [wordle_comments, setWordleComments] = useState<any[]>([]);
     const [wordle_comments_loading, setWordleCommentsLoading] = useState<boolean>(true);
+    const [snackbar_open, setSnackbarOpen] = useState<boolean>(false);
+    const {ref, client_rect, setDOMLoading} = useElementClientRect();
+
+    useEffect(() => {
+        setDOMLoading(wordle_comments_loading);
+    }, [wordle_comments_loading])
 
     // API /////////////////////////////////////////////////////////////////////////
-    const getWordleComments = (paginate: 'prev' | 'next') => {
-        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordle_comments.length > 0 ? wordle_comments[0].id : null, last: wordle_comments.length > 0 ? wordle_comments.slice(-1)[0].id : null}}).then(res => {
+    const getWordleComments = (paginate: 'prev' | 'next', latest?: boolean) => {
+        axios.get(`/api/${request_config.api_url}`, {params: {...request_config.params, per_page: 10, paginate: paginate, start: wordle_comments.length === 0 || latest ? null : wordle_comments[0].id, last: wordle_comments.length > 0 ? wordle_comments.slice(-1)[0].id : null}}).then(res => {
             if(res.data.status === true) {
                 var res_data = res.data;
                 request_config.response_keys.forEach(key => {
@@ -27,17 +39,41 @@ function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
                 setWordleCommentsLoading(false);
             }
             else if (res.data.status === false) {
-                // TODO: ユーザーが存在しない時の処理
+                // 失敗時の処理
             }
         })
     }
 
     useEffect(() => {
         getWordleComments('prev');
+
+        if(listen) {
+            window.Echo.channel(request_config.listening_channel).listen(request_config.listening_event, (channel_event: any) => {
+                console.log(channel_event);
+                if(channel_event.event_type === 'create') {
+                    setSnackbarOpen(true); // 新規投稿があったらsnackbarで通知する
+                }
+                if(channel_event.event_type === 'update') {
+                    setWordleComments((wordle_comments) => wordle_comments.map((wordle_comment) => (
+                        wordle_comment.id === channel_event.wordle_comment.id ? channel_event.wordle_comment : wordle_comment
+                    ))); // 投稿の更新があったらリアルタイムに更新する
+                }
+                if(channel_event.event_type === 'destroy') {
+                    // 削除された時の処理
+                }
+            });
+        }
     }, []);
 
-    /////////////////////////////////////////////////////////////////////////
-    // チャンネル関連のコードは今は必要無いので書いていない
+    // new /////////////////////////////////////////////////////////////////////////
+    const getWordleCommentsLeatest = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        getWordleComments('prev', true);
+        setSnackbarOpen(false);
+    }
+
+    const handleSnackbarCloce = (event: React.SyntheticEvent | Event) => {
+        setSnackbarOpen(false);
+    }
     /////////////////////////////////////////////////////////////////////////
 
     // Page Change ///////////////////////////////////////////////////////////////////////
@@ -49,7 +85,17 @@ function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
     return (
         <Card elevation={1}>
             {head}
-            <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
+            <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0, position: 'relative'}} ref={ref}>
+                <NewPostSnackbar
+                    open={snackbar_open}
+                    handleApiGet={getWordleCommentsLeatest}
+                    handleClose={handleSnackbarCloce}
+                    message={'New Comment'}
+                    position={{
+                        top: 0,
+                        left: client_rect ? client_rect!.width / 2 : 0
+                    }}
+                />
                 {
                     wordle_comments_loading ?
                     <SuspensePrimary open={true} backdrop={false} />

@@ -8,22 +8,25 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class GameEvent implements ShouldBroadcast
+class WordleCommentEvent implements ShouldBroadcast
 {
     use SerializesModels;
 
-    public $game;
+    public $wordle_comment;
 
     public $event_type;
 
-    public function __construct($game, $event_type)
+    public $wordle_id;
+
+    public function __construct($wordle_comment, $event_type, $wordle_id)
     {
-        $this->game = $game;
+        $this->wordle_comment = $wordle_comment;
         $this->event_type = $event_type;
+        $this->wordle_id = $wordle_id;
     }
 
     public function broadcastOn()
     {
-        return new Channel('game');
+        return new Channel('wordle_comment.' . $this->wordle_id);
     }
 }
