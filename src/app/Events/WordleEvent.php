@@ -1,7 +1,6 @@
 <?php
 namespace App\Events;
 
-use App\Models\Post;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;

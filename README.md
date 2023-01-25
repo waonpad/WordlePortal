@@ -22,7 +22,3 @@ make build
 ## Hot Reload
 appコンテナ内でファイルを監視して自動コンパイル  
 ローカルでファイルを監視してホットリロード
-
-[Base Repository]: https://github.com/mariebell/fullstack-project
-[Reset CSS]: https://raw.githubusercontent.com/twbs/bootstrap/v4-dev/dist/css/bootstrap-reboot.css
-[Auth]: https://akiblog10.com/authentication-spa-laravel-react/

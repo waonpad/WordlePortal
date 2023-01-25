@@ -65,7 +65,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                         </Stack>
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography>{wordle.description}</Typography>
+                        <Typography sx={{whiteSpace: 'pre-line'}}>{wordle.description}</Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>

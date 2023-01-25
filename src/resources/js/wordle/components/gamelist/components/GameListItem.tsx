@@ -69,7 +69,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                         </Stack>
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography>{game.description}</Typography>
+                        <Typography sx={{whiteSpace: 'pre-line'}}>{game.description}</Typography>
                     </Grid>
                     <Grid item container xs={12}>
                         <Grid item>

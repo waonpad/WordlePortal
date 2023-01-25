@@ -14,7 +14,6 @@ class DatabaseChannel extends BaseDatabaseChannel
             'read_at' => null,
             'resource_type' => isset($notification->resource) ? get_class($notification->resource) : null,
             'resource_id' => isset($notification->resource) ? $notification->resource->getKey() : null,
-            // use Illuminate\Notifications\Notification にpublic $resourceを追加する
         ];
     }
 }
