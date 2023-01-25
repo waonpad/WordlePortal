@@ -10,6 +10,7 @@ use App\Models\Wordle;
 use App\Models\Tag;
 use App\Models\WordleTag;
 use App\Events\WordleEvent;
+use App\Events\WordleFollowsEvent;
 use App\Events\WordleTagEvent;
 use App\Http\Requests\WordleUpsertRequest;
 use App\Models\WordleLike;
@@ -22,6 +23,8 @@ class WordleController extends Controller
 
     private function eventHandler($wordle, $event_type, $sync_tags, $dettached_tags = [])
     {
+        $auth_user = User::find(Auth::user()->id);
+
         event(new WordleEvent($wordle, $event_type));
 
         foreach($sync_tags as $tag) {
@@ -30,6 +33,10 @@ class WordleController extends Controller
 
         foreach($dettached_tags as $tag) {
             event(new WordleTagEvent($wordle, 'destroy', $tag->id));
+        }
+
+        foreach($auth_user->followers()->get()->toArray() as $follower) {
+            event(new WordleFollowsEvent($wordle, $event_type, $follower['id']));
         }
     }
 
@@ -56,13 +63,15 @@ class WordleController extends Controller
         }
 
         // 空要素を削除、重複削除した結果wordが10個無ければエラー
-        $recognized_words = array_unique(array_filter($request->words, function($value){
+        $recognized_words = array_unique(array_map(function($word){
+            return mb_convert_kana(strtoupper($word), "KVCn"); // 大文字小文字、ひらがなカタカナを合わせる
+        }, array_filter($request->words, function($value){
             if( empty($value) && $value !== '0' && $value !== 0 ) {
                 return false;
             } else {
                 return true;
             }
-        }));
+        })));
         $recognized_words = array_values($recognized_words);
         if(count($recognized_words) < 10) {
             return response()->json([
@@ -107,8 +116,11 @@ class WordleController extends Controller
 
         $this->eventHandler($response_wordle, $event_type, $sync_tags, $dettached_tags);
 
+        $auth_user = User::find(Auth::user()->id);
+
         return response()->json([
-            'status' => true
+            'status' => true,
+            'fo' => $auth_user->followers()->get()->toArray()
         ]);
     }
     

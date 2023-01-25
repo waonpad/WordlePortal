@@ -18,7 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import { useWindowDimensions } from '@/common/hooks/WindowDimensions';
 import NewPostSnackbar from '@/common/snackbar/newpostsnackbar/components/NewPostSnackbar';
-import { useNewPostSnackbarPosition } from '@/common/hooks/NewPostSnackbarPosition';
+import { useElementClientRect } from '@/common/hooks/ElementClientRect';
 
 declare var window: {
     Echo: any;
@@ -35,10 +35,10 @@ function WordleList(props: WordleListProps): React.ReactElement {
     const [vs_target_wordle, setVSTargetWordle] = useState<any>();
     const [modalIsOpen, setIsOpen] = useState(false);
     const [snackbar_open, setSnackbarOpen] = useState<boolean>(false);
-    const {snackbar_position, parent_ref, setSnackbarParentDOMLoading} = useNewPostSnackbarPosition();
+    const {ref, client_rect, setDOMLoading} = useElementClientRect();
 
     useEffect(() => {
-        setSnackbarParentDOMLoading(wordle_loading);
+        setDOMLoading(wordle_loading);
     }, [wordle_loading])
 
     // API ///////////////////////////////////////////////////////////////////////
@@ -185,11 +185,11 @@ function WordleList(props: WordleListProps): React.ReactElement {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(wordle_loading || parent_ref === null) {
+    if(wordle_loading || ref === null) {
         return (<SuspensePrimary open={true} backdrop={false} />)
     }
     return (
-        <Container maxWidth={'md'} disableGutters ref={parent_ref} sx={{position: 'relative'}}>
+        <Container maxWidth={'md'} disableGutters ref={ref} sx={{position: 'relative'}}>
             <Button onClick={test}>testbutton</Button>
             <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
                 <VSPlayOption wordle={vs_target_wordle} handleModalClose={setIsOpen} />
@@ -203,7 +203,7 @@ function WordleList(props: WordleListProps): React.ReactElement {
                 message={'New Wordle'}
                 position={{
                     top: 0,
-                    left: snackbar_position.left
+                    left: client_rect ? client_rect!.width / 2 : 0
                 }}
             />
             <Grid container spacing={1}>
