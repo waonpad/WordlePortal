@@ -442,10 +442,6 @@ function Wordle(): React.ReactElement {
     }, [counter]);
     /////////////////////////////////////////////////////////////////////////
 
-    useEffect(() => {
-        console.log(errata_list)
-    }, [errata_list])
-
     // errata ///////////////////////////////////////////////////////////////////////
     const mergeErrata = (game_status: any, game_words: any) => {
         const game_input_logs = game_status.game_input_logs;
@@ -537,6 +533,7 @@ function Wordle(): React.ReactElement {
             }
         })
     }
+    /////////////////////////////////////////////////////////////////////////
 
     if(initial_load || firebase_game_data?.users == undefined || game_status == undefined) {
         return (<SuspensePrimary open={true} backdrop={true} />)

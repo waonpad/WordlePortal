@@ -329,7 +329,6 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                 >
                     {children}
                 </Container>
-                <SimpleFooter />
             </Box>
             {renderMobileMenu}
             {renderMenu}

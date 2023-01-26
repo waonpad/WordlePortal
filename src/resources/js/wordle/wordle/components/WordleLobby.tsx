@@ -13,17 +13,17 @@ function WordleLobby(props: WordleLobbyProps): React.ReactElement {
     return (
         <Container maxWidth={'md'}>
             <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={game_status.game.status === 'wait' ? 12 : 6}>
                     <WordleGamePrimaryDetail
                         game={game_status.game}
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={game_status.game.status === 'wait' ? 12 : 6}>
                     <WordleGameUserList
                         users={firebase_game_data.users}
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{display: game_status?.game?.status === 'wait' ? 'block' : 'none'}}>
                     <Button
                         fullWidth
                         variant='contained'

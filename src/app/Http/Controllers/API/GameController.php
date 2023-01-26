@@ -17,7 +17,7 @@ use App\Http\Requests\GameUpsertRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
-// TODO: visibilityに関する設定をする
+// TODO: visibilityについては今後余裕ができたら設定する
 
 class GameController extends Controller
 {

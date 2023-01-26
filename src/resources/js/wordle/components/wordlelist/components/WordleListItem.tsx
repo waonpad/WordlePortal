@@ -48,7 +48,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                 }
                 sx={{pb: 1}}
             />
-            <CardContent sx={{pt: 0, "&:last-child": {pb: 1}}}>
+            <CardContent sx={{pt: 0, "&:last-child": {pb: 1.5}}}>
                 <Grid container spacing={1}>
                     <Grid item xs={12}>
                         <Typography variant="h5">
