@@ -37,15 +37,15 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
     const history = useHistory();
     const [loading, setLoading] = useState(false);
 
-    // Visibility ///////////////////////////////////////////////////////////////////////
-    const [visibility, setVisibility] = useState<'true' | 'false'>(game ? game.visibility === 1 ? 'true' : 'false' : 'true');
+    // // Visibility ///////////////////////////////////////////////////////////////////////
+    // const [visibility, setVisibility] = useState<'true' | 'false'>(game ? game.visibility === 1 ? 'true' : 'false' : 'true');
 
-    const handleChangeVisibility = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target);
-        console.log(event.target.value);
-        setVisibility((event.target.value as any));
-    };
-    //////////////////////////////////////////////////////////////////////////
+    // const handleChangeVisibility = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     console.log(event.target);
+    //     console.log(event.target.value);
+    //     setVisibility((event.target.value as any));
+    // };
+    // //////////////////////////////////////////////////////////////////////////
 
     // Coloring ///////////////////////////////////////////////////////////////////////
     const [coloring, setColoring] = useState<'true' | 'false'>(game ? game.coloring === 1 ? 'true' : 'false' : 'true');
@@ -67,7 +67,8 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
         setLoading(true);
         data.game_id = game ? game.id : null;
         data.wordle_id = game ? game.wordle_id : wordle.id;
-        data.visibility = visibility === 'true' ? true : false;
+        // data.visibility = visibility === 'true' ? true : false;
+        data.visibility = true;
         data.coloring = coloring === 'true' ? true : false;
         console.log(data);
         
@@ -136,7 +137,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         helperText={errors.laps?.message}
                     />
                 </Grid>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <FormControl error={errors.visibility ? true : false}>
                         <FormLabel id="demo-controlled-radio-buttons-group">Visibility</FormLabel>
                         <RadioGroup
@@ -152,7 +153,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                         </RadioGroup>
                         <FormHelperText>{errors.visibility?.message}</FormHelperText>
                     </FormControl>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                     <TextField
                         required

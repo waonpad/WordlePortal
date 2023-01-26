@@ -12,7 +12,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { Link, useHistory } from "react-router-dom";
+import { Box } from '@mui/material';
 import { DrawerPrimaryProps } from '@/common/drawer/drawerprimary/types/DrawerPrimaryType';
+import SimpleFooter from '@/common/footer/simplefooter/components/SimpleFooter';
 
 function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
     const {classes, open, handleDrawerOpen, } = props;
@@ -26,8 +28,9 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
             anchor="left"
             open={open}
             classes={{
-            paper: classes.drawerPaper,
-        }}
+                paper: classes.drawerPaper,
+            }}
+            style={{height: '100vh', position: 'relative'}}
         >
         <div className={props.classes.drawerHeader}>
             <IconButton onClick={handleDrawerOpen}>
@@ -35,31 +38,41 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
             </IconButton>
         </div>
         <Divider />
-        <List>
+        <List style={{paddingTop: 0}}>
             <ListItem button component={Link} to='/' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemIcon><Home /></ListItemIcon>
                 <ListItemText primary='Home'></ListItemText>
             </ListItem>
+            <Divider />
             <ListItem button component={Link} to='/wordle/follows' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemIcon><TimelineIcon /></ListItemIcon>
                 <ListItemText primary='TimeLine'></ListItemText>
             </ListItem>
+            <Divider />
             <ListItem button component={Link} to='/wordle/create' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Wordle Create'></ListItemText>
             </ListItem>
+            <Divider />
             <ListItem button component={Link} to='/wordle/manage/1' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Wordle Manage 1'></ListItemText>
             </ListItem>
+            <Divider />
             <ListItem button component={Link} to='/search' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Search'></ListItemText>
             </ListItem>
+            <Divider />
             <ListItem button component={Link} to='/wordle/game/1' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Wordle Game 1'></ListItemText>
             </ListItem>
+            <Divider />
             <ListItem button component={Link} to='/wordle/game/1/1' style={{ textDecoration: 'none', color: "inherit" }}>
                 <ListItemText primary='Wordle Game 1 - 1'></ListItemText>
             </ListItem>
+            <Divider />
         </List>
+        <Box sx={{position: 'absolute', bottom: '8px', display: 'flex', alignItems: "center", justifyContent: "center", width: '100%'}}>
+            <SimpleFooter wrap={true} />
+        </Box>
         </Drawer>
     )
 };

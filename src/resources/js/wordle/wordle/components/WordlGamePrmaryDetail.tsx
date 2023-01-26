@@ -28,7 +28,7 @@ function WordleGamePrimaryDetail(props: WordleGamePrimaryDetailProps): React.Rea
 
     return (
         <Card elevation={1}>
-            <CardContent sx={{pt: 0, "&:last-child": {pb: 1}}}>
+            <CardContent sx={{pt: 1.5, "&:last-child": {pb: 1.5}}}>
                 <Grid container spacing={1}>
                     <Grid item xs={12}>
                         <Typography variant="h5">
@@ -43,7 +43,7 @@ function WordleGamePrimaryDetail(props: WordleGamePrimaryDetailProps): React.Rea
                             ))}
                         </Stack>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{display: game.status === 'wait' ? 'block' : 'none'}}>
                         <Typography sx={{whiteSpace: 'pre-line'}}>{game.description}</Typography>
                     </Grid>
                     <Grid item container xs={12}>
