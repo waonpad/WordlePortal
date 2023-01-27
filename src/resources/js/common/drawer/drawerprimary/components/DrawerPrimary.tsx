@@ -53,22 +53,6 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
                 <ListItemText primary='Wordle Create'></ListItemText>
             </ListItem>
             <Divider />
-            <ListItem button component={Link} to='/wordle/manage/1' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemText primary='Wordle Manage 1'></ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem button component={Link} to='/search' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemText primary='Search'></ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem button component={Link} to='/wordle/game/1' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemText primary='Wordle Game 1'></ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem button component={Link} to='/wordle/game/1/1' style={{ textDecoration: 'none', color: "inherit" }}>
-                <ListItemText primary='Wordle Game 1 - 1'></ListItemText>
-            </ListItem>
-            <Divider />
         </List>
         <Box sx={{position: 'absolute', bottom: '8px', display: 'flex', alignItems: "center", justifyContent: "center", width: '100%'}}>
             <SimpleFooter wrap={true} />

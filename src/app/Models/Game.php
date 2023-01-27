@@ -32,7 +32,8 @@ class Game extends Model
     ];
 
     protected $hidden = [
-        'answer'
+        'answer',
+        'words'
     ];
     
     protected $casts = [

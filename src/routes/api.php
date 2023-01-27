@@ -68,6 +68,7 @@ Route::prefix('wordle')->group(function (){
     Route::get('userlikes', [WordleController::class, 'userLikes']);
     Route::post('upsert', [WordleController::class, 'upsert'])->middleware('auth');
     Route::get('show', [WordleController::class, 'show'])->middleware('auth');
+    Route::get('manage', [WordleController::class, 'manage'])->middleware('auth');
     Route::post('destroy', [WordleController::class, 'destroy'])->middleware('auth');
     Route::get('search', [WordleController::class, 'search']);
     Route::post('liketoggle', [WordleController::class, 'likeToggle'])->middleware('auth');

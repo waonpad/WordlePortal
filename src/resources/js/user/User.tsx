@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import swal from "sweetalert";
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
 import { Button, Container, Grid, Paper, Typography } from '@mui/material';
@@ -55,7 +56,7 @@ function User(props: any): React.ReactElement {
                     setLoading(false);
                 }
                 else if (res.data.status === false) {
-                    // TODO: ユーザーが存在しない時の処理
+                    swal("Error", res.data.message, "error");
                 }
             })
         }
@@ -90,20 +91,20 @@ function User(props: any): React.ReactElement {
                         />
                     </Grid>
                     {/* フォロー中のタグ？ */}
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <Paper elevation={1} sx={{minWidth: '100%'}}>
                             <Typography>Paper</Typography>
                         </Paper>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
                 {/* 右のエリア */}
                 <Grid item container xs={8} spacing={2} height={'fit-content'}>
                     {/* 成績 */}
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <Paper elevation={1} sx={{minWidth: '100%'}}>
                             <Typography>Paper</Typography>
                         </Paper>
-                    </Grid>
+                    </Grid> */}
                     {/* 待機中のゲーム */}
                     <Grid item xs={12}>
                         <Button
@@ -116,7 +117,7 @@ function User(props: any): React.ReactElement {
                     </Grid>
                     <Grid item xs={12}>
                         <GameList
-                            game_status={['wait', 'start']} // start消す?
+                            game_status={['wait', 'start']}
                             request_config={{
                                 api_url: 'wordle/game/user',
                                 params: {screen_name: screen_name},

@@ -3,18 +3,18 @@ import swal from "sweetalert";
 import { useParams, useHistory, useLocation } from "react-router-dom";
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Backdrop, CircularProgress, IconButton, TextField, Button, FormLabel, FormControl, FormGroup, FormControlLabel, FormHelperText, Checkbox, Grid, Box, Typography, Container } from '@mui/material';
+import { TextField, Grid, Box, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { MuiChipsInput, MuiChipsInputChip } from 'mui-chips-input';
+import { MuiChipsInputChip } from 'mui-chips-input';
 import { WordleData, WordleErrorData, WordleDefaultData } from '@/wordle/types/WordleType';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import WordleCommentList from '@/wordle/components/wordlecommentlist/components/WordleCommentList';
 import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import WordlePrimaryManage from '@/wordle/wordlemanage/components/WordlePrimaryManage';
 import SimpleTextCard from '@/common/card/simpletextcard/components/SimpleTextCard';
-import { WordleCommentData, WordleCommentErrorData } from '../types/WordleCommentType';
+import { WordleCommentData, WordleCommentErrorData } from '@/wordle/types/WordleCommentType';
 
 function WordleManage(): React.ReactElement {
     const basicSchemaWordleManage = Yup.object().shape({
@@ -26,7 +26,7 @@ function WordleManage(): React.ReactElement {
                 // )
                 // TextFieldを消しても実際のデータが消えないので本来無いデータがバリデーションされる
                 // ここでは処理せずバックエンドでバリデーションする
-                .unique("must be unique", (val: any) => val || val === '') // TODO: カタカナひらがなを同一のものとして扱いたい
+                .unique("must be unique", (val: any) => val || val === '')
                 // .test('', 'words field must have at least 10 items', (words: any) => words?.filter(function(word: any){
                 //     return !(word === null || word === undefined || word === "");
                 // }).length >= 10)
@@ -41,6 +41,7 @@ function WordleManage(): React.ReactElement {
         comment: Yup.string().max(255),
     });
     const location = useLocation();
+    const history = useHistory();
     const {wordle_id} = useParams<{wordle_id: string}>();
     const [wordle_default_data, setWordleDefaultData] = useState<WordleDefaultData>();
     const [initial_load, setInitialLoad] = useState(true);
@@ -104,6 +105,7 @@ function WordleManage(): React.ReactElement {
         data.id = Number(wordle_id) ?? null;
         data.tags = tags;
         data.words = words;
+        typeof data.input === 'string' ? data.input = [data.input] : false;
         setLoading(true);
 
         console.log(data);
@@ -111,7 +113,7 @@ function WordleManage(): React.ReactElement {
         axios.post('/api/wordle/upsert', data).then(res => {
             if (res.data.status === true) {
                 swal("Success", "登録成功", "success");
-                // setTimeout((() => {history.push('/')}), 4000);
+                setTimeout((() => {history.push('/')}), 4000);
                 setLoading(false)
             }
             else if (res.data.status === false) {
@@ -156,23 +158,22 @@ function WordleManage(): React.ReactElement {
     /////////////////////////////////////////////////////////////////////////////////////
 
 	useEffect(() => {
-        // 作成済、管理用
+        // 管理用
         if (location.pathname ===  `/wordle/manage/${wordle_id}`) {
-            axios.get('/api/wordle/show',  {params: {wordle_id: wordle_id}}).then(res => {
+            axios.get('/api/wordle/manage',  {params: {wordle_id: wordle_id}}).then(res => {
                 if (res.data.status === true) {
-                    // 初期データ注入
                     const wordle: WordleDefaultData = res.data.wordle;
                     setWordleDefaultData(wordle);
                     setTags(wordle.tags.map(tag => tag.name));
                     wordle.input.forEach(target_input => {
                         mergeDefaultInput(target_input);
                     });
-                    setWords([...wordle.words, '']);
+                    setWords([...res.data.words, '']);
+                    setInitialLoad(false)
                 }
                 else if (res.data.status === false) {
-                    // wordleが存在しなかった時の処理
+                    swal("Error", res.data.message, "error");
                 }
-                setInitialLoad(false)
             })
         }
         // 作成用
@@ -190,7 +191,7 @@ function WordleManage(): React.ReactElement {
         <Container maxWidth={'lg'}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Typography component="h1" variant="h5">
+                    <Typography component="h1" variant="h5" color='primary' fontWeight='bold'>
                         Wordle {wordle_id ? 'Manage' : 'Create'}
                     </Typography>
                 </Grid>
@@ -281,7 +282,7 @@ function WordleManage(): React.ReactElement {
                                 </Grid>
                             </Grid>
                             :
-                            // TODO: createの時に表示するものを決める
+                            // TODO: 説明等createの時に表示するものが欲しい
                             <SimpleTextCard
                                 text={'Comment Area'}
                             />

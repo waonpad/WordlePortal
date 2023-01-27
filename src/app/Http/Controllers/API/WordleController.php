@@ -128,8 +128,32 @@ class WordleController extends Controller
     {
         $wordle = Wordle::with('user', 'tags', 'likes')->find($request->wordle_id);
 
+        $words = Auth::user()->id === $wordle->user_id ? $wordle->words : [];
+
         return response()->json([
             'wordle' => $wordle,
+            'words' => $words,
+            'status' => true
+        ]);
+    }
+
+    public function manage(Request $request)
+    {
+
+        $wordle = Wordle::with('user', 'tags', 'likes')->find($request->wordle_id);
+
+        if(Auth::user()->id !== $wordle->user_id) {
+            return response()->json([
+                'status' => false,
+                'message' => '作成者ではない'
+            ]);
+        }
+
+        $words = Auth::user()->id === $wordle->user_id ? $wordle->words : [];
+
+        return response()->json([
+            'wordle' => $wordle,
+            'words' => $words,
             'status' => true
         ]);
     }

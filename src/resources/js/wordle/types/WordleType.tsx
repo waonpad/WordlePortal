@@ -117,5 +117,6 @@ export type WordleListItemProps = {
 
 export type WordleInputSelectButtonGroupProps = {
     input: string[];
+    display_input_component: DisplayInputComponent;
     handleDisplayInputComponentSelect: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }

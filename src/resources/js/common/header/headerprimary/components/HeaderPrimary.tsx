@@ -1,35 +1,26 @@
 import React, { useState, forwardRef, useEffect } from 'react';
-import Container from '@mui/material/Container';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import { Badge } from '@mui/material';
-import Popover from '@material-ui/core/Popover';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Popover,Button, Box } from '@material-ui/core';
+import { Badge, Container } from '@mui/material';
 import { Home, Chat, Forum, Group, Login, PersonAdd } from '@mui/icons-material';
 import { Settings } from '@material-ui/icons';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { Button, Card, Box } from '@material-ui/core';
 import InfoIcon from '@mui/icons-material/Info';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
-import { Link, useHistory } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import { HeaderPrimaryStyle } from '@/common/header/headerprimary/styles/HeaderPrimaryStyle';
 import DrawerPrimary from '@/common/drawer/drawerprimary/components/DrawerPrimary';
 import HeaderSearch from '@/common/header/headerprimary/components/HeaderSearch';
 import { useNotification } from '@/contexts/NotificationContext';
-import SimpleFooter from '@/common/footer/simplefooter/components/SimpleFooter';
 import { HeaderPrimaryProps } from '@/common/header/headerprimary/types/HeaderPrimaryType';
 import { yellow, green, grey } from '@mui/material/colors';
 import NotificationList from '@/common/notification/components/NotificationList';
 import { NotificationListProps } from '@/common/notification/types/NotificationListType';
+import FabWordleCreate from '@/common/fab/fabwordlecreate/components/FabWordleCreate';
 
 /////////////////////////////////////////////////////////////////////////
 // muiのバージョンが違い、スタイルの書き方も違うため個別に設定しないといけない
@@ -70,7 +61,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
 
     const handleNotificationClose = () => {
         setNotificationAnchorEl(null);
-        // notification?.readAllNotifications(); // TODO: テスト用に既読処理を外している 後でコメントアウトを解除
+        notification?.readAllNotifications(); // TODO: テスト用に既読処理を外している 後でコメントアウトを解除
     }
     
     const notificationPopoverId = 'primary--notification';
@@ -249,7 +240,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     )
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} style={{ minHeight: '100vh'}}>
             <AppBar
                 position="fixed"
                 className={classes.appBar}
@@ -326,6 +317,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                 <Container
                     component="main"
                     maxWidth={false}
+                    sx={{mb: 5}}
                 >
                     {children}
                 </Container>
@@ -334,6 +326,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             {renderMenu}
             {renderSettingMenu}
             {renderNotificationPopover}
+            <FabWordleCreate />
         </div>
     );
 }
