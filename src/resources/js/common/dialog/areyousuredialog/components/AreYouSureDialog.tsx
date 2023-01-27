@@ -9,10 +9,10 @@ import { AreYouSureDialogProps } from '@/common/dialog/areyousuredialog/types/Ar
 export default function AreYouSureDialog(props: AreYouSureDialogProps) {
     const {
         onClose,
-        title = "削除してもよろしいですか？",
-        message = "一度削除すると元に戻すことはできません。",
-        okText = "削除する",
-        cancelText = "キャンセル",
+        title = "Are you sure?",
+        message = "Once deleted, it cannot be undone",
+        okText = "Delete",
+        cancelText = "Cancel",
         okColor = "error",
         cancelColor = "primary"
     } = props;

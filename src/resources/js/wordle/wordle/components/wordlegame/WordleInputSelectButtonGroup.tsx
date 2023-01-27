@@ -6,16 +6,17 @@ import KeyboardIcon from '@mui/icons-material/Keyboard';
 import { WordleInputSelectButtonGroupProps } from '@/wordle/types/WordleType';
 
 function WordleInputSelectButtonGroup(props: WordleInputSelectButtonGroupProps): React.ReactElement {
-    const {input, handleDisplayInputComponentSelect} = props;
+    const {input, display_input_component, handleDisplayInputComponentSelect} = props;
 
     return (
         <Box>
-            <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                {/* {(input as any[]).map((input, index) => ( */}
-                {(['japanese', 'english', 'number', 'typing']).map((input, index) => (
+            <ButtonGroup sx={{backgroundColor: '#fff'}}>
+                {(input as any[]).map((input, index) => (
+                // {/* {(['japanese', 'english', 'number', 'typing']).map((input, index) => ( */}
                     <Button
                         key={index}
                         value={input}
+                        variant={input === display_input_component ? 'contained' : 'outlined'}
                         onClick={handleDisplayInputComponentSelect}
                         sx={{fontWeight: 'bold'}}
                     >

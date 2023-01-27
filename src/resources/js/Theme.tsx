@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import { green, grey, yellow } from '@mui/material/colors';
 
 export const globalTheme = createTheme({
@@ -15,10 +15,18 @@ export const globalTheme = createTheme({
     components: {
         MuiBackdrop: {
             defaultProps: {
-                sx: {
-                    backgroundColor: '#f5f5f5',
-                }
+                sx: {backgroundColor: '#f5f5f5'}
             }
-        }
-    }
+        },
+        MuiOutlinedInput: {
+            defaultProps: {
+                sx: {background: '#fff'}
+            }
+        },
+        MuiCssBaseline: {
+            styleOverrides: {
+                '&.swal-button': {backgroundColor: green[400]}
+            }
+        },
+    },
 });

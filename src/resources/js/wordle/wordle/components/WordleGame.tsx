@@ -8,6 +8,7 @@ import WordleBoard from '@/wordle/wordle/components/wordlegame/WordleBoard';
 import { WordleGameProps } from '@/wordle/types/WordleType';
 import { WordleGameStyle } from '@/wordle/wordle/styles/WordleGameStyle';
 import WordleGamePrimaryDetail from './WordlGamePrmaryDetail';
+import { green, grey, yellow } from '@mui/material/colors';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
     const {
@@ -30,6 +31,11 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
     return (
         <Container sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Grid container spacing={2} sx={{maxWidth: '910px'}}>
+
+                {/* 参加者一覧表示用のモーダルを出す */}
+                {/* 終わったときにステータスを出す */}
+                {/* コメントもできるようにする */}
+
                 {/* 情報表示エリア */}
                 <Grid item xs={12}>
                     <WordleGamePrimaryDetail game={game_status.game} />
@@ -42,12 +48,13 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                     {/* input切り替えボタングループ */}
                     <WordleInputSelectButtonGroup
                         input={game_status?.game?.input}
+                        display_input_component={display_input_component}
                         handleDisplayInputComponentSelect={handleDisplayInputComponentSelect}
                     />
                     {/* 削除と送信 */}
                     <Stack spacing={2} direction="row" sx={{ml: 5}}>
-                        <IconButton color='inherit' onClick={handleInputBackSpace}>
-                            <BackspaceIcon />
+                        <IconButton sx={{p: 0}} onClick={handleInputBackSpace}>
+                            <BackspaceIcon fontSize='large' sx={{color: grey[400]}} />
                         </IconButton>
                         <LoadingButton
                             loading={loading}

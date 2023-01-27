@@ -48,9 +48,9 @@ class UserController extends Controller
         $target_user = User::with([
             'followers', 'follows',
             'wordles.user', 'wordles.tags', 'wordles.likes',
-            'wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes',
-            'games.user', 'games.gameUsers.user', 'games.gameLogs',
-            'joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs',
+            // 'wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes',
+            // 'games.user', 'games.gameUsers.user', 'games.gameLogs',
+            // 'joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs',
             // 投稿関連は数を取得する以外に今は使っていない
         ])->where('screen_name', $request->screen_name)->first();
 
@@ -58,8 +58,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'user' => $ff_checked_target_user,
-            // 'user' => $target_user
+            'user' => $ff_checked_target_user
         ]);
     }
 

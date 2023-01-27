@@ -17,6 +17,10 @@ class Wordle extends Model
         'description'
     ];
 
+    protected $hidden = [
+        'words'
+    ];
+
     protected $casts = [
         'words' => 'json',
         'input' => 'json'
