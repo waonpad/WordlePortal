@@ -5,6 +5,7 @@ import WordleJapaneseCharacters from '@/wordle/wordle/components/wordlegame/word
 import WordleEnglishCharacters from '@/wordle/wordle/components/wordlegame/wordleinput/WordleEnglishCharacters';
 import WordleNumberCharacters from '@/wordle/wordle/components/wordlegame/wordleinput/WordleNumberCharacters';
 import WordleTyping from '@/wordle/wordle/components/wordlegame/wordleinput/WordleTyping';
+import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 
 function WordleInput(props: WordleInputProps): React.ReactElement {
     const {classes, coloring, turn_flag, handleInputStack, errata, input_stack, handleTypingStack, display_input_component} = props;
@@ -47,7 +48,7 @@ function WordleInput(props: WordleInputProps): React.ReactElement {
                         handleTypingStack={handleTypingStack}
                     />
                 :
-                <CircularProgress color="inherit" />
+                <></>
             }
         </React.Fragment>
     )

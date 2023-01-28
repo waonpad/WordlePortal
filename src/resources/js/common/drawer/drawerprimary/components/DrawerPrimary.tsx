@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { Link, useHistory } from "react-router-dom";
 import { Box } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import { DrawerPrimaryProps } from '@/common/drawer/drawerprimary/types/DrawerPrimaryType';
 import SimpleFooter from '@/common/footer/simplefooter/components/SimpleFooter';
 
@@ -50,6 +51,7 @@ function DrawerPrimary(props: DrawerPrimaryProps): React.ReactElement {
             </ListItem>
             <Divider />
             <ListItem button component={Link} to='/wordle/create' style={{ textDecoration: 'none', color: "inherit" }}>
+                <ListItemIcon><EditIcon /></ListItemIcon>
                 <ListItemText primary='Wordle Create'></ListItemText>
             </ListItem>
             <Divider />

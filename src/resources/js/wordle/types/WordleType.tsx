@@ -88,6 +88,7 @@ export type WordleGameProps = {
     loading: boolean;
     errata_list: ErrataList;
     display_input_component: 'japanese' | 'english' | 'number' | 'typing' | null;
+    firebase_game_data: any;
 }
 
 export type WordleLobbyProps = {

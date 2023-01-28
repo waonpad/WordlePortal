@@ -18,11 +18,11 @@ import InvertColorsOffIcon from '@mui/icons-material/InvertColorsOff'; // 着色
 import { useAuth } from '@/contexts/AuthContext';
 
 export type WordleGamePrimaryDetailProps = {
-    game: any;
+    game_status: any;
 }
 
 function WordleGamePrimaryDetail(props: WordleGamePrimaryDetailProps): React.ReactElement {
-    const {game} = props;
+    const {game_status} = props;
 
     const auth = useAuth();
 
@@ -32,25 +32,25 @@ function WordleGamePrimaryDetail(props: WordleGamePrimaryDetailProps): React.Rea
                 <Grid container spacing={1}>
                     <Grid item xs={12}>
                         <Typography variant="h5">
-                            {game.name}
+                            {game_status.game.name}
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1, alignItems: 'center'}}>
                             <LocalOfferIcon sx={{color: '#757575'}} />
-                            {(game.tags as any[]).map((tag: any, index: number) => (
+                            {(game_status.game.tags as any[]).map((tag: any, index: number) => (
                                 <Link to={`/wordle/game/tag/${tag.id}`} key={index}><Chip clickable label={tag.name} /></Link>
                             ))}
                         </Stack>
                     </Grid>
-                    <Grid item xs={12} sx={{display: game.status === 'wait' ? 'block' : 'none'}}>
-                        <Typography sx={{whiteSpace: 'pre-line'}}>{game.description}</Typography>
+                    <Grid item xs={12} sx={{display: game_status.game.status === 'wait' ? 'block' : 'none'}}>
+                        <Typography sx={{whiteSpace: 'pre-line'}}>{game_status.game.description}</Typography>
                     </Grid>
                     <Grid item container xs={12}>
                         <Grid item>
                             <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
                             {/* <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1, marginLeft: 'auto'}}> */}
-                                {(game.input as string[]).map((input: string, index: number) => (
+                                {(game_status.game.input as string[]).map((input: string, index: number) => (
                                     <Chip key={index} sx={{borderRadius: '4px', fontWeight: 'bold', color: '#757575'}} label={
                                         input === 'japanese' ? 'あ'
                                         : input === 'english' ? <AbcIcon />
@@ -63,29 +63,29 @@ function WordleGamePrimaryDetail(props: WordleGamePrimaryDetailProps): React.Rea
                         </Grid>
                         <Grid item sx={{marginLeft: 'auto'}}>
                             <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
-                                <Tooltip title={`Max Participants: ${game.max_participants}`}>
+                                <Tooltip title={`Max Participants: ${game_status.game.max_participants}`}>
                                     <Chip sx={{borderRadius: '4px', fontWeight: 'bold', color: '#757575'}}
                                         icon={<PersonIcon />}
                                         // firebaseから現在の参加者を取得する？(めんどう・・・)
-                                        // label={`0 / ${game.max_participants}`}
-                                        label={game.status === 'end' ? game.game_users.length : game.max_participants}
+                                        // label={`0 / ${game_status.game.max_participants}`}
+                                        label={game_status.game.status === 'end' ? game_status.game_users.length : game_status.game.max_participants}
                                     />
                                 </Tooltip>
-                                <Tooltip title={`Laps: ${game.laps}`}>
+                                <Tooltip title={`Laps: ${game_status.game.laps}`}>
                                     <Chip sx={{borderRadius: '4px', fontWeight: 'bold', color: '#757575'}}
                                         icon={<AutorenewIcon />}
-                                        label={game.laps}
+                                        label={game_status.game.laps}
                                     />
                                 </Tooltip>
-                                <Tooltip title={`Answer Time Limit: ${game.answer_time_limit ? `${game.answer_time_limit}s` : 'none'}`}>
+                                <Tooltip title={`Answer Time Limit: ${game_status.game.answer_time_limit ? `${game_status.game.answer_time_limit}s` : 'none'}`}>
                                     <Chip sx={{borderRadius: '4px', fontWeight: 'bold', color: '#757575'}}
-                                        icon={game.answer_time_limit ? <AlarmIcon /> : <></>}
-                                        label={game.answer_time_limit ? `${game.answer_time_limit}s` : <AlarmOffIcon />}
+                                        icon={game_status.game.answer_time_limit ? <AlarmIcon /> : <></>}
+                                        label={game_status.game.answer_time_limit ? `${game_status.game.answer_time_limit}s` : <AlarmOffIcon />}
                                     />
                                 </Tooltip>
-                                <Tooltip title={`Coloring: ${game.coloring ? 'Colored' : 'Plain'}`}>
+                                <Tooltip title={`Coloring: ${game_status.game.coloring ? 'Colored' : 'Plain'}`}>
                                     <Chip sx={{borderRadius: '4px', fontWeight: 'bold', color: '#757575'}}
-                                        label={game.coloring ? <InvertColorsIcon /> : <InvertColorsOffIcon />}
+                                        label={game_status.game.coloring ? <InvertColorsIcon /> : <InvertColorsOffIcon />}
                                     />
                                 </Tooltip>
                             </Stack>

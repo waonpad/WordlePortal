@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container, Grid } from '@mui/material';
 import { useAuth } from '@/contexts/AuthContext';
 import { WordleLobbyProps } from '@/wordle/types/WordleType';
-import WordleGameUserList from './wordlegameuserlist/WordleGameUserList';
-import WordleGamePrimaryDetail from './WordlGamePrmaryDetail';
+import WordleGameUserList from '@/wordle/wordle/components/wordlegameuserlist/WordleGameUserList';
+import WordleGamePrimaryDetail from '@/wordle/wordle/components/WordlGamePrmaryDetail';
 
 function WordleLobby(props: WordleLobbyProps): React.ReactElement {
     const {game_status, firebase_game_data, handleGameStart} = props;
@@ -13,17 +13,18 @@ function WordleLobby(props: WordleLobbyProps): React.ReactElement {
     return (
         <Container maxWidth={'md'}>
             <Grid container spacing={2}>
-                <Grid item xs={game_status.game.status === 'wait' ? 12 : 6}>
+                <Grid item xs={12}>
                     <WordleGamePrimaryDetail
-                        game={game_status.game}
+                        game_status={game_status}
                     />
                 </Grid>
-                <Grid item xs={game_status.game.status === 'wait' ? 12 : 6}>
+                <Grid item xs={12}>
                     <WordleGameUserList
                         users={firebase_game_data.users}
+                        firebase_game_data={firebase_game_data}
                     />
                 </Grid>
-                <Grid item xs={12} sx={{display: game_status?.game?.status === 'wait' ? 'block' : 'none'}}>
+                <Grid item xs={12}>
                     <Button
                         fullWidth
                         variant='contained'

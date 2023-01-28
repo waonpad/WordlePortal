@@ -64,7 +64,7 @@ export default function LogIn(): React.ReactElement {
 
     return (
         <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <Typography component="h1" variant="h5">
+            <Typography component="h1" variant="h5" color='primary' fontWeight='bold'>
                 Log in
             </Typography>
             <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
