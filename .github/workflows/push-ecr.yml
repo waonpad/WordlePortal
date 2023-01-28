@@ -33,9 +33,9 @@ jobs:
           ECR_PHP_REPOSITORY: ${{ secrets.AWS_ECR_PHP_REPO_NAME }}
           ECR_DATABASE_REPOSITORY: ${{ secrets.AWS_ECR_DATABASE_REPO_NAME }}
         run: |
-          docker build -t $ECR_NGINX_REPOSITORY/$ECR_REPOSITORY:latest -f ./docker/nginx/Dockerfile .
-          docker push $ECR_NGINX_REPOSITORY/$ECR_REPOSITORY:latest
-          docker build -t $ECR_PHP_REPOSITORY/$ECR_REPOSITORY:latest -f ./docker/php/Dockerfile .
-          docker push $ECR_PHP_REPOSITORY/$ECR_REPOSITORY:latest
-          docker build -t $ECR_DATABASE_REPOSITORY/$ECR_REPOSITORY:latest -f ./docker/mysql/Dockerfile .
-          docker push $ECR_DATABASE_REPOSITORY/$ECR_REPOSITORY:latest
+          docker build -t $ECR_REGISTRY/$ECR_NGINX_REPOSITORY:latest -f ./docker/nginx/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_NGINX_REPOSITORY:latest
+          docker build -t $ECR_REGISTRY/$ECR_PHP_REPOSITORY:latest -f ./docker/php/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_PHP_REPOSITORY:latest
+          docker build -t $ECR_REGISTRY/$ECR_DATABASE_REPOSITORY:latest -f ./docker/database/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_DATABASE_REPOSITORY:latest
