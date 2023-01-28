@@ -37,5 +37,5 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_NGINX_REPOSITORY:latest
           docker build -t $ECR_REGISTRY/$ECR_PHP_REPOSITORY:latest -f ./docker/php/Dockerfile .
           docker push $ECR_REGISTRY/$ECR_PHP_REPOSITORY:latest
-          docker build -t $ECR_REGISTRY/$ECR_DATABASE_REPOSITORY:latest -f ./docker/database/Dockerfile .
+          docker build -t $ECR_REGISTRY/$ECR_DATABASE_REPOSITORY:latest -f ./docker/mysql/Dockerfile .
           docker push $ECR_REGISTRY/$ECR_DATABASE_REPOSITORY:latest
