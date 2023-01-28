@@ -57,17 +57,19 @@ function Wordle(): React.ReactElement {
                             snapshot.val().users[key]
                         )) : [];
                         
+                        console.log(snapshot.val());
+                        console.log(game.game_users.filter((game_user: any) => (game_user.user_id === auth!.user!.id)))
                         console.log(connected_firebase_game_users);
                         if(
-                            // (connected_firebase_game_users.length === 0 && snapshot.val().joined !== false) // 参加ユーザーがいない
-                            // ||
-                            (game.status === 'end') // 終了している
+                            (game.status !== 'end' && connected_firebase_game_users.length === 0 && snapshot.val().joined !== false) // 参加ユーザーがいない
                             ||
-                            // (game.status === 'start' && game.max_participants !== 1 && ('order' in snapshot.val().users[(`u${user_id}` as any)]) === false) //startしていて、制限人数が1でない、且つゲーム参加者ではない
-                            // ||
+                            (game.status === 'end' && game.game_users.filter((game_user: any) => (game_user.user_id === auth!.user!.id)).length === 0) // 終了していて参加者ではない
+                            ||
+                            (game.status === 'start' && game.game_users.filter((game_user: any) => (game_user.user_id === auth!.user!.id)).length === 0) //startしていて、制限人数が1でない、且つゲーム参加者ではない
+                            ||
                             (connected_firebase_game_users.length === game.max_participants) // 満員
-                        ) {  
-                            swal("ゲームが存在しないか参加できない", "ゲームが存在しないか参加できない", "error");
+                        ) {
+                            swal("Error", "ゲームが存在しないか参加できない", "error");
                         }
                         else {
                             console.log('接続');
@@ -153,7 +155,7 @@ function Wordle(): React.ReactElement {
             }
             else if(res.data.status === false) {
                 // 参加できなかった時の処理
-                swal("参加失敗", res.data.message, "error");
+                swal("Error", res.data.message, "error");
             }
         })
 
@@ -253,7 +255,7 @@ function Wordle(): React.ReactElement {
     // ゲームの状態が変わったときの処理まとめ ///////////////////////////////////////////////////////////////////////
     useEffect(() => {
         if(game_status !== undefined) {
-            if(game_status.game.status === 'start') {
+            if(game_status.game.status !== 'wait') {
 
                 // gameがstartしていてgame_wordsのデフォルト値が入っていなかったら入れる
                 if((game_words as any[]).length === 0) {
@@ -294,7 +296,7 @@ function Wordle(): React.ReactElement {
                 }
 
                 // ターン(inputエリアの入力可否)切り替え
-                if(auth?.user?.id === game_status.next_input_user) {
+                if(auth?.user?.id === game_status.next_input_user && game_status.game.status === 'start') {
                     console.log('ターンプレイヤーです');
                     setTurnFlag(true);
                 }
@@ -308,7 +310,7 @@ function Wordle(): React.ReactElement {
                     mergeErrata(game_status, game_words);
                 }
 
-                if(firebase_game_data !== undefined) {
+                if(firebase_game_data !== undefined && game_status.game.status === 'start') {
                     // カウンターを動かすためのパラメータの処理
                     if(firebase_game_data.log_length < game_status.game_input_logs.length) {
                         console.log('firebaseのタイムスタンプを更新');
@@ -410,7 +412,7 @@ function Wordle(): React.ReactElement {
             // 指定時間更新が無かったら
             // ホストユーザーがログを更新する責務を負う
             // firebaseのstatusがconnectなユーザーの中でキーが若いユーザー順にホストになる
-            if(counter <= 0) {
+            if(counter <= 0 && game_status.game.status === 'start') {
                 console.log('ターンスキップ');
     
                 if(
@@ -470,7 +472,7 @@ function Wordle(): React.ReactElement {
         const new_input_and_errata = new_game_input_log.log.input_and_errata;
 
         (async () => {
-            const sleep = (second: number) => new Promise(resolve => setTimeout(resolve, second * 1000))
+            const sleep = (second: number) => new Promise(resolve => setTimeout(resolve, second * 500))
 
             for(var i = 0; i < new_input_and_errata.length; i++) {
                 // stateの仕組みの都合、i番目の要素だけでなくそれまでの要素も更新する
@@ -549,7 +551,7 @@ function Wordle(): React.ReactElement {
                     handleGameStart={handleGameStart}
                 />
                 :
-                game_status?.game?.status === 'start' ?
+                game_status?.game?.status === 'start' || game_status?.game?.status === 'end' ?
                 <WordleGame
                     game_status={game_status}
                     game_words={game_words}
@@ -563,12 +565,13 @@ function Wordle(): React.ReactElement {
                     loading={loading}
                     errata_list={errata_list}
                     display_input_component={display_input_component}
+                    firebase_game_data={firebase_game_data}
                 />
-                :
-                game_status?.game?.status === 'end' ?
-                <Backdrop open={true}>
-                    <CircularProgress/>
-                </Backdrop>
+                // :
+                // game_status?.game?.status === 'end' ?
+                // <Backdrop open={true}>
+                //     <CircularProgress/>
+                // </Backdrop>
                 :
                 <></>
             }

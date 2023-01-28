@@ -5,7 +5,7 @@ import { ModalPrimaryProps } from '@/common/modal/modalprimary/types/ModalPrimar
 Modal.setAppElement('#app');
 
 function ModalPrimary(props: ModalPrimaryProps): React.ReactElement {
-    const {isOpen, children, maxWidth} = props;
+    const {isOpen, children, maxWidth, minWidth} = props;
 
     const customStyles = {
         overlay: {
@@ -13,6 +13,7 @@ function ModalPrimary(props: ModalPrimaryProps): React.ReactElement {
         },
         content: {
             maxWidth: maxWidth ? maxWidth : '90%',
+            minWidth: minWidth ? minWidth : 0,
             top: '50%',
             left: '50%',
             right: 'auto',

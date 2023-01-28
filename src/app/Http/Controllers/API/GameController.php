@@ -44,6 +44,8 @@ class GameController extends Controller
 
     private function currentGameStatus($game, $initial_load = false)
     {
+        // $game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($game->id);
+
         $game_users = array_values($game->gameUsers->toArray());
 
         $game_input_logs = array_values(array_filter($game->gameLogs->toArray(), function($game_log) {
@@ -110,7 +112,7 @@ class GameController extends Controller
 
     public function index(Request $request)
     {
-        $games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
+        $games = Game::with(['user', 'gameUsers.user', 'gameLogs'])->get();
 
         $filtered_games = $this->filterGame($games, $request->game_status);
         $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
@@ -123,9 +125,16 @@ class GameController extends Controller
 
     public function show(Request $request)
     {
-        $game = Game::where('uuid', $request->game_uuid)->first() ?? null;
+        $game = Game::with('gameUsers.user')->where('uuid', $request->game_uuid)->first() ?? null;
+
+        if($game === null) {
+            return response()->json([
+                'message' => 'Not exist game',
+                'status' => false
+            ]);
+        }
         
-        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
+        $current_game_status = $this->currentGameStatus($game, true);
 
         return response()->json([
             'game' => $game,
@@ -136,7 +145,7 @@ class GameController extends Controller
 
     public function follows(Request $request)
     {
-        $games = Game::with('user', 'gameUsers.user', 'gameLogs')->whereIn('game_create_user_id', User::find(Auth::user()->id)->follows()->pluck('followed_user_id'))->latest()->get();
+        $games = Game::with(['user', 'gameUsers.user', 'gameLogs'])->whereIn('game_create_user_id', User::find(Auth::user()->id)->follows()->pluck('followed_user_id'))->latest()->get();
 
         $filtered_games = $this->filterGame($games, $request->game_status);
         $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
@@ -149,7 +158,7 @@ class GameController extends Controller
 
     public function user(Request $request)
     {
-        $games = User::with('games.user', 'games.gameUsers.user', 'games.gameLogs')->where('screen_name', $request->screen_name)->first()->games;
+        $games = User::with(['games.user', 'games.gameUsers.user', 'games.gameLogs'])->where('screen_name', $request->screen_name)->first()->games;
 
         $filtered_games = $this->filterGame($games, $request->game_status);
         $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
@@ -162,7 +171,7 @@ class GameController extends Controller
 
     public function userJoining(Request $request)
     {
-        $games = User::with('joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs')->where('screen_name', $request->screen_name)->first()->joiningGames;
+        $games = User::with(['joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs'])->where('screen_name', $request->screen_name)->first()->joiningGames;
 
         $filtered_games = $this->filterGame($games, $request->game_status);
         $paginated_games = $this->paginate($filtered_games, 'id', $request->per_page, $request->paginate, $request->start, $request->last);
@@ -177,7 +186,7 @@ class GameController extends Controller
     {
         $keyword = $request->wordle_game_search_param;
 
-        $games = Game::with('user', 'gameUsers.user', 'gameLogs')
+        $games = Game::with(['user', 'gameUsers.user', 'gameLogs'])
         ->where('name', 'LIKE', "%{$keyword}%") // 部分一致
         ->orWhereJsonContains('tags', [['name' => $keyword]]) // 完全一致 // https://stackoverflow.com/questions/53641403/search-in-json-column-with-laravel
         ->get();
@@ -194,7 +203,7 @@ class GameController extends Controller
     public function tag(Request $request)
     {
         $game_tag_id = $request->game_tag_id;
-        $all_games = Game::with('user', 'gameUsers.user', 'gameLogs')->get();
+        $all_games = Game::with(['user', 'gameUsers.user', 'gameLogs'])->get();
 
         $games = array_filter($all_games->toArray(), function($game) use($game_tag_id) {
             return in_array($game_tag_id, array_column($game['tags'], 'id'));
@@ -367,7 +376,7 @@ class GameController extends Controller
             'status' => 'start'
         ]);
         
-        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
+        $current_game_status = $this->currentGameStatus(Game::with(['gameLogs', 'gameUsers.user'])->where('uuid', $request->game_uuid)->first());
         event(new GamePlayEvent($current_game_status));
 
         return response()->json([
@@ -377,7 +386,7 @@ class GameController extends Controller
     
     public function input(Request $request)
     {
-        $game = Game::where('uuid', $request->game_uuid)->first() ?? null;
+        $game = Game::with(['gameLogs', 'gameUsers.user'])->where('uuid', $request->game_uuid)->first() ?? null;
         
         // 終了していないか判定
         if($game->status !== 'start') {
@@ -490,7 +499,9 @@ class GameController extends Controller
             ];
         }, $input_split, $errata);
 
-        $correct = $input_split === $answer_split ? true : false;
+        $correct = array_map(function($v) {
+            return $v === "" ? 'foo' : $v;
+        }, $input_split) === $answer_split ? true : false;
 
         $input_log = GameLog::create([
             'game_id' => $game->id,
@@ -520,8 +531,19 @@ class GameController extends Controller
                 'status' => 'end'
             ]);
         }
+        else if(count($game->gameLogs) + 1 >= (count($game->gameUsers) * $game->laps)) {
+            // resultを設定する
+            GameUser::where('game_id', $game->id)->update([
+                'result' => 2
+            ]);
+    
+            // ゲームを終了状態にする
+            $game->update([
+                'status' => 'end'
+            ]);
+        }
 
-        $current_game_status = $this->currentGameStatus(Game::where('uuid', $request->game_uuid)->first());
+        $current_game_status = $this->currentGameStatus(Game::with(['gameLogs', 'gameUsers.user'])->where('uuid', $request->game_uuid)->first());
         event(new GamePlayEvent($current_game_status));
 
         return response()->json([

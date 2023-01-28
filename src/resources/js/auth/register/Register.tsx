@@ -85,7 +85,7 @@ export default function Register(): React.ReactElement {
 
     return (
         <Container maxWidth={'xs'} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <Typography component="h1" variant="h5">
+            <Typography component="h1" variant="h5" color='primary' fontWeight='bold'>
                 Register
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>

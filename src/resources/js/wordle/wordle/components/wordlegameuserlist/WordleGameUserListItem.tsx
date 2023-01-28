@@ -5,17 +5,18 @@ import { grey } from '@mui/material/colors';
 
 export type WordleGameUserListItemProps = {
     user: any;
+    firebase_game_data: any;
 }
 
 function WordleGameUserListItem(props: WordleGameUserListItemProps): React.ReactElement {
-    const {user} = props;
+    const {user, firebase_game_data} = props;
 
     useEffect(() => {
         console.log(user)
     }, [user])
     
     return (
-        <ListItem alignItems="flex-start">
+        <ListItem alignItems="flex-start" sx={{paddingRight: '140px'}}>
             <ListItemAvatar>
                 <Avatar src={`/storage/${user.icon}`} />
             </ListItemAvatar>
@@ -45,6 +46,12 @@ function WordleGameUserListItem(props: WordleGameUserListItemProps): React.React
                 </React.Fragment>
                 }
             />
+            {firebase_game_data.status !== 'wait' && (
+                <ListItemSecondaryAction sx={{top: '35px'}}>
+                    <Typography fontWeight={'bold'} fontSize='large' color='primary'>Order {firebase_game_data.users[`u${user.id}`].order}</Typography>
+                    {firebase_game_data.status === 'end' && <Typography fontWeight={'bold'} fontSize='large' color='primary'>Result {firebase_game_data.users[`u${user.id}`].result}</Typography>}
+                </ListItemSecondaryAction>
+            )}
         </ListItem>
     )
 }
