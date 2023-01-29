@@ -11,7 +11,7 @@ function AxiosInterceptors({children}: Props): React.ReactElement {
     const handleError = useErrorHandler();
     const history = useHistory();
 
-    axios.defaults.baseURL = "http://localhost:8000/";
+    axios.defaults.baseURL = process.env.MIX_APP_URL;
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.defaults.headers.post['Accept'] = 'application/json';
     axios.defaults.withCredentials = true;
