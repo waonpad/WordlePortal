@@ -22,11 +22,11 @@ function NotificationListItemWordleLike(props: NotificationListItemFWordleLikePr
             <ListItemText
                 primary={
                     <Box>
-                        <Link to={`/user/${wordle_like_notification.resource.user.screen_name}`} style={{textDecoration: 'none', color: 'inherit'}}>
+                        <Link to={`/user/${wordle_like_notification.resource.user.screen_name}`} style={{display: 'inline-block', textDecoration: 'none', color: 'inherit'}}>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>
                                 <Avatar src={`/storage/${wordle_like_notification.resource.user.icon}`} />
                                 <Box sx={{marginLeft: 2}}>
-                                    <Box sx={{display: 'flex'}}>
+                                    <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                                         <Typography color={'#000000DE'}>
                                             {wordle_like_notification.resource.user.name}
                                         </Typography>

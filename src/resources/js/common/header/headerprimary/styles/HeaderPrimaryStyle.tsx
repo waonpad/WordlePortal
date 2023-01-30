@@ -93,7 +93,9 @@ export const HeaderPrimaryStyle = makeStyles((theme: Theme) =>
         },
         content: {
             flexGrow: 1,
-            padding: theme.spacing(3),
+            paddingTop: theme.spacing(3),
+            paddingLeft: 0,
+            paddingRight: 0,
             paddingBottom: theme.spacing(0.5),
             transition: theme.transitions.create('margin', {
                 easing: theme.transitions.easing.sharp,

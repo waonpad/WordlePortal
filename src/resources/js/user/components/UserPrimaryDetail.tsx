@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import swal from "sweetalert";
-import { Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, styled } from '@mui/material';
+import { grey, green } from '@mui/material/colors';
 import { ExpandMore, ExpandLess, MoreHoriz } from '@mui/icons-material';
 import { MenuItem, Menu } from '@material-ui/core';
 import { UserPrimaryDetailProps } from '@/user/types/UserType';
@@ -70,10 +70,16 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
 
+    const StyledLink = styled(Link)({
+        ':hover': {
+            backgroundColor: 'red'
+        }
+    })
+
     return (
         <Card elevation={1} sx={{minWidth: '100%'}}>
             {render_user_menu}
-            <ModalPrimary isOpen={modalIsOpen} maxWidth={'540px'}>
+            <ModalPrimary isOpen={modalIsOpen} width={'540px'}>
                 <EditProfile user={user} handleModalClose={setIsOpen} />
                 <Button onClick={() => setIsOpen(false)}>Close Modal</Button>
             </ModalPrimary>
@@ -93,7 +99,7 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                         {<Avatar src={`/storage/${user.icon}`} sx={{height: '100px', width: '100px'}} />}
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography fontSize={28}>
+                        <Typography fontSize={'1.1rem'}>
                             {user.name}
                         </Typography>
                         <Typography color={grey[500]}>
@@ -110,24 +116,34 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
                         }
                     </Grid>
                     <Grid item container xs={12} spacing={1} sx={{marginTop: 0.5}}>
-                        <Grid item xs={4}>
-                            <Link to={`/user/${user.screen_name}/wordle`}>
-                                <Typography color={grey[700]}>0</Typography>
-                                <Typography color={grey[500]}>Post</Typography>
-                            </Link>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Link to={`/user/${user.screen_name}/follows`}>
-                                <Typography color={grey[700]}>{user.follows.length}</Typography>
-                                <Typography color={grey[500]}>Follow</Typography>
-                            </Link>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Link to={`/user/${user.screen_name}/followers`}>
-                                <Typography color={grey[700]}>{user.followers.length}</Typography>
-                                <Typography color={grey[500]}>Follower</Typography>
-                            </Link>
-                        </Grid>
+                        {
+                            [
+                                {
+                                    link: `/user/${user.screen_name}/wordle`,
+                                    count: user.wordles.length,
+                                    label: 'Post'
+                                },
+                                {
+                                    link: `/user/${user.screen_name}/follows`,
+                                    count: user.follows.length,
+                                    label: 'Follow'
+                                },
+                                {
+                                    link: `/user/${user.screen_name}/followers`,
+                                    count: user.followers.length,
+                                    label: 'Follower'
+                                }
+                            ].map((item, index) => (
+                                <Grid item xs={4} key={index}>
+                                    <Link to={item.link}>
+                                        <Box sx={{':hover': {backgroundColor: grey[50]}}}>
+                                            <Typography color={grey[700]}>{item.count}</Typography>
+                                            <Typography color={grey[500]}>{item.label}</Typography>
+                                        </Box>
+                                    </Link>
+                                </Grid>
+                            ))
+                        }
                     </Grid>
                     {/* description */}
                     <Grid item xs={12} sx={{marginTop: 2, textAlign: 'left', whiteSpace: 'pre-line'}}>

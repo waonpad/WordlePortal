@@ -80,7 +80,7 @@ function User(props: any): React.ReactElement {
         <Container maxWidth={'lg'} key={key}>
             <Grid container spacing={2}>
                 {/* 左のエリア */}
-                <Grid item container xs={4} spacing={2} height={'fit-content'}>
+                <Grid item container xs={12} smd={4} spacing={2} height={'fit-content'}>
                     {/* ユーザー情報 */}
                     <Grid item xs={12}>
                         <UserPrimaryDetail
@@ -98,7 +98,7 @@ function User(props: any): React.ReactElement {
                     </Grid> */}
                 </Grid>
                 {/* 右のエリア */}
-                <Grid item container xs={8} spacing={2} height={'fit-content'}>
+                <Grid item container xs={12} smd={8} spacing={2} height={'fit-content'}>
                     {/* 成績 */}
                     {/* <Grid item xs={12}>
                         <Paper elevation={1} sx={{minWidth: '100%'}}>
@@ -107,6 +107,7 @@ function User(props: any): React.ReactElement {
                     </Grid> */}
                     {/* 待機中のゲーム */}
                     <Grid item xs={12}>
+                        {/* メンバーがいなくなって閉じたゲームも表示されてしまう */}
                         <Button
                             fullWidth
                             variant='outlined'

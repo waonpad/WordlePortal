@@ -11,13 +11,13 @@ function WordleCommentListItem(props: WordleCommentListItemProps): React.ReactEl
     return (
         <ListItem alignItems="flex-start">
             <ListItemAvatar>
-                <Avatar src={`/storage/${wordle_comment.user.icon}`} />
+                <Avatar src={`/storage/${wordle_comment.user.icon}`} component={Link} to={`/user/${wordle_comment.user.screen_name}`} />
             </ListItemAvatar>
             <ListItemText
                 primary={
                     <Box>
-                        <Link to={`/user/${wordle_comment.user.screen_name}`}>
-                            <Box sx={{display: 'flex'}}>
+                        <Link to={`/user/${wordle_comment.user.screen_name}`} style={{color: '#000000DE', display: 'inline-block'}}>
+                            <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                                 <Typography color={'#000000DE'}>
                                     {wordle_comment.user.name}
                                 </Typography>

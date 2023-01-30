@@ -85,7 +85,7 @@ function WordleCommentList(props: WordleCommentListProps): React.ReactElement {
     return (
         <Card elevation={1}>
             {head}
-            <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0, position: 'relative'}} ref={ref}>
+            <List sx={{minWidth: '100%', bgcolor: 'background.paper', position: 'relative'}} ref={ref}>
                 <NewPostSnackbar
                     open={snackbar_open}
                     handleApiGet={getWordleCommentsLeatest}

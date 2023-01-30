@@ -25,7 +25,7 @@ function WordleGameUserList(props: WordleGameUserListProps): React.ReactElement 
                     },
                 ]}
             />
-            <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
+            <List sx={{minWidth: '100%', bgcolor: 'background.paper'}}>
                 {
                     Object.keys(users).filter((key: string) => (
                         firebase_game_data.status !== 'wait' ? 'order' in users[key] : users[key].status === 'connect' // startした場合disconnectでも表示して、ハイライトする

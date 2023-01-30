@@ -3,6 +3,7 @@ import { Area, MediaSize } from "react-easy-crop";
 import { Theme, makeStyles } from '@material-ui/core';
 import CropperModal from "@/common/cropimage/components/CropperModal";
 import getCroppedImg from "@/common/cropimage/components/getCroppedImg";
+import { green } from "@mui/material/colors";
 
 type CropImageProps = {
     default_img_src?: string;
@@ -35,22 +36,24 @@ const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
             display: "flex",
             alinItems: "center",
             borderRadius: props.display_radius,
-            border: "1px solid gray",
+            border: `2px solid ${green[400]}`,
             overflow: "hidden",
-            backgroundColor: "#EAEAEA",
+            backgroundColor: green[200],
             "& .img": {
                 width: "100%",
                 objectFit: "contain",
-                backgroundColor: "#EAEAEA"
+                // backgroundColor: "#EAEAEA"
             },
             "& .no-img": {
-                backgroundColor: "#EAEAEA",
+                // backgroundColor: "#EAEAEA",
                 width: "100%",
                 height: "100%",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#000"
+                color: "#fff",
+                fontSize: 'small',
+                fontWeight: 'bold'
             }
         }
     })

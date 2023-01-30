@@ -16,14 +16,14 @@ function WordleGameUserListItem(props: WordleGameUserListItemProps): React.React
     }, [user])
     
     return (
-        <ListItem alignItems="flex-start" sx={{paddingRight: '140px'}}>
+        <ListItem alignItems="flex-start" sx={{paddingRight: '140px'}} component={Link} to={`/user/${user.screen_name}`}>
             <ListItemAvatar>
                 <Avatar src={`/storage/${user.icon}`} />
             </ListItemAvatar>
             <ListItemText
                 primary={
-                    <Link to={`/user/${user.screen_name}`}>
-                        <Box sx={{display: 'flex'}}>
+                    <Link to={`/user/${user.screen_name}`} style={{color: '#000000DE', display: 'inline-block'}}>
+                        <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                             <Typography color={'#000000DE'}>
                                 {user.name}
                             </Typography>

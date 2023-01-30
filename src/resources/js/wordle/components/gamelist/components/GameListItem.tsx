@@ -28,7 +28,7 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
         <Card elevation={1}>
             <CardHeader
                 avatar={
-                    <Avatar src={`/storage/${game.user.icon}`} />
+                    <Avatar src={`/storage/${game.user.icon}`} component={Link} to={`/user/${game.user.screen_name}`} />
                 }
                 action={
                     <IconButton aria-label="settings">
@@ -38,8 +38,8 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                 }
                 subheader={
                     <React.Fragment>
-                        <Link to={`/user/${game.user.screen_name}`} style={{color: '#000000DE'}}>
-                            <Box sx={{display: 'flex'}}>
+                        <Link to={`/user/${game.user.screen_name}`} style={{color: '#000000DE', display: 'inline-block'}}>
+                            <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                                 <Typography color={'#000000DE'}>
                                     {game.user.name}
                                 </Typography>

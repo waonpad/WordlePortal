@@ -20,11 +20,11 @@ function NotificationListItemFollow(props: NotificationListItemFollowProps): Rea
             <ListItemText
                 primary={
                     <Box>
-                        <Link to={`/user/${follow_notification.resource.following.screen_name}`} style={{textDecoration: 'none', color: 'inherit'}}>
+                        <Link to={`/user/${follow_notification.resource.following.screen_name}`} style={{display: 'inline-block', textDecoration: 'none', color: 'inherit'}}>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>
                                 <Avatar src={`/storage/${follow_notification.resource.following.icon}`} />
                                 <Box sx={{marginLeft: 2}}>
-                                    <Box sx={{display: 'flex'}}>
+                                    <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                                         <Typography color={'#000000DE'}>
                                             {follow_notification.resource.following.name}
                                         </Typography>
