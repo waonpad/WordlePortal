@@ -65,7 +65,7 @@ function UserList(props: UserListProps): React.ReactElement {
     return (
         <Card elevation={1}>
             {head}
-            <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
+            <List sx={{minWidth: '100%', bgcolor: 'background.paper'}}>
                 {
                     users_loading ?
                     <SuspensePrimary open={users_loading} backdrop={false} />

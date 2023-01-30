@@ -23,7 +23,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
         <Card elevation={1}>
             <CardHeader
                 avatar={
-                    <Avatar src={`/storage/${wordle.user.icon}`} />
+                    <Avatar src={`/storage/${wordle.user.icon}`} component={Link} to={`/user/${wordle.user.screen_name}`} />
                 }
                 action={
                 <IconButton aria-label="settings">
@@ -33,8 +33,8 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                 }
                 subheader={
                     <React.Fragment>
-                        <Link to={`/user/${wordle.user.screen_name}`} style={{color: '#000000DE'}}>
-                            <Box sx={{display: 'flex'}}>
+                        <Link to={`/user/${wordle.user.screen_name}`} style={{color: '#000000DE', display: 'inline-block'}}>
+                            <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                                 <Typography color={'#000000DE'}>
                                     {wordle.user.name}
                                 </Typography>
@@ -84,7 +84,7 @@ function WordleListItem(props: WordleListItemProps): React.ReactElement {
                     <Grid item xs={12} sx={{display: 'flex'}}>
                         {auth?.user?.id == wordle.user.id ? (
                                 <React.Fragment>
-                                    <IconButton component={Link} to={`/wordle/manage/${wordle.id}`}>
+                                    <IconButton component={Link} to={`/wordle/manage/${wordle.id}`} sx={{':hover': {color: 'rgba(0, 0, 0, 0.54)'}}}>
                                         <EditIcon />
                                     </IconButton>
                                     <IconButton data-delete-id={wordle.id} onClick={handleDeleteWordle}>

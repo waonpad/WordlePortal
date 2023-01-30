@@ -23,11 +23,11 @@ function NotificationListItemWordleComment(props: NotificationListItemFWordleCom
             <ListItemText
                 primary={
                     <Box>
-                        <Link to={`/user/${wordle_comment_notification.resource.user.screen_name}`} style={{textDecoration: 'none', color: 'inherit'}}>
+                        <Link to={`/user/${wordle_comment_notification.resource.user.screen_name}`} style={{display: 'inline-block', textDecoration: 'none', color: 'inherit'}}>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>
                                 <Avatar src={`/storage/${wordle_comment_notification.resource.user.icon}`} />
                                 <Box sx={{marginLeft: 2}}>
-                                    <Box sx={{display: 'flex'}}>
+                                    <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                                         <Typography color={'#000000DE'}>
                                             {wordle_comment_notification.resource.user.name}
                                         </Typography>

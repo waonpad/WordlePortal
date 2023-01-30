@@ -10,12 +10,12 @@ function UserListItem(props: UserListItemProps): React.ReactElement {
     return (
         <ListItem alignItems="flex-start" sx={{paddingRight: '140px'}}>
             <ListItemAvatar>
-                <Avatar src={`/storage/${user.icon}`} />
+                <Avatar src={`/storage/${user.icon}`} component={Link} to={`/user/${user.screen_name}`} />
             </ListItemAvatar>
             <ListItemText
                 primary={
-                    <Link to={`/user/${user.screen_name}`}>
-                        <Box sx={{display: 'flex'}}>
+                    <Link to={`/user/${user.screen_name}`} style={{color: '#000000DE', display: 'inline-block'}}>
+                        <Box sx={{display: 'flex', ':hover': {backgroundColor: grey[50]}}}>
                             <Typography color={'#000000DE'}>
                                 {user.name}
                             </Typography>

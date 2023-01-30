@@ -38,17 +38,14 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     const notification = useNotification();
     const [open, setOpen] = useState(false);
     const classes = HeaderPrimaryStyle();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [settingAnchorEl, setSettingAnchorEl] = useState<null | HTMLElement>(null);
     const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
-    const isMenuOpen = Boolean(anchorEl);
     const isSettingMenuOpen = Boolean(settingAnchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const isNotificationOpen = Boolean(notificationAnchorEl);
 
     useEffect(() => {
-        setAnchorEl(null);
         setSettingAnchorEl(null);
         setNotificationAnchorEl(null);
         setMobileMoreAnchorEl(null);
@@ -106,9 +103,6 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     //////////////////////////////////////////////////////////////
 
     // AppBar ////////////////////////////////////////////////////////////////////////////////////
-    const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
 
     const handleSettingMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setSettingAnchorEl(event.currentTarget);
@@ -119,7 +113,6 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     };
 
     const handleMenuClose = () => {
-        setAnchorEl(null);
         setSettingAnchorEl(null)
         handleMobileMenuClose();
     };
@@ -127,23 +120,6 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
     const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
-
-    const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-            <MenuItem onClick={logout}>Log Out</MenuItem>
-        </Menu>
-    );
 
     const settingMenuId = 'primary-search-setting-menu';
     const renderSettingMenu = (
@@ -317,13 +293,12 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                 <Container
                     component="main"
                     maxWidth={false}
-                    sx={{mb: 5}}
+                    sx={{mb: 5, pl: 1, pr: 1, '@media (min-width: 600px)': {mb: 5, pl: 1, pr: 1}}}
                 >
                     {children}
                 </Container>
             </Box>
             {renderMobileMenu}
-            {renderMenu}
             {renderSettingMenu}
             {renderNotificationPopover}
             <FabWordleCreate />

@@ -67,7 +67,7 @@ function NotificationList(props: NotificationListProps): React.ReactElement {
                     },
                 ]}
             />
-            <List sx={{minWidth: '100%', bgcolor: 'background.paper', pt: 0, pb: 0}}>
+            <List sx={{minWidth: '100%', bgcolor: 'background.paper'}}>
                 {
                     notification!.notifications_loading ?
                     <SuspensePrimary open={true} backdrop={false} />

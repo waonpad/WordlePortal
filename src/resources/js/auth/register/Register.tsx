@@ -6,6 +6,7 @@ import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel,
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import { green } from '@mui/material/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { RegisterData, RegisterErrorData } from '@/auth/types/AuthType';
 import CropImage from '@/common/cropimage/components/CropImage';
@@ -217,7 +218,9 @@ export default function Register(): React.ReactElement {
                 <Grid container justifyContent="flex-end">
                     <Grid item>
                         <Link to="/login">
-                        Already have an account? Log in
+                            <Typography color='primary' sx={{':hover': {color: green[700]}}}>
+                                Already have an account? Log in
+                            </Typography>
                         </Link>
                     </Grid>
                 </Grid>

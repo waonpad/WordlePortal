@@ -7,6 +7,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { LoadingButton } from '@mui/lab';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import { green } from '@mui/material/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogInData, LogInErrorData } from '@/auth/types/AuthType';
 
@@ -113,7 +114,9 @@ export default function LogIn(): React.ReactElement {
                 </Grid> */}
                 <Grid item>
                     <Link to="/register">
-                        {"Don't have an account? Sign Up"}
+                        <Typography color='primary' sx={{':hover': {color: green[700]}}}>
+                            {"Don't have an account? Sign Up"}
+                        </Typography>
                     </Link>
                 </Grid>
                 </Grid>
