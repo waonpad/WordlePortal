@@ -36,7 +36,7 @@ export const globalTheme = createTheme({
     components: {
         MuiCssBaseline: {
             styleOverrides: {
-                '&.swal-button': {backgroundColor: green[400]}
+                '&.swal-button': {backgroundColor: green[400], '&:hover': {backgroundColor: `${green[200]} !important`}}
             }
         },
         MuiBackdrop: {
@@ -57,6 +57,15 @@ export const globalTheme = createTheme({
         MuiList: {
             defaultProps: {
                 disablePadding: true
+            }
+        },
+        MuiAvatar: {
+            defaultProps: {
+                sx: {
+                    '&:hover': {
+                        color: '#f5f5f5'
+                    }
+                }
             }
         },
     },

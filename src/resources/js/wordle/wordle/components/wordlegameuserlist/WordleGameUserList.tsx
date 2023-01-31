@@ -31,10 +31,13 @@ function WordleGameUserList(props: WordleGameUserListProps): React.ReactElement 
                         firebase_game_data.status !== 'wait' ? 'order' in users[key] : users[key].status === 'connect' // startした場合disconnectでも表示して、ハイライトする
                     )).map((key: string, index: number) => (
                         <React.Fragment key={index}>
-                            <WordleGameUserListItem
-                                user={users[key].user}
-                                firebase_game_data={firebase_game_data}
-                            />
+                            {
+                                users[key].user !== undefined &&
+                                <WordleGameUserListItem
+                                    user={users[key].user}
+                                    firebase_game_data={firebase_game_data}
+                                />
+                            }
                             <Divider />
                         </React.Fragment>
                     ))

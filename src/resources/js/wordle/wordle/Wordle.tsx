@@ -177,14 +177,16 @@ function Wordle(): React.ReactElement {
 
     // input ///////////////////////////////////////////////////////////////////////
     const handleInputStack = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        const target_character = String(event.currentTarget.getAttribute('data-character-value'));
-        const target_input_stack_index = input_stack.findIndex(function(character) {
-            return character.character === '';
-        });
+        if(game_status.game.status === 'start') {
+            const target_character = String(event.currentTarget.getAttribute('data-character-value'));
+            const target_input_stack_index = input_stack.findIndex(function(character) {
+                return character.character === '';
+            });
 
-        const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: target_character} : character));
-        setInputStack(updated_input_stack);
-        updateBoard(updated_input_stack);
+            const updated_input_stack = input_stack.map((character, index) => (index === target_input_stack_index ? {...character, character: target_character} : character));
+            setInputStack(updated_input_stack);
+            updateBoard(updated_input_stack);
+        }
     }
 
     const handleInputBackSpace = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -199,25 +201,27 @@ function Wordle(): React.ReactElement {
 
     // typing ///////////////////////////////////////////////////////////////////////
     const handleTypingStack = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const current_value = event.currentTarget.value.split('');
-        const updated_input_stack: any[] = [];
+        if(game_status.game.status === 'start') {
+            const current_value = event.currentTarget.value.split('');
+            const updated_input_stack: any[] = [];
 
-        current_value.forEach((character: any, index: number) => {
-            updated_input_stack.push({
-                character: current_value[index],
-                errata: 'plain'
+            current_value.forEach((character: any, index: number) => {
+                updated_input_stack.push({
+                    character: current_value[index],
+                    errata: 'plain'
+                })
             })
-        })
 
-        for(var i = current_value.length; i < game_status.game.max; i++) {
-            updated_input_stack.push({
-                character: '',
-                errata: 'plain'
-            })
+            for(var i = current_value.length; i < game_status.game.max; i++) {
+                updated_input_stack.push({
+                    character: '',
+                    errata: 'plain'
+                })
+            }
+
+            setInputStack(updated_input_stack);
+            updateBoard(updated_input_stack.slice(0, game_status.game.max));
         }
-
-        setInputStack(updated_input_stack);
-        updateBoard(updated_input_stack.slice(0, game_status.game.max));
     }
     /////////////////////////////////////////////////////////////////////////
 
@@ -374,33 +378,33 @@ function Wordle(): React.ReactElement {
             console.log(firebase_game_data);
 
             // テスト済み 邪魔なのでコメントアウト
-            // if(game_status.game.status === 'start') {
-            //     // カウント
-            //     if(game_status.game.answer_time_limit !== null) {
-            //         console.log('reset counter');
+            if(game_status.game.status === 'start') {
+                // カウント
+                if(game_status.game.answer_time_limit !== null) {
+                    console.log('reset counter');
 
-            //         const input_timestamp = new Date((firebase_game_data.input_timestamp as any)).getTime();
-            //         const answer_time_limit = game_status.game.answer_time_limit * 1000;
-            //         const target_time = input_timestamp + answer_time_limit;
+                    const input_timestamp = new Date((firebase_game_data.input_timestamp as any)).getTime();
+                    const answer_time_limit = game_status.game.answer_time_limit * 1000;
+                    const target_time = input_timestamp + answer_time_limit;
         
-            //         setCounter(answer_time_limit);
+                    setCounter(answer_time_limit);
             
-            //         const timer = setInterval(() => {
-            //             const remaining_time = target_time - new Date().getTime();
+                    const timer = setInterval(() => {
+                        const remaining_time = target_time - new Date().getTime();
         
-            //             setCounter(remaining_time / 1000 | 0);
+                        setCounter(remaining_time / 1000 | 0);
         
-            //             if(remaining_time <= 0) {
-            //                 clearInterval(timer);
-            //             }
-            //         }, 1000)
+                        if(remaining_time <= 0) {
+                            clearInterval(timer);
+                        }
+                    }, 1000)
             
-            //         return () => {
-            //             clearInterval(timer);
-            //             console.log('clear counter');
-            //         }
-            //     }
-            // }
+                    return () => {
+                        clearInterval(timer);
+                        console.log('clear counter');
+                    }
+                }
+            }
         }
     }, [firebase_game_data]);
     /////////////////////////////////////////////////////////////////////////

@@ -148,37 +148,44 @@ function GameListItem(props: GameListItemProps): React.ReactElement {
                         )
                         :
                         game.status === 'end' ? (
-                            // endの時はリザルトが表示される
-                            <Grid item xs={12}>
-                                <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
-                                    {(game.game_users.filter((game_user: any) => (
-                                        game_user.result === 1
-                                    ))).map((game_user: any, index: number) => (
-                                        <Link to={`/user/${game_user.user.screen_name}`} key={index}>
-                                            <Chip
-                                                avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
-                                                label={game_user.user.name}
-                                                variant="filled"
-                                                color={'primary'}
-                                                // sx={{backgroundColor: yellow[200]}}
-                                                clickable
-                                            />
-                                        </Link>
-                                    ))}
-                                    {(game.game_users.filter((game_user: any) => (
-                                        game_user.result !== 1
-                                    ))).map((game_user: any, index: number) => (
-                                        <Link to={`/user/${game_user.user.screen_name}`} key={index}>
-                                            <Chip
-                                                avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
-                                                label={game_user.user.name}
-                                                variant="outlined"
-                                                clickable
-                                            />
-                                        </Link>
-                                    ))}
-                                </Stack>
-                            </Grid>
+                            // endの時はリザルトが見れる
+                            <React.Fragment>
+                                <Grid item xs={12} sx={{display: 'flex'}}>
+                                    <Link to={`/wordle/game/play/${game.uuid}`} style={{marginLeft: 'auto'}}>
+                                        <Button variant='contained' style={{fontWeight: 'bold', color: '#fff'}}>Result</Button>
+                                    </Link>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Stack direction="row" spacing={0} sx={{ flexWrap: 'wrap', gap: 1}}>
+                                        {(game.game_users.filter((game_user: any) => (
+                                            game_user.result === 1
+                                        ))).map((game_user: any, index: number) => (
+                                            <Link to={`/user/${game_user.user.screen_name}`} key={index}>
+                                                <Chip
+                                                    avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
+                                                    label={game_user.user.name}
+                                                    variant="filled"
+                                                    color={'primary'}
+                                                    // sx={{backgroundColor: yellow[200]}}
+                                                    clickable
+                                                />
+                                            </Link>
+                                        ))}
+                                        {(game.game_users.filter((game_user: any) => (
+                                            game_user.result !== 1
+                                        ))).map((game_user: any, index: number) => (
+                                            <Link to={`/user/${game_user.user.screen_name}`} key={index}>
+                                                <Chip
+                                                    avatar={<Avatar alt="" src={`/storage/${game_user.user.icon}`} />}
+                                                    label={game_user.user.name}
+                                                    variant="outlined"
+                                                    clickable
+                                                />
+                                            </Link>
+                                        ))}
+                                    </Stack>
+                                </Grid>
+                            </React.Fragment>
                         )
                         :
                         <></>
