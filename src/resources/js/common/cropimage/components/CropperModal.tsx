@@ -1,6 +1,7 @@
 import { Theme, Button, makeStyles, Modal, Slider } from "@material-ui/core";
 import React from "react";
 import Cropper, { Area, MediaSize } from "react-easy-crop";
+import { globalTheme } from "@/Theme";
 
 const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
     root: {
@@ -10,20 +11,25 @@ const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
     },
     modal: props => ({
         width: 420,
+        maxWidth: '95%',
         height: 500,
         backgroundColor: "white",
         display: "flex",
         justifyContent: "center",
         flexFlow: "column",
-        borderRadius: "0px 0px 10px 10px",
+        border: '2px solid #f5f5f5',
+        boxSizing: 'border-box',
+        borderRadius: "10px 10px 10px 10px",
         "& .crop-container": {
         height: 400,
         borderRadius: "10px 10px 0px 0px",
         backgroundColor: "#f4f7fb",
         position: "relative",
-        "& .container": {},
+        "& .container": {
+            borderRadius: "10px 10px 0px 0px"
+        },
         "& .crop-area": {
-            border: "3px solid #00A0FF",
+            border: `3px solid ${globalTheme.palette.primary.main}`,
             borderRadius: props.displayRadius
         },
         "& .media": {}
@@ -36,7 +42,7 @@ const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
         alignItems: "center",
         marginTop: 10,
         "& .zoom-range": {
-            color: "#00A0FF"
+            color: globalTheme.palette.primary.main
         }
         },
         "& .buttons": {
@@ -52,7 +58,7 @@ const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
             color: "#fff"
         },
         "& .ok": {
-            backgroundColor: "#00A0FF",
+            backgroundColor: globalTheme.palette.primary.main,
             color: "#fff"
         }
         }

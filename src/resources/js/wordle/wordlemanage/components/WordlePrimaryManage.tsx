@@ -63,7 +63,7 @@ function WordlePrimaryManage(props: WordlePrimaryManageProps): React.ReactElemen
                     <FormHelperText sx={{mt: 1, ml: 2}}>Double click to edit a tag</FormHelperText>
                 </Grid>
                 <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                    <FormLabel component="legend">Using Language Set</FormLabel>
+                    <FormLabel component="legend">Select usable language set</FormLabel>
                     <FormGroup>
                         {input_values.map((input_value, index) => 
                             <FormControlLabel
@@ -105,7 +105,7 @@ function WordlePrimaryManage(props: WordlePrimaryManageProps): React.ReactElemen
                                 }}
                                 InputProps={{
                                     endAdornment: (
-                                        <IconButton aria-label='delete-word-by-index' data-word-id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: "inherit" }}>
+                                        <IconButton aria-label='delete-word-by-index' data-word-id={String(index)} onClick={handleDeleteWord} style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.54)' }}>
                                             <HighlightOffIcon />
                                         </IconButton>
                                     ),

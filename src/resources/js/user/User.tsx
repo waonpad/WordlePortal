@@ -9,9 +9,11 @@ import GameList from '@/wordle/components/gamelist/components/GameList';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import UserList from '@/user/components/UserList';
+import { useWindowDimensions } from '@/common/hooks/WindowDimensions';
 
 function User(props: any): React.ReactElement {
     const location = useLocation();
+    const {width} = useWindowDimensions();
     const {screen_name} = useParams<{screen_name: string}>();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(undefined);
@@ -175,7 +177,7 @@ function User(props: any): React.ReactElement {
                                             active: display_list_component === 'wordles'
                                         },
                                         {
-                                            text: 'GAME RESULTS',
+                                            text: width >= 450 ? 'GAME RESULTS' : 'RESULTS',
                                             value: 'game_results',
                                             link: `/user/${screen_name}/wordle/game`,
                                             active: display_list_component === 'game_results'
