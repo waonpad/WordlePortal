@@ -23,7 +23,7 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
         max_participants: Yup.number().min(game ? game.max_participants : 0).required(),
         laps: Yup.number().required(),
         // visibility: Yup.boolean().oneOf([true, false]).required(),
-        answer_time_limit: Yup.number().required(),
+        answer_time_limit: Yup.number().transform((value) => (isNaN(value) ? undefined : value)).nullable(),
         // coloring: Yup.boolean().oneOf([true, false]).required(),
     });
 
@@ -156,7 +156,6 @@ function VSPlayOption(props: VSPlayOptionProps): React.ReactElement {
                 </Grid> */}
                 <Grid item xs={12}>
                     <TextField
-                        required
                         fullWidth
                         id="answer_time_limit"
                         label="Answer Time Limit"

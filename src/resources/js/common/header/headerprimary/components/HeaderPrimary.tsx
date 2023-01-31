@@ -293,7 +293,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                 <Container
                     component="main"
                     maxWidth={false}
-                    sx={{mb: 5, pl: 1, pr: 1, '@media (min-width: 600px)': {mb: 5, pl: 1, pr: 1}}}
+                    sx={{mb: 10, pl: 1, pr: 1, '@media (min-width: 600px)': {mb: 5, pl: 1, pr: 1}}}
                 >
                     {children}
                 </Container>

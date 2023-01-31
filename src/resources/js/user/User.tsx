@@ -80,6 +80,7 @@ function User(props: any): React.ReactElement {
     }
     return (
         <Container maxWidth={'lg'} key={key}>
+            <Button>test</Button>
             <Grid container spacing={2}>
                 {/* 左のエリア */}
                 <Grid item container xs={12} smd={4} spacing={2} height={'fit-content'}>

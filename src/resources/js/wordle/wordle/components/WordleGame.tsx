@@ -102,11 +102,6 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                 />
             </Dialog>
             <Grid container spacing={2} sx={{maxWidth: '910px'}}>
-
-                {/* 参加者一覧表示用のモーダルを出す */}
-                {/* 終わったときにステータスを出す */}
-                {/* コメントもできるようにする */}
-
                 {/* 情報表示エリア */}
                 <Grid item xs={12}>
                     <WordleGamePrimaryDetail game_status={game_status} />
@@ -116,9 +111,9 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                     <WordleBoard game_words={game_words} classes={classes} />
                 </Grid>
                 {/* ボタンエリア */}
-                <Grid item xs={12} sx={{display: game_status?.game?.status === 'end' ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <Grid item xs={12} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     <IconButton sx={{p: 0, mr: 3}} onClick={handleOpenMemberList}>
-                       <PersonIcon fontSize='large' /> 
+                       <PersonIcon fontSize='large' />
                     </IconButton>
                     {/* input切り替えボタングループ */}
                     <WordleInputSelectButtonGroup
@@ -155,13 +150,13 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
                     />
                 </Grid>
                 <Grid item container xs={12} spacing={1} sx={{display: game_status.game.status === 'end' ? 'flex' : 'none'}}>
-                    <Grid item xs={game_status.game.wordle_id === null ? 12 : 6}>
+                    <Grid item xs={12} smd={game_status.game.wordle_id === null ? 12 : 6}>
                         <WordleGameUserList
                             users={firebase_game_data.users}
                             firebase_game_data={firebase_game_data}
                         />
                     </Grid>
-                    <Grid item container xs={6} spacing={2} sx={{display: game_status.game.wordle_id === null ? 'none' : 'block'}}>
+                    <Grid item container xs={12} smd={6} spacing={2} sx={{display: game_status.game.wordle_id === null ? 'none' : 'block'}}>
                         {/* コメント投稿 */}
                         <Grid item xs={12}>
                             <Box component="form" noValidate onSubmit={handleSubmitWordleComment(onSubmitWordleComment)}>
