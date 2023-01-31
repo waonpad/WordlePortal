@@ -151,13 +151,13 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             onClose={handleMobileMenuClose}
         >
             <MenuItem onClick={handleMenuClose} component={Link} to={'/login'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <IconButton aria-label="go to login" color="inherit">
+                <IconButton aria-label="go to login" style={{color: 'rgba(0, 0, 0, 0.54)'}}>
                     <Login />
                 </IconButton>
                 <Typography>Login</Typography>
             </MenuItem>
             <MenuItem onClick={handleMenuClose} component={Link} to={'/register'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <IconButton aria-label="go to register" color="inherit">
+                <IconButton aria-label="go to register" style={{color: 'rgba(0, 0, 0, 0.54)'}}>
                     <PersonAdd />
                 </IconButton>
                 <Typography>Register</Typography>
@@ -175,15 +175,15 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             onClose={handleMobileMenuClose}
         >
             <MenuItem aria-label="show new notifications" onClick={handleNotificationOpen}>
-                <IconButton aria-label="show new notifications" color="inherit">
+                <IconButton aria-label="show new notifications" style={{color: 'rgba(0, 0, 0, 0.54)'}}>
                     <Badge badgeContent={notification?.unread_notifications ? notification?.unread_notifications.length : 0} max={99} sx={{"& .MuiBadge-badge": {fontWeight: 'bold', color: '#fff', backgroundColor: green[700]}}}>
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
                 <Typography>Notifications</Typography>
             </MenuItem>
-            <MenuItem onClick={handleMobileMenuClose}  aria-label='go to current user' component={Link} to={'/user/' + auth?.user!.screen_name} style={{ textDecoration: 'none', color: "inherit" }}>
-                <IconButton color="inherit">
+            <MenuItem onClick={handleMobileMenuClose}  aria-label='go to current user' component={Link} to={'/user/' + auth?.user!.screen_name} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <IconButton style={{color: 'rgba(0, 0, 0, 0.54)'}}>
                     <AccountCircle />
                 </IconButton>
                 <Typography>Profile</Typography>
@@ -194,20 +194,20 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
                     // aria-controls={settingMenuId}
                     // aria-haspopup="true"
                     // onClick={handleSettingMenuOpen}
-                    color="inherit"
+                    style={{color: 'rgba(0, 0, 0, 0.54)'}}
                 >
                     <Settings />
                 </IconButton>
                 <Typography>Setting</Typography>
             </MenuItem>
             <MenuItem onClick={handleMobileMenuClose} component={Link} to={'/about'} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <IconButton color="inherit">
+                <IconButton style={{color: 'rgba(0, 0, 0, 0.54)'}}>
                     <InfoIcon />
                 </IconButton>
                 <Typography>About</Typography>
             </MenuItem>
             <MenuItem onClick={logout}>
-                <IconButton color="inherit">
+                <IconButton  style={{color: 'rgba(0, 0, 0, 0.54)'}}>
                     <LogoutIcon />
                 </IconButton>
                 <Typography>Logout</Typography>

@@ -4,6 +4,7 @@ import { Theme, makeStyles } from '@material-ui/core';
 import CropperModal from "@/common/cropimage/components/CropperModal";
 import getCroppedImg from "@/common/cropimage/components/getCroppedImg";
 import { green } from "@mui/material/colors";
+import { Box, Button } from "@mui/material";
 
 type CropImageProps = {
     default_img_src?: string;
@@ -39,6 +40,10 @@ const useStyles = makeStyles<Theme, any>((theme: Theme) => ({
             border: `2px solid ${green[400]}`,
             overflow: "hidden",
             backgroundColor: green[200],
+            padding: 0,
+            "&:hover": {
+                backgroundColor: green[300]
+            },
             "& .img": {
                 width: "100%",
                 objectFit: "contain",
@@ -90,6 +95,7 @@ function CropImage(props: CropImageProps): React.ReactElement {
     const inputRef = useRef(null);
 
     const handleFileUpload = () => {
+        console.log('click');
         (inputRef!.current! as any).click();
     }
     // 
@@ -173,7 +179,7 @@ function CropImage(props: CropImageProps): React.ReactElement {
             accept="image/*"
             onChange={onFileChange}
         />
-        <div className="img-container" onClick={handleFileUpload} style={{cursor: 'pointer'}}>
+        <Box className="img-container" component={Button} fullWidth onClick={handleFileUpload} style={{cursor: 'pointer'}}>
             {
                 croppedImgSrc ? (
                 <img src={croppedImgSrc} alt="Cropped" className="img" />
@@ -189,7 +195,7 @@ function CropImage(props: CropImageProps): React.ReactElement {
                 </div>
                 )
             }
-        </div>
+        </Box>
         <CropperModal
             crop={crop}
             setCrop={setCrop}

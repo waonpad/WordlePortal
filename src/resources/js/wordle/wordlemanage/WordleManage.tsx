@@ -188,15 +188,15 @@ function WordleManage(): React.ReactElement {
     }
 
     return (
-        <Container maxWidth={'lg'}>
-            <Grid container spacing={2}>
+        <Container maxWidth={wordle_id ? 'lg' : 'sm'}>
+            <Grid container spacing={2} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <Grid item xs={12}>
                     <Typography component="h1" variant="h5" color='primary' fontWeight='bold'>
                         Wordle {wordle_id ? 'Manage' : 'Create'}
                     </Typography>
                 </Grid>
                 {/* 左のエリア */}
-                <Grid item container xs={6} spacing={2} height={'fit-content'}>
+                <Grid item container xs={12} smd={wordle_id ? 6 : 12} spacing={2} height={'fit-content'}>
                     <Grid item xs={12}>
                         <WordlePrimaryManage
                             handleSubmit={handleSubmitWordleManage}
@@ -219,7 +219,7 @@ function WordleManage(): React.ReactElement {
                     </Grid>
                 </Grid>
                 {/* 右のエリア */}
-                <Grid item container xs={6} spacing={2} height={'fit-content'}>
+                <Grid item container xs={12} smd={6} spacing={2} height={'fit-content'} sx={{display: wordle_id ? 'block' : 'none'}}>
                     {/* コメントリスト */}
                     <Grid item xs={12}>
                         {
