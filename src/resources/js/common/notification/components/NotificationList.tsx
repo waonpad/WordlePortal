@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, List, ListItem, Divider } from '@mui/material';
-import PaginationPrimary from '@/common/pagination/paginationprimary/components/PaginationPrimary';
+import { Typography, Card, List, Divider } from '@mui/material';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import SimpleTextListItem from '@/common/listitem/simpletextlistitem/components/SimpleTextListItem';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -37,9 +34,6 @@ function NotificationList(props: NotificationListProps): React.ReactElement {
 
     //             setNotifications(res_data.reverse());
     //             setNotificationsLoading(false);
-    //         }
-    //         else if (res.data.status === false) {
-    //             // TODO:
     //         }
     //     })
     // }

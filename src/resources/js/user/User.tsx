@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import swal from "sweetalert";
 import { Link, useParams, useLocation } from "react-router-dom";
 import axios from 'axios';
 import { Button, Container, Grid, Paper, Typography } from '@mui/material';
@@ -57,9 +56,6 @@ function User(props: any): React.ReactElement {
                     setKey(screen_name);
                     setLoading(false);
                 }
-                else if (res.data.status === false) {
-                    swal("Error", res.data.message, "error");
-                }
             })
         }
         setDisplayFFComponent(
@@ -80,7 +76,6 @@ function User(props: any): React.ReactElement {
     }
     return (
         <Container maxWidth={'lg'} key={key}>
-            <Button>test</Button>
             <Grid container spacing={2}>
                 {/* 左のエリア */}
                 <Grid item container xs={12} smd={4} spacing={2} height={'fit-content'}>

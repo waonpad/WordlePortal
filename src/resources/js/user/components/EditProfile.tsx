@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useHistory } from 'react-router-dom';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Radio, RadioGroup, TextField, FormLabel, FormControl, FormControlLabel, FormHelperText, Grid, Box, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -15,8 +13,7 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
     const {user, handleModalClose} = props;
 
     const basicSchema = Yup.object().shape({
-        name: Yup.string()
-        .required('必須入力'),
+        name: Yup.string().required(),
         description: Yup.string().max(191),
         age: Yup.number().min(0).max(130).required(),
         // gender: Yup.string().oneOf(['male', 'female']).required()
@@ -52,9 +49,6 @@ export default function EditProfile(props: EditProfileProps): React.ReactElement
 
                 // TODO: 画面に表示されているプロフィールをどう更新するか
                 // auth.userをそれぞれのコンポーネントで監視する？
-            }
-            else if (res.data.status === false) {
-                // TODO: 更新できなかった時の処理
             }
             else {
                 const obj: EditProfileErrorData = res.data.validation_errors;

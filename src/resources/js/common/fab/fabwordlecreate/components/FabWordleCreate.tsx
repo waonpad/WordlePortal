@@ -3,10 +3,7 @@ import { Fab } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { Link, useLocation } from 'react-router-dom';
 
-export type FabWordleCreateProps = {
-}
-
-function FabWordleCreate(props: FabWordleCreateProps): React.ReactElement {
+function FabWordleCreate(): React.ReactElement {
 
     const location = useLocation();
     const [open, setOpen] = useState<boolean>(false);

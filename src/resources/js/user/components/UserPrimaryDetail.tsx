@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import swal from "sweetalert";
 import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, styled } from '@mui/material';
 import { grey, green } from '@mui/material/colors';
 import { ExpandMore, ExpandLess, MoreHoriz } from '@mui/icons-material';
@@ -57,9 +56,6 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
             if(res.data.status === true) {
                 setUser({...user, follow: res.data.follow});
             }
-            else if (res.data.status === false) {
-                // TODO: 失敗時の処理
-            }
         })
     }
     /////////////////////////////////////////////////////////////////////////
@@ -69,12 +65,6 @@ function UserPrimaryDetail(props: UserPrimaryDetailProps): React.ReactElement {
         setIsOpen(true);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
-
-    const StyledLink = styled(Link)({
-        ':hover': {
-            backgroundColor: 'red'
-        }
-    })
 
     return (
         <Card elevation={1} sx={{minWidth: '100%'}}>

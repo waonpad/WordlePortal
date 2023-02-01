@@ -232,7 +232,7 @@ class GameController extends Controller
     
             if($target_game->status !== 'wait') {
                 return response()->json([
-                    'message' => '今は設定を変更できません',
+                    'message' => "Can't change settings now",
                     'status' => false
                 ]);
             }
@@ -240,7 +240,7 @@ class GameController extends Controller
             if($request->max_participants < $target_game->max_participants) {
                 // 既に参加者が入っている場合処理がめんどうになるので弾く
                 return response()->json([
-                    'message' => '制限人数を減らすことはできません',
+                    'message' => 'Max participants cannot be reduced',
                     'status' => false
                 ]);
             }
@@ -335,7 +335,7 @@ class GameController extends Controller
         }
         else {
             return response()->json([
-               'message' => 'Gameが存在しないか削除権限が無い',
+               'message' => "Can't delete game",
                'status' => false
             ]);
         }
@@ -392,7 +392,7 @@ class GameController extends Controller
         if($game->status !== 'start') {
             return response()->json([
                 'status' => false,
-                'message' => 'ゲームが開始していないか既に終了している'
+                'message' => "can't input now"
             ]);
         }
 
@@ -406,40 +406,33 @@ class GameController extends Controller
             if($input_user_order !== 1) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'ターンプレイヤーではない'
+                    'message' => 'You are not turn player'
                 ]);
             }
         }
-        else {
-            $turn_user = GameUser::where('game_id', $game->id)->where('order', $latest_input_user->order + 1)->first();
+        
+        $turn_user = GameUser::where('game_id', $game->id)->where('order', $latest_input_user->order + 1)->first();
 
-            // 一周した場合、orderが1でないならターンプレイヤーではない
-            if($turn_user === null) {
-                if($input_user_order !== 1) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'ターンプレイヤーではない'
-                    ]);
-                }
+        // 一周した場合、orderが1でないならターンプレイヤーではない
+        if($turn_user === null) {
+            if($input_user_order !== 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You are not turn player'
+                ]);
             }
-            else {
-                // 本来のターンプレイヤーと自分のidが一致しなければターンプレイヤーではない
-                if($input_user_id !== $turn_user->user_id) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'ターンプレイヤーではない'
-                    ]);
-                }
-            }
+        }
+
+        // 本来のターンプレイヤーと自分のidが一致しなければターンプレイヤーではない
+        if($input_user_id !== $turn_user->user_id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'You are not turn player'
+            ]);
         }
 
         // answerは入力可能最大文字数未満の可能性がある為、配列要素数を最大文字数と同じにする
         // 最大文字数が9でLaravelがanswerの場合、$answer_splitは[L,a,r,a,v,e,l,foo,foo]になる
-        // $answer_split = mb_convert_encoding(str_split($game->answer, 1), 'UTF-8', 'UTF-8');
-        // for ($i=count($answer_split); $i < $game->max; $i++) {
-        //     array_push($answer_split, 'foo');
-        // }
-        // $input_split = $request->has('skip') ? array_fill(0, $game->max, '') : array_map('mb_strtoupper', $request->input)
         $answer_split = preg_split("//u", (mb_convert_kana($game->answer, "KVCn")), -1, PREG_SPLIT_NO_EMPTY);
         for ($i=count($answer_split); $i < $game->max; $i++) {
             array_push($answer_split, 'foo');
@@ -453,15 +446,7 @@ class GameController extends Controller
         $exists = [];
         $not_exists = [];
         $errata = [];
-        // $answer_split: [L,a,r,a,v,e,l,foo,foo]
-        // $input_split: [R,e,a,c,t,J,S,空白文字,空白文字]
-        // max: 9
-        // matchs: []
-        // exists: [R,e,a]
-        // not_exists: [c,t,J,S]
-        // errata: ['exist', 'exist', 'exist', 'not_exist'...]
         for ($i=0; $i < $game->max; $i++) {
-            // $target_character = mb_convert_kana($input_split[$i], "KVCn");
             $target_character = $input_split[$i];
 
             // 場所一致
