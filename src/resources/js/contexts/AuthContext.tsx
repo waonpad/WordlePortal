@@ -94,12 +94,12 @@ const useProvideAuth = () => {
 		axios.get('/api/user/auth').then((res) => {
 			if(res.data.status === true) {
 				setUser(res.data.user)
-				console.log('ログイン済み');
+				console.log('logined');
 				setLoad(false)
 			}
 			else if (res.data.status === false) {
 				setUser(null);
-				console.log('ログインしていない');
+				console.log('not logined');
 				setLoad(false);
 			}
 		})

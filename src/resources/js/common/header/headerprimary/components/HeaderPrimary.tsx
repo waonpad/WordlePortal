@@ -58,7 +58,7 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
 
     const handleNotificationClose = () => {
         setNotificationAnchorEl(null);
-        notification?.readAllNotifications(); // TODO: テスト用に既読処理を外している 後でコメントアウトを解除
+        notification?.readAllNotifications();
     }
     
     const notificationPopoverId = 'primary--notification';
@@ -88,9 +88,6 @@ export default function HeaderPrimary({children}: HeaderPrimaryProps) {
             if (res.data.status === true) {
                 history.push('/');
                 window.location.reload();
-            }
-            else if (res.data.status === false) {
-                // 失敗時の処理
             }
         })
     }

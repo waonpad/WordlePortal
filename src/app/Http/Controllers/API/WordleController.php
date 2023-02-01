@@ -145,7 +145,7 @@ class WordleController extends Controller
         if(Auth::user()->id !== $wordle->user_id) {
             return response()->json([
                 'status' => false,
-                'message' => '作成者ではない'
+                'message' => 'You are not this wordle manager'
             ]);
         }
 
@@ -212,7 +212,7 @@ class WordleController extends Controller
         }
         else {
             return response()->json([
-               'message' => 'Wordleが存在しないか削除権限が無い',
+               'message' => "You can't delete wordle",
                'status' => false
             ]);
         }

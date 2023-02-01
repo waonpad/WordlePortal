@@ -80,7 +80,7 @@ class WordleCommentController extends Controller
         }
         else {
             return response()->json([
-               'message' => 'Commentが存在しないか削除権限が無い' 
+               'message' => "You can't delete comment" 
             ]);
         }
     }

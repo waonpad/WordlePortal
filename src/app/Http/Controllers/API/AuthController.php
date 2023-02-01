@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request){
+    public function register(RegisterRequest $request)
+    {
         $validator = $request->getValidator();
         if($validator->fails()){
             return response()->json([
@@ -54,11 +55,12 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'status' => true,
-            'message' => 'Registerd Successfully'
+            'message' => 'Registerd success'
         ]);
     }
 
-    public function login(LoginRequest $request) {
+    public function login(LoginRequest $request)
+    {
         $validator = $request->getValidator();
         if ($validator->fails()){
             return response()->json([
@@ -72,19 +74,23 @@ class AuthController extends Controller
                 'message' => 'Unauthorized'
             ]);
         }
+        
         $user = User::whereEmail($request->email)->first();
+
         return response()->json([
             'user' => $user,
             'status' => true,
-            'message' => 'ログインに成功しました。'
+            'message' => 'Authentication success'
         ]);
     }
 
-    public function logout (Request $request) {
+    public function logout (Request $request)
+    {
         $request->session()->flush();
+
         return response()->json([
             'status' => true,
-            'message' => 'ログアウト成功',
+            'message' => 'Logout success',
         ]);
     }
 }

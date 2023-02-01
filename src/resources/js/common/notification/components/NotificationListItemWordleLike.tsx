@@ -2,14 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Typography, Avatar, Button, IconButton, ListItem, ListItemText, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShortcutIcon from '@mui/icons-material/Shortcut';
-
-export type NotificationListItemFWordleLikeProps = {
-    wordle_like_notification: any;
-}
+import { NotificationListItemFWordleLikeProps } from '@/common/notification/types/NotificationListType';
 
 function NotificationListItemWordleLike(props: NotificationListItemFWordleLikeProps): React.ReactElement {
     const {wordle_like_notification} = props;

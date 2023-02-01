@@ -12,3 +12,15 @@ export type NotificationListProps = {
     // listen?: boolean;
     no_item_text: string;
 }
+
+export type NotificationListItemFollowProps = {
+    follow_notification: any;
+}
+
+export type NotificationListItemFWordleCommentProps = {
+    wordle_comment_notification: any;
+}
+
+export type NotificationListItemFWordleLikeProps = {
+    wordle_like_notification: any;
+}

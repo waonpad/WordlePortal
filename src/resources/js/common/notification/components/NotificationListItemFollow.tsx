@@ -2,12 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Typography, Avatar, Button, IconButton, ListItem, ListItemText, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-
-export type NotificationListItemFollowProps = {
-    follow_notification: any;
-}
+import { NotificationListItemFollowProps } from '@/common/notification/types/NotificationListType';
 
 function NotificationListItemFollow(props: NotificationListItemFollowProps): React.ReactElement {
     const {follow_notification} = props;

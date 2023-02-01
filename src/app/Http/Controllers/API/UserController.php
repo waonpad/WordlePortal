@@ -51,7 +51,6 @@ class UserController extends Controller
             // 'wordleLikes.user', 'wordleLikes.tags', 'wordleLikes.likes',
             // 'games.user', 'games.gameUsers.user', 'games.gameLogs',
             // 'joiningGames.user', 'joiningGames.gameUsers.user', 'joiningGames.gameLogs',
-            // 投稿関連は数を取得する以外に今は使っていない
         ])->where('screen_name', $request->screen_name)->first();
 
         $ff_checked_target_user = $this->ffCheck([$target_user])[0];

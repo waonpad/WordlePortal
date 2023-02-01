@@ -12,12 +12,11 @@ import WordleInputSelectButtonGroup from '@/wordle/wordle/components/wordlegame/
 import WordleBoard from '@/wordle/wordle/components/wordlegame/WordleBoard';
 import { WordleGameProps } from '@/wordle/types/WordleType';
 import { WordleGameStyle } from '@/wordle/wordle/styles/WordleGameStyle';
-import WordleGamePrimaryDetail from './WordlGamePrmaryDetail';
+import WordleGamePrimaryDetail from '@/wordle/wordle/components/WordlGamePrmaryDetail';
 import WordleGameUserList from '@/wordle/wordle/components/wordlegameuserlist/WordleGameUserList';
 import WordleCommentList from '@/wordle/components/wordlecommentlist/components/WordleCommentList';
 import ButtonGroupPrimary from '@/common/button/buttongroupprimary/components/ButtonGroupPrimary';
 import { WordleCommentData, WordleCommentErrorData } from '@/wordle/types/WordleCommentType';
-import { green, grey, yellow } from '@mui/material/colors';
 
 function WordleGame(props: WordleGameProps): React.ReactElement {
     const {
@@ -65,9 +64,6 @@ function WordleGame(props: WordleGameProps): React.ReactElement {
         axios.post('/api/wordle/comment/upsert', data).then(res => {
             if (res.data.status === true) {
                 setWordleCommentSubmitLoading(false)
-            }
-            else if (res.data.status === false) {
-                // 失敗時の処理
             }
             else {
                 const obj: WordleCommentErrorData = res.data.validation_errors;

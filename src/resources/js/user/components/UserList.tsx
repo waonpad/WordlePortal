@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Grid, Typography, Avatar, Card, CardContent, Button, Collapse, IconButton, List, Divider } from '@mui/material';
+import { Card, List, Divider } from '@mui/material';
 import PaginationPrimary from '@/common/pagination/paginationprimary/components/PaginationPrimary';
 import SuspensePrimary from '@/common/suspense/suspenseprimary/components/SuspensePrimary';
 import UserListItem from '@/user/components/UserListItem';
@@ -25,9 +24,6 @@ function UserList(props: UserListProps): React.ReactElement {
 
                 setUsers(res_data.reverse());
                 setusersLoading(false);
-            }
-            else if (res.data.status === false) {
-                // TODO: ユーザーが存在しない時の処理
             }
         })
     }
@@ -54,9 +50,6 @@ function UserList(props: UserListProps): React.ReactElement {
         axios.post('/api/user/followtoggle', {screen_name: screen_name}).then(res => {
             if(res.data.status === true) {
                 setUsers((users) => users.map((user) => (user.screen_name === screen_name ? {...user, follow: res.data.follow} : user)));
-            }
-            else if (res.data.status === false) {
-                // TODO: 失敗時の処理
             }
         })
     }

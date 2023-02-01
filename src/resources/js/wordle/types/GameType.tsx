@@ -15,3 +15,13 @@ export type GameListItemProps = {
     handleDeleteGame: any;
     handleVSPlayOptionOpen: any;
 }
+
+export type WordleGameUserListProps = {
+    users: any;
+    firebase_game_data: any;
+}
+
+export type WordleGameUserListItemProps = {
+    user: any;
+    firebase_game_data: any;
+}

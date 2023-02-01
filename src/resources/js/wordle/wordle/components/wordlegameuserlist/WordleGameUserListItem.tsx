@@ -2,18 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Typography, Avatar, Button, ListItem, ListItemText, ListItemAvatar, ListItemSecondaryAction } from '@mui/material';
 import { grey } from '@mui/material/colors';
-
-export type WordleGameUserListItemProps = {
-    user: any;
-    firebase_game_data: any;
-}
+import { WordleGameUserListItemProps } from '@/wordle/types/GameType';
 
 function WordleGameUserListItem(props: WordleGameUserListItemProps): React.ReactElement {
     const {user, firebase_game_data} = props;
-
-    useEffect(() => {
-        console.log(user)
-    }, [user])
     
     return (
         <ListItem alignItems="flex-start" sx={{paddingRight: '140px'}} component={Link} to={`/user/${user.screen_name}`}>

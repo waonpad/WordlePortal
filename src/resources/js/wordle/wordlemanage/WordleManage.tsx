@@ -112,12 +112,9 @@ function WordleManage(): React.ReactElement {
 
         axios.post('/api/wordle/upsert', data).then(res => {
             if (res.data.status === true) {
-                swal("Success", "登録成功", "success");
+                swal("Success", "Wordle saved!", "success");
                 setTimeout((() => {history.push('/')}), 4000);
                 setLoading(false)
-            }
-            else if (res.data.status === false) {
-                // 失敗時の処理
             }
             else {
                 const obj: WordleErrorData = res.data.validation_errors;
@@ -140,9 +137,6 @@ function WordleManage(): React.ReactElement {
         axios.post('/api/wordle/comment/upsert', data).then(res => {
             if (res.data.status === true) {
                 setWordleCommentSubmitLoading(false)
-            }
-            else if (res.data.status === false) {
-                // 失敗時の処理
             }
             else {
                 const obj: WordleCommentErrorData = res.data.validation_errors;
@@ -170,9 +164,6 @@ function WordleManage(): React.ReactElement {
                     });
                     setWords([...res.data.words, '']);
                     setInitialLoad(false)
-                }
-                else if (res.data.status === false) {
-                    swal("Error", res.data.message, "error");
                 }
             })
         }

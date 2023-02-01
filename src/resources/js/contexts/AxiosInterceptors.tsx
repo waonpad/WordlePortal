@@ -1,4 +1,5 @@
 import React, {useContext, createContext, useState, ReactNode, useEffect } from "react"
+import swal from "sweetalert";
 import { useHistory } from "react-router-dom";
 import axios, {AxiosRequestConfig, AxiosResponse, AxiosError} from 'axios';
 import { useErrorHandler } from "react-error-boundary";
@@ -41,6 +42,9 @@ function AxiosInterceptors({children}: Props): React.ReactElement {
             if(response.config.url !== '/sanctum/csrf-cookie' && response.config.url !== '/api/broadcasting/auth') {
                 if(response.data.status !== undefined || response.data.validation_errors !== undefined) {
                     return response;
+                }
+                else if(response.data.status == false) {
+                    swal('Error', response.data.message, 'error');
                 }
                 else {
                     console.log('error');
