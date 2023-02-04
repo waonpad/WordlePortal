@@ -44,7 +44,7 @@ class GameController extends Controller
 
     private function currentGameStatus($game, $initial_load = false)
     {
-        // $game = Game::with(['user', 'gameUsers.user', 'gameLogs'])->find($game->id);
+        $game = Game::with(['user', 'gameUsers', 'gameLogs'])->find($game->id);
 
         $game_users = array_values($game->gameUsers->toArray());
 
@@ -80,7 +80,7 @@ class GameController extends Controller
                     return ($game_user['user_id'] === $game_input_logs[count($game_input_logs) - 1]['user_id']);
                 }))[0];
         
-                $next_input_user = array_values(array_filter($game_users, function($game_user) use($latest_input_user) {
+                $next_input_user_id = array_values(array_filter($game_users, function($game_user) use($latest_input_user) {
                     return ($game_user['order'] === ($latest_input_user['order'] + 1));
                 }))[0]['user_id']
                 ??
@@ -89,7 +89,7 @@ class GameController extends Controller
                 }))[0]['user_id'];
             }
             else {
-                $next_input_user = array_values(array_filter($game_users, function($game_user) {
+                $next_input_user_id = array_values(array_filter($game_users, function($game_user) {
                     return ($game_user['order'] === 1);
                 }))[0]['user_id'];
             }
@@ -98,9 +98,9 @@ class GameController extends Controller
         return [
             'game' => $game->attributesToArray(),
             'game_users' => $game_users,
-            'next_input_user' => $next_input_user ?? null,
+            'next_input_user_id' => $next_input_user_id ?? null,
             'latest_game_log' => count($game->gameLogs->toArray()) > 0 ? $game->gameLogs()->latest()->first()->attributesToArray() : null,
-            'game_input_logs' => $game_input_logs,
+            'game_input_logs_length' => count($game_input_logs),
             'board' => $board,
             'errata' => [
                 'matchs' => $matchs,
@@ -411,20 +411,11 @@ class GameController extends Controller
             }
         }
         
-        $turn_user = GameUser::where('game_id', $game->id)->where('order', $latest_input_user->order + 1)->first();
+        $turn_user = $latest_input_user === null ? GameUser::where('game_id', $game->id)->where('order', 1)->first() : GameUser::where('game_id', $game->id)->where('order', $latest_input_user->order + 1)->first();
+        $turn_user === null ? $turn_user = GameUser::where('game_id', $game->id)->where('order', 1)->first() : null;
 
-        // 一周した場合、orderが1でないならターンプレイヤーではない
-        if($turn_user === null) {
-            if($input_user_order !== 1) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You are not turn player'
-                ]);
-            }
-        }
-
-        // 本来のターンプレイヤーと自分のidが一致しなければターンプレイヤーではない
-        if($input_user_id !== $turn_user->user_id) {
+        // orderが一致しないならターンプレイヤーではない
+        if($input_user_order !== $turn_user->order) {
             return response()->json([
                 'status' => false,
                 'message' => 'You are not turn player'

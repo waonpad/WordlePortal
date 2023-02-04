@@ -94,10 +94,10 @@ function WordleManage(): React.ReactElement {
     };
 
     const mergeDefaultInput = (default_input: string) => {
-        setInput({
+        setInput((input) => ({
             ...input,
             [default_input]: true,
-        });
+        }));
     }
 
     // Submit ////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ function WordleManage(): React.ReactElement {
         axios.post('/api/wordle/upsert', data).then(res => {
             if (res.data.status === true) {
                 swal("Success", "Wordle saved!", "success");
-                setTimeout((() => {history.push('/')}), 4000);
+                setTimeout((() => {history.push('/')}), 2000);
                 setLoading(false)
             }
             else {
@@ -180,7 +180,7 @@ function WordleManage(): React.ReactElement {
 
     return (
         <Container maxWidth={wordle_id ? 'lg' : 'sm'}>
-            <Grid container spacing={2} sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <Grid container spacing={2} sx={{alignItems: {xs: 'center', smd: 'normal'}, justifyContent: 'center'}}>
                 <Grid item xs={12}>
                     <Typography component="h1" variant="h5" color='primary' fontWeight='bold'>
                         Wordle {wordle_id ? 'Manage' : 'Create'}
@@ -210,7 +210,7 @@ function WordleManage(): React.ReactElement {
                     </Grid>
                 </Grid>
                 {/* 右のエリア */}
-                <Grid item container xs={12} smd={6} spacing={2} height={'fit-content'} sx={{display: wordle_id ? 'block' : 'none'}}>
+                <Grid item container xs={12} smd={6} spacing={2} height={'fit-content'} sx={{display: wordle_id ? 'flex' : 'none'}}>
                     {/* コメントリスト */}
                     <Grid item xs={12}>
                         {
