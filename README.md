@@ -5,7 +5,7 @@
 - React ^17.0.2
 - TypeScript ^4.7.4
 
-## Start Up (on Windows using Makefile)
+## Start Up
 ```
 make build
 ```
